@@ -47,7 +47,7 @@
         .logo {
             font-size: 24px;
             font-weight: bold;
-            background: linear-gradient(45deg, #00a8ff, #0078ff);
+            background: linear-gradient(45deg, #10afff, #0078ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -271,6 +271,7 @@
             font-size: 3rem;
             margin-bottom: 20px;
             color: #00a8ff;
+            margin: auto;
         }
         
         .service-card h3 {
@@ -352,6 +353,21 @@
             animation: fillBar 2s ease-in-out;
         }
         
+        .skill-description {
+        display: none;
+        font-size: 0.9rem;
+        color: #a0a9c0;
+        margin-top: 10px;
+        transition: opacity 0.3s ease;
+        }
+
+        /* Desktop: Zeige Text bei Hover */
+        @media (hover: hover) {
+        .skill-item:hover .skill-description {
+            display: block;
+        }
+}
+
         /* Contact Section */
         .contact {
             padding: 100px 0;
@@ -506,15 +522,15 @@
                     <h1>Salesforce für dein Service-Team</h1>
                     <div class="subtitle">CRM-Lösungen, die dein Service-Team zum Fliegen bringen</div>
                     <p>Hi 👋 <br />
-                    Ich bin Kevin und helfe KMUs und Startups dabei, mit Salesforce richtig durchzustarten. Vergiss komplizierte Prozesse – ich sorge dafür, dass dein CRM einfach funktioniert und dein Team mehr verkauft.</p>
+                    Ich bin Kevin und helfe dabei, mit Salesforce richtig durchzustarten. Vergiss komplizierte Prozesse; denn ich sorge dafür, dass dein CRM einfach funktioniert und deine Kunden den Service lieben.</p>
                     <div class="cta-buttons">
-                        <a href="#contact" class="btn btn-primary">No Coffee - No Talkie</a>
+                        <a href="#contact" class="btn btn-primary">Lass mal treffen</a>
                         <a href="#services" class="btn btn-secondary">Was ich mache</a>
                     </div>
                 </div>
                 <div class="hero-visual">
                     <div class="sf-logo">
-                        <img src="Kevin.jpg" alt="Kevin - Salesforce Experte" loading="lazy"/>
+                        <img src="Boat.jpeg" alt="Kevin - Salesforce Experte" loading="lazy"/>
                     </div>
                 </div>
             </div>
@@ -572,39 +588,19 @@
                 <div class="skills-grid">
                     <div class="skill-item">
                         <h4>Salesforce Admin</h4>
-                        <div class="skill-bar">
-                            <div class="skill-progress" style="width: 95%;"></div>
-                        </div>
-                    </div>
-                    <div class="skill-item">
-                        <h4>Apex Development</h4>
-                        <div class="skill-bar">
-                            <div class="skill-progress" style="width: 90%;"></div>
-                        </div>
-                    </div>
-                    <div class="skill-item">
-                        <h4>Lightning Components</h4>
-                        <div class="skill-bar">
-                            <div class="skill-progress" style="width: 85%;"></div>
-                        </div>
+                        <div class="skill-description">Verwaltung und Konfiguration von Salesforce-Umgebungen.</div>
                     </div>
                     <div class="skill-item">
                         <h4>Integration</h4>
-                        <div class="skill-bar">
-                            <div class="skill-progress" style="width: 88%;"></div>
-                        </div>
+                        <div class="skill-description">Verwaltung und Konfiguration von Salesforce-Umgebungen.</div>
                     </div>
                     <div class="skill-item">
                         <h4>Process Automation</h4>
-                        <div class="skill-bar">
-                            <div class="skill-progress" style="width: 92%;"></div>
-                        </div>
+                        <div class="skill-description">Verwaltung und Konfiguration von Salesforce-Umgebungen.</div>
                     </div>
                     <div class="skill-item">
                         <h4>Data Management</h4>
-                        <div class="skill-bar">
-                            <div class="skill-progress" style="width: 87%;"></div>
-                        </div>
+                        <div class="skill-description">Verwaltung und Konfiguration von Salesforce-Umgebungen.</div>
                     </div>
                 </div>
             </div>
@@ -615,7 +611,7 @@
     <section id="contact" class="contact">
         <div class="container">
             <div class="contact-content">
-                <h2>Lass mal Treffen</h2>
+                <h2>No Coffee - No Talkie</h2>
                 <p>Hast du Bock auf ein Salesforce, das wirklich zu deinem Business passt? Ruf mich an, schreib mir oder lass uns bei einem Kaffee reden – kostet nix* und bringt dich weiter!</p>
                 <p style="font-size: small;font-style: italic">*Kaffe geht auf dich</p>
                 <div class="contact-info">
@@ -640,7 +636,7 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <p>&copy; 2025 Kevin • Salesforce für KMU und Startups</p>
+            <p>&copy; 2025 Kevin • Salesforce für dein Serivce</p>
         </div>
     </footer>
 
