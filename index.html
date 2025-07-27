@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salesforce Experte | CRM Beratung & Entwicklung</title>
+    <title>Salesforce Architect | CRM Beratung & Entwicklung</title>
     <style>
         * {
             margin: 0;
@@ -47,7 +47,7 @@
         .logo {
             font-size: 24px;
             font-weight: bold;
-            background: linear-gradient(45deg, #10afff, #0078ff);
+            background: linear-gradient(45deg, #fbfeff, #a2c2e8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -354,17 +354,18 @@
         }
         
         .skill-description {
-        display: none;
-        font-size: 0.9rem;
-        color: #a0a9c0;
-        margin-top: 10px;
-        transition: opacity 0.3s ease;
+        opacity: 0;
+        visibility: hidden;
+        max-height: 0;
+        transition: opacity 0.3s ease, max-height 0.3s ease, visibility 0.3s;
+        overflow: hidden;
         }
 
-        /* Desktop: Zeige Text bei Hover */
         @media (hover: hover) {
         .skill-item:hover .skill-description {
-            display: block;
+            opacity: 1;
+            visibility: visible;
+            max-height: 200px; /* groß genug für deinen Text */
         }
 }
 
@@ -504,7 +505,8 @@
     <!-- Header -->
     <header>
         <nav class="container">
-            <div class="logo">Kevin • SF</div>
+            
+            <div class="logo">Flowlogic Consulting</div>
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#services">Was ich mache</a></li>
@@ -522,15 +524,15 @@
                     <h1>Salesforce für dein Service-Team</h1>
                     <div class="subtitle">CRM-Lösungen, die dein Service-Team zum Fliegen bringen</div>
                     <p>Hi 👋 <br />
-                    Ich bin Kevin und helfe dabei, mit Salesforce richtig durchzustarten. Vergiss komplizierte Prozesse; denn ich sorge dafür, dass dein CRM einfach funktioniert und deine Kunden den Service lieben.</p>
+                    Ich bin Kevin und helfe dabei, mit Salesforce richtig durchzustarten. Vergiss komplizierte Prozesse. Denn ich sorge dafür, dass dein CRM funktioniert und deine Kunden den Service lieben.</p>
                     <div class="cta-buttons">
-                        <a href="#contact" class="btn btn-primary">Lass mal treffen</a>
+                        <a href="#contact" class="btn btn-primary">Lass mal reden</a>
                         <a href="#services" class="btn btn-secondary">Was ich mache</a>
                     </div>
                 </div>
                 <div class="hero-visual">
                     <div class="sf-logo">
-                        <img src="Boat.jpeg" alt="Kevin - Salesforce Experte" loading="lazy"/>
+                        <img src="Boat.jpeg" alt="Kevin - Salesforce Solution Architect" loading="lazy"/>
                     </div>
                 </div>
             </div>
@@ -545,7 +547,7 @@
                 <div class="service-card">
                     <div class="service-icon">🚀</div>
                     <h3>Salesforce Setup</h3>
-                    <p>Dein Salesforce startklar machen – von null auf hundert. Perfekt abgestimmt auf dein Business, ohne unnötigen Schnickschnack.</p>
+                    <p>Dein Salesforce startklar machen. Perfekt abgestimmt auf dein Business, ohne unnötigen Schnickschnack.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">⚡</div>
@@ -560,7 +562,7 @@
                 <div class="service-card">
                     <div class="service-icon">🤖</div>
                     <h3>Automatisierung</h3>
-                    <p>Lass die Technik für dich arbeiten! Automatische Follow-ups, E-Mails und Workflows – mehr Zeit für die wichtigen Dinge.</p>
+                    <p>Lass die Technik für dich arbeiten! Automatische Follow-ups, E-Mails und Workflows und somit mehr Zeit für die wichtigen Dinge.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">📊</div>
@@ -570,7 +572,7 @@
                 <div class="service-card">
                     <div class="service-icon">🎯</div>
                     <h3>Training für dein Team</h3>
-                    <p>Dein Team lernt Salesforce lieben! Praktische Schulungen, die wirklich hängen bleiben – ohne Fachchinesisch.</p>
+                    <p>Dein Team lernt Salesforce lieben! Praktische Schulungen, die wirklich Mehrwert bieten.</p>
                 </div>
             </div>
         </div>
@@ -591,7 +593,7 @@
                         <div class="skill-description">Verwaltung und Konfiguration von Salesforce-Umgebungen.</div>
                     </div>
                     <div class="skill-item">
-                        <h4>Integration</h4>
+                        <h4>Architektur</h4>
                         <div class="skill-description">Verwaltung und Konfiguration von Salesforce-Umgebungen.</div>
                     </div>
                     <div class="skill-item">
@@ -636,7 +638,7 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <p>&copy; 2025 Kevin • Salesforce für dein Serivce</p>
+            <p>&copy; 2025 Flowlogic Consulting • Salesforce für dein Service-Team</p>
         </div>
     </footer>
 
