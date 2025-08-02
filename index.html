@@ -416,7 +416,222 @@
         .contact-item:hover {
             color: #fff;
         }
+
+        /* Carousel */
+        .carousel-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .carousel-container {
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .carousel-wrapper {
+            overflow: hidden;
+            border-radius: 15px;
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .addon-card {
+            min-width: 300px;
+            margin: 0 1rem;
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transform: scale(0.95);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .addon-card.active {
+            transform: scale(1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .addon-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00d4ff, #5b63d3);
+        }
+
+        .addon-logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .addon-logo::after {
+            content: attr(data-initial);
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .addon-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .addon-category {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .addon-description {
+            color: #5a6c7d;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .addon-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .addon-features li {
+            padding: 0.3rem 0;
+            color: #34495e;
+            display: flex;
+            align-items: center;
+        }
+
+        .addon-features li::before {
+            content: '✓';
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .addon-cta {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .addon-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .carousel-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+
+        .carousel-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .carousel-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .carousel-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        .carousel-indicators {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .addon-card {
+                min-width: 280px;
+                margin: 0 0.5rem;
+                padding: 1.5rem;
+            }
+            
+            .carousel-container {
+                padding: 1rem;
+            }
+        }
         
+
         /* Footer */
         footer {
             background: #0a0f1c;
@@ -548,7 +763,7 @@
                 <div class="service-card">
                     <div class="service-icon">🚀</div>
                     <h3>Salesforce Setup</h3>
-                    <p>Dein Salesforce startklar machen. Perfekt abgestimmt auf dein Business, ohne unnötigen Schnickschnack.</p>
+                    <p>Dein Salesforce startklar machen. Perfekt abgestimmt auf dein Bedürfnisse, ohne unnötigen Schnickschnack.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">⚡</div>
@@ -568,7 +783,7 @@
                 <div class="service-card">
                     <div class="service-icon">📊</div>
                     <h3>Dashboards & Reports</h3>
-                    <p>Endlich verstehen, was läuft! Einfache Dashboards zeigen dir, wo dein Business steht und wo es hingeht.</p>
+                    <p>Endlich verstehen, was läuft! Einfache Dashboards zeigen dir, wo ihr steht und wo es hingeht.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">🎯</div>
@@ -585,37 +800,138 @@
             <div class="skills-content">
                 <div class="skills-text">
                     <h2>Warum mit mir arbeiten?</h2>
-                    <p>Seit über 8 Jahren mache ich nichts anderes als Salesforce – aber ohne das ganze Marketing-Blabla. Ich spreche deine Sprache und verstehe, was kleine und mittlere Unternehmen wirklich brauchen.</p>
-                    <p>Von der ersten Idee bis zum go-live bin ich dabei. Und danach auch – denn ein CRM ist nur so gut wie die Leute, die damit arbeiten.</p>
+                    <p>Seit 2016 dreht sich bei mir alles um Salesforce. Ohne Buzzwords, dafür mit einem klaren Verständnis für die Herausforderungen deiner Customer Service Mitarbeiter</p>
+                    <p>Ich begleite dich von der ersten Idee bis zum Go-live. Und danach auch. Denn ein CRM entfaltet erst dann seinen echten Wert, wenn die Menschen damit gerne, simpel und sicher arbeiten.</p>
                 </div>
                 <div class="skills-grid">
                     <div class="skill-item">
-                        <h4>Salesforce Admin</h4>
-                        <div class="skill-description">Verwaltung und Konfiguration von Salesforce-Umgebungen.</div>
+                        <h4>Administration</h4>
+                        <div class="skill-description">Effiziente Einrichtung, Benutzerverwaltung und laufende Pflege deiner Salesforce-Umgebung.</div>
                     </div>
                     <div class="skill-item">
                         <h4>Architektur</h4>
-                        <div class="skill-description">Verwaltung und Konfiguration von Salesforce-Umgebungen.</div>
+                        <div class="skill-description">Skalierbare Systemarchitektur mit Fokus auf Performance, Sicherheit und Erweiterbarkeit.</div>
                     </div>
                     <div class="skill-item">
                         <h4>Process Automation</h4>
-                        <div class="skill-description">Verwaltung und Konfiguration von Salesforce-Umgebungen.</div>
+                        <div class="skill-description">Automatisierung deiner Geschäftsprozesse mit Flows, Approval-Prozessen und benutzerdefinierten Logiken.</div>
                     </div>
                     <div class="skill-item">
                         <h4>Data Management</h4>
-                        <div class="skill-description">Verwaltung und Konfiguration von Salesforce-Umgebungen.</div>
+                        <div class="skill-description">Strukturierte Datenpflege, Migrationskonzepte und saubere Datenmodelle für bessere Insights.</div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Carousel Section 
+    <section class="carousel-section">
+        <div class="section-header">
+            <h1 class="section-title">Salesforce Partner Addons</h1>
+            <p class="section-subtitle">Extend your Salesforce experience with powerful partner solutions designed to boost productivity and drive growth</p>
+        </div>
+
+        <div class="carousel-container">
+            <div class="carousel-wrapper">
+                <div class="carousel-track" id="carouselTrack">
+                    <div class="addon-card active">
+                        <div class="addon-logo" data-initial="CC"></div>
+                        <h3 class="addon-title">Conga Composer</h3>
+                        <p class="addon-category">Document Generation</p>
+                        <p class="addon-description">
+Automatisiere die Erstellung von Angeboten, Verträgen und Reports direkt aus Salesforce. Mit dynamischen Vorlagen, die sich an deine Geschäftslogik anpassen.</p>
+                        <ul class="addon-features">
+                            <li>Dynamische Dokumentenerstellung</li>
+                            <li>Word und PDF</li>
+                            <li>Branding und Bedingungen</li>
+                            <li>Automatisierte Versand- und Speicherprozesse</li>
+                        </ul>
+                        <button class="addon-cta">Learn More</button>
+                    </div>
+
+                    <div class="addon-card">
+                        <div class="addon-logo" data-initial="PA"></div>
+                        <h3 class="addon-title">Parloa</h3>
+                        <p class="addon-category">Callcenter</p>
+                        <p class="addon-description">KI-gestützte Kundenkommunikation am Telefon – direkt aus Salesforce.</p>
+                        <ul class="addon-features">
+                            <li>Spracherkennung in Echtzeit</li>
+                            <li>Automatisierte Dialoge</li>
+                            <li>CRM-Integration</li>
+                            <li>Skalierbar für große Teams</li>
+                        </ul>
+                        <button class="addon-cta">Jetzt entdecken</button>
+                    </div>
+
+                    <div class="addon-card">
+                        <div class="addon-logo" data-initial="PA"></div>
+                        <h3 class="addon-title">Parloa</h3>
+                        <p class="addon-category">Callcenter</p>
+                        <p class="addon-description">KI-gestützte Kundenkommunikation am Telefon – direkt aus Salesforce.</p>
+                        <ul class="addon-features">
+                            <li>Spracherkennung in Echtzeit</li>
+                            <li>Automatisierte Dialoge</li>
+                            <li>CRM-Integration</li>
+                            <li>Skalierbar für große Teams</li>
+                        </ul>
+                        <button class="addon-cta">Jetzt entdecken</button>
+                    </div>
+
+                    <div class="addon-card">
+                        <div class="addon-logo" data-initial="PA"></div>
+                        <h3 class="addon-title">Parloa</h3>
+                        <p class="addon-category">Callcenter</p>
+                        <p class="addon-description">KI-gestützte Kundenkommunikation am Telefon – direkt aus Salesforce.</p>
+                        <ul class="addon-features">
+                            <li>Spracherkennung in Echtzeit</li>
+                            <li>Automatisierte Dialoge</li>
+                            <li>CRM-Integration</li>
+                            <li>Skalierbar für große Teams</li>
+                        </ul>
+                        <button class="addon-cta">Jetzt entdecken</button>
+                    </div>
+
+                    <div class="addon-card">
+                        <div class="addon-logo" data-initial="TB"></div>
+                        <h3 class="addon-title">Tableau Analytics</h3>
+                        <p class="addon-category">Business Intelligence</p>
+                        <p class="addon-description">Visualisiere Salesforce-Daten in interaktiven Dashboards.</p>
+                        <ul class="addon-features">
+                            <li>Echtzeit-Reports</li>
+                            <li>Individuelle Visuals</li>
+                            <li>Trendanalyse</li>
+                            <li>Mobil verfügbar</li>
+                        </ul>
+                        <button class="addon-cta">Jetzt starten</button>
+                    </div>
+
+                    <div class="addon-card">
+                        <div class="addon-logo" data-initial="SL"></div>
+                        <h3 class="addon-title">Slack</h3>
+                        <p class="addon-category">Collaboration</p>
+                        <p class="addon-description">Erhalte Salesforce-Updates direkt in Slack – ganz ohne E-Mails.</p>
+                        <ul class="addon-features">
+                            <li>Sofortbenachrichtigungen</li>
+                            <li>Automatisierte Abläufe</li>
+                            <li>Live-Daten teilen</li>
+                            <li>Effizient im Team</li>
+                        </ul>
+                        <button class="addon-cta">Jetzt verbinden</button>
+                    </div>
+            <div class="carousel-controls">
+                <button class="carousel-btn" id="prevBtn">‹</button>
+                <div class="carousel-indicators" id="indicators"></div>
+                <button class="carousel-btn" id="nextBtn">›</button>
+            </div>
+        </div>
+    </section>-->
     <!-- Contact Section -->
     <section id="contact" class="contact">
         <div class="container">
             <div class="contact-content">
-                <h2>No Coffee ☕ - No Talkie 🔕</h2>
-                <p>Hast du Bock auf ein Salesforce, das wirklich zu deinem Business passt? Ruf mich an, schreib mir oder lass uns bei einem Kaffee reden – kostet nix* und bringt dich weiter!</p>
+                <h2>No Coffee - No Talkie </h2>
+                <p>Hast du Bock auf ein Salesforce, das zu deinem Business passt? Ruf mich an, schreib mir oder lass uns bei einem Kaffee reden. Kostet nix* und bringt dich weiter!</p>
                 <p style="font-size: small;font-style: italic">*Kaffe geht auf dich</p>
                 <div class="contact-info">
                     <a href="mailto:kev.gadient@gmail.com" class="contact-item">
@@ -698,6 +1014,189 @@
                 }
             }
             });
+        });
+    </script>
+    <script>
+        class SalesforceCarousel {
+            constructor() {
+                this.track = document.getElementById('carouselTrack');
+                this.cards = document.querySelectorAll('.addon-card');
+                this.prevBtn = document.getElementById('prevBtn');
+                this.nextBtn = document.getElementById('nextBtn');
+                this.indicators = document.getElementById('indicators');
+                
+                this.currentIndex = 0;
+                this.cardsToShow = this.getCardsToShow();
+                this.maxIndex = Math.max(0, this.cards.length - this.cardsToShow);
+                
+                this.init();
+            }
+
+            getCardsToShow() {
+                const containerWidth = this.track.parentElement.offsetWidth;
+                if (containerWidth < 768) return 1;
+                if (containerWidth < 1024) return 2;
+                return 3;
+            }
+
+            init() {
+                this.createIndicators();
+                this.updateCarousel();
+                this.bindEvents();
+                this.startAutoPlay();
+            }
+
+            createIndicators() {
+                this.indicators.innerHTML = '';
+                const totalSlides = this.maxIndex + 1;
+                
+                for (let i = 0; i < totalSlides; i++) {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'indicator';
+                    indicator.addEventListener('click', () => this.goToSlide(i));
+                    this.indicators.appendChild(indicator);
+                }
+            }
+
+            updateCarousel() {
+                // Update track position
+                const cardWidth = this.cards[0].offsetWidth + 32; // including margin
+                const translateX = -this.currentIndex * cardWidth;
+                this.track.style.transform = `translateX(${translateX}px)`;
+
+                // Update active card
+                this.cards.forEach((card, index) => {
+                    card.classList.remove('active');
+                    if (index >= this.currentIndex && index < this.currentIndex + this.cardsToShow) {
+                        const middleIndex = Math.floor(this.cardsToShow / 2);
+                        if (index === this.currentIndex + middleIndex) {
+                            card.classList.add('active');
+                        }
+                    }
+                });
+
+                // Update indicators
+                const indicators = this.indicators.querySelectorAll('.indicator');
+                indicators.forEach((indicator, index) => {
+                    indicator.classList.toggle('active', index === this.currentIndex);
+                });
+
+                // Update button states
+                this.prevBtn.disabled = this.currentIndex === 0;
+                this.nextBtn.disabled = this.currentIndex >= this.maxIndex;
+            }
+
+            goToSlide(index) {
+                this.currentIndex = Math.max(0, Math.min(index, this.maxIndex));
+                this.updateCarousel();
+                this.resetAutoPlay();
+            }
+
+            nextSlide() {
+                if (this.currentIndex < this.maxIndex) {
+                    this.currentIndex++;
+                    this.updateCarousel();
+                } else {
+                    // Loop back to beginning
+                    this.currentIndex = 0;
+                    this.updateCarousel();
+                }
+                this.resetAutoPlay();
+            }
+
+            prevSlide() {
+                if (this.currentIndex > 0) {
+                    this.currentIndex--;
+                    this.updateCarousel();
+                } else {
+                    // Loop to end
+                    this.currentIndex = this.maxIndex;
+                    this.updateCarousel();
+                }
+                this.resetAutoPlay();
+            }
+
+            bindEvents() {
+                this.nextBtn.addEventListener('click', () => this.nextSlide());
+                this.prevBtn.addEventListener('click', () => this.prevSlide());
+
+                // Keyboard navigation
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowLeft') this.prevSlide();
+                    if (e.key === 'ArrowRight') this.nextSlide();
+                });
+
+                // Touch/swipe support
+                let startX = 0;
+                let endX = 0;
+
+                this.track.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                });
+
+                this.track.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                });
+
+                this.track.addEventListener('touchend', (e) => {
+                    endX = e.changedTouches[0].clientX;
+                    const diffX = startX - endX;
+
+                    if (Math.abs(diffX) > 50) { // Minimum swipe distance
+                        if (diffX > 0) {
+                            this.nextSlide();
+                        } else {
+                            this.prevSlide();
+                        }
+                    }
+                });
+
+                // Pause auto-play on hover
+                this.track.addEventListener('mouseenter', () => this.pauseAutoPlay());
+                this.track.addEventListener('mouseleave', () => this.startAutoPlay());
+
+                // Handle window resize
+                window.addEventListener('resize', () => {
+                    const newCardsToShow = this.getCardsToShow();
+                    if (newCardsToShow !== this.cardsToShow) {
+                        this.cardsToShow = newCardsToShow;
+                        this.maxIndex = Math.max(0, this.cards.length - this.cardsToShow);
+                        this.currentIndex = Math.min(this.currentIndex, this.maxIndex);
+                        this.createIndicators();
+                        this.updateCarousel();
+                    }
+                });
+            }
+
+            startAutoPlay() {
+                this.autoPlayInterval = setInterval(() => {
+                    this.nextSlide();
+                }, 4000);
+            }
+
+            pauseAutoPlay() {
+                if (this.autoPlayInterval) {
+                    clearInterval(this.autoPlayInterval);
+                }
+            }
+
+            resetAutoPlay() {
+                this.pauseAutoPlay();
+                this.startAutoPlay();
+            }
+        }
+
+        // Initialize carousel when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new SalesforceCarousel();
+        });
+
+        // Add click handlers for CTA buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('addon-cta')) {
+                const addonTitle = e.target.closest('.addon-card').querySelector('.addon-title').textContent;
+                alert(`Redirecting to ${addonTitle} installation page...`);
+            }
         });
     </script>
 </body>
