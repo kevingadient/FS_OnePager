@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salesforce Partner Addons</title>
+    <style>
+        .carousel-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .carousel-container {
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .carousel-wrapper {
+            overflow: hidden;
+            border-radius: 15px;
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .addon-card {
+            min-width: 300px;
+            margin: 0 1rem;
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transform: scale(0.95);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .addon-card.active {
+            transform: scale(1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .addon-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00d4ff, #5b63d3);
+        }
+
+        .addon-logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .addon-logo::after {
+            content: attr(data-initial);
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .addon-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .addon-category {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .addon-description {
+            color: #5a6c7d;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .addon-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .addon-features li {
+            padding: 0.3rem 0;
+            color: #34495e;
+            display: flex;
+            align-items: center;
+        }
+
+        .addon-features li::before {
+            content: '✓';
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .addon-cta {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .addon-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .carousel-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+
+        .carousel-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .carousel-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .carousel-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        .carousel-indicators {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .addon-card {
+                min-width: 280px;
+                margin: 0 0.5rem;
+                padding: 1.5rem;
+            }
+            
+            .carousel-container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="carousel-section">
+        <div class="section-header">
+            <h1 class="section-title">Salesforce Partner Addons</h1>
+            <p class="section-subtitle">Extend your Salesforce experience with powerful partner solutions designed to boost productivity and drive growth</p>
+        </div>
+
+        <div class="carousel-container">
+            <div class="carousel-wrapper">
+                <div class="carousel-track" id="carouselTrack">
+                    <div class="addon-card active">
+                        <div class="addon-logo" data-initial="DS"></div>
+                        <h3 class="addon-title">DocuSign CLM</h3>
+                        <p class="addon-category">Contract Management</p>
+                        <p class="addon-description">Streamline your contract lifecycle with AI-powered contract management directly integrated into Salesforce.</p>
+                        <ul class="addon-features">
+                            <li>AI contract analysis</li>
+                            <li>Electronic signatures</li>
+                            <li>Template management</li>
+                            <li>Approval workflows</li>
+                        </ul>
+                        <button class="addon-cta">Learn More</button>
+                    </div>
+
+                    <div class="addon-card">
+                        <div class="addon-logo" data-initial="HS"></div>
+                        <h3 class="addon-title">HubSpot Integration</h3>
+                        <p class="addon-category">Marketing Automation</p>
+                        <p class="addon-description">Sync your marketing and sales efforts with seamless HubSpot integration for better lead management.</p>
+                        <ul class="addon-features">
+                            <li>Lead scoring automation</li>
+                            <li>Email campaign sync</li>
+                            <li>Contact management</li>
+                            <li>Analytics dashboard</li>
+                        </ul>
+                        <button class="addon-cta">Explore Now</button>
+                    </div>
+
+                    <div class="addon-card">
+                        <div class="addon-logo" data-initial="TB"></div>
+                        <h3 class="addon-title">Tableau Analytics</h3>
+                        <p class="addon-category">Business Intelligence</p>
+                        <p class="addon-description">Transform your Salesforce data into actionable insights with advanced visualization and analytics.</p>
+                        <ul class="addon-features">
+                            <li>Real-time dashboards</li>
+                            <li>Custom visualizations</li>
+                            <li>Predictive analytics</li>
+                            <li>Mobile reporting</li>
+                        </ul>
+                        <button class="addon-cta">Get Started</button>
+                    </div>
+
+                    <div class="addon-card">
+                        <div class="addon-logo" data-initial="MS"></div>
+                        <h3 class="addon-title">MailChimp Sync</h3>
+                        <p class="addon-category">Email Marketing</p>
+                        <p class="addon-description">Automate your email marketing campaigns with intelligent audience segmentation and personalization.</p>
+                        <ul class="addon-features">
+                            <li>Audience segmentation</li>
+                            <li>Campaign automation</li>
+                            <li>A/B testing</li>
+                            <li>Performance tracking</li>
+                        </ul>
+                        <button class="addon-cta">Try Free</button>
+                    </div>
+
+                    <div class="addon-card">
+                        <div class="addon-logo" data-initial="ZD"></div>
+                        <h3 class="addon-title">Zendesk Support</h3>
+                        <p class="addon-category">Customer Service</p>
+                        <p class="addon-description">Deliver exceptional customer service with integrated ticketing and support case management.</p>
+                        <ul class="addon-features">
+                            <li>Ticket management</li>
+                            <li>Knowledge base integration</li>
+                            <li>Customer satisfaction tracking</li>
+                            <li>Multi-channel support</li>
+                        </ul>
+                        <button class="addon-cta">Start Trial</button>
+                    </div>
+
+                    <div class="addon-card">
+                        <div class="addon-logo" data-initial="SL"></div>
+                        <h3 class="addon-title">Slack Connect</h3>
+                        <p class="addon-category">Collaboration</p>
+                        <p class="addon-description">Enhance team collaboration with real-time notifications and workflow automation in Slack.</p>
+                        <ul class="addon-features">
+                            <li>Real-time notifications</li>
+                            <li>Workflow automation</li>
+                            <li>Record updates</li>
+                            <li>Team collaboration</li>
+                        </ul>
+                        <button class="addon-cta">Connect Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carousel-controls">
+                <button class="carousel-btn" id="prevBtn">‹</button>
+                <div class="carousel-indicators" id="indicators"></div>
+                <button class="carousel-btn" id="nextBtn">›</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        class SalesforceCarousel {
+            constructor() {
+                this.track = document.getElementById('carouselTrack');
+                this.cards = document.querySelectorAll('.addon-card');
+                this.prevBtn = document.getElementById('prevBtn');
+                this.nextBtn = document.getElementById('nextBtn');
+                this.indicators = document.getElementById('indicators');
+                
+                this.currentIndex = 0;
+                this.cardsToShow = this.getCardsToShow();
+                this.maxIndex = Math.max(0, this.cards.length - this.cardsToShow);
+                
+                this.init();
+            }
+
+            getCardsToShow() {
+                const containerWidth = this.track.parentElement.offsetWidth;
+                if (containerWidth < 768) return 1;
+                if (containerWidth < 1024) return 2;
+                return 3;
+            }
+
+            init() {
+                this.createIndicators();
+                this.updateCarousel();
+                this.bindEvents();
+                this.startAutoPlay();
+            }
+
+            createIndicators() {
+                this.indicators.innerHTML = '';
+                const totalSlides = this.maxIndex + 1;
+                
+                for (let i = 0; i < totalSlides; i++) {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'indicator';
+                    indicator.addEventListener('click', () => this.goToSlide(i));
+                    this.indicators.appendChild(indicator);
+                }
+            }
+
+            updateCarousel() {
+                // Update track position
+                const cardWidth = this.cards[0].offsetWidth + 32; // including margin
+                const translateX = -this.currentIndex * cardWidth;
+                this.track.style.transform = `translateX(${translateX}px)`;
+
+                // Update active card
+                this.cards.forEach((card, index) => {
+                    card.classList.remove('active');
+                    if (index >= this.currentIndex && index < this.currentIndex + this.cardsToShow) {
+                        const middleIndex = Math.floor(this.cardsToShow / 2);
+                        if (index === this.currentIndex + middleIndex) {
+                            card.classList.add('active');
+                        }
+                    }
+                });
+
+                // Update indicators
+                const indicators = this.indicators.querySelectorAll('.indicator');
+                indicators.forEach((indicator, index) => {
+                    indicator.classList.toggle('active', index === this.currentIndex);
+                });
+
+                // Update button states
+                this.prevBtn.disabled = this.currentIndex === 0;
+                this.nextBtn.disabled = this.currentIndex >= this.maxIndex;
+            }
+
+            goToSlide(index) {
+                this.currentIndex = Math.max(0, Math.min(index, this.maxIndex));
+                this.updateCarousel();
+                this.resetAutoPlay();
+            }
+
+            nextSlide() {
+                if (this.currentIndex < this.maxIndex) {
+                    this.currentIndex++;
+                    this.updateCarousel();
+                } else {
+                    // Loop back to beginning
+                    this.currentIndex = 0;
+                    this.updateCarousel();
+                }
+                this.resetAutoPlay();
+            }
+
+            prevSlide() {
+                if (this.currentIndex > 0) {
+                    this.currentIndex--;
+                    this.updateCarousel();
+                } else {
+                    // Loop to end
+                    this.currentIndex = this.maxIndex;
+                    this.updateCarousel();
+                }
+                this.resetAutoPlay();
+            }
+
+            bindEvents() {
+                this.nextBtn.addEventListener('click', () => this.nextSlide());
+                this.prevBtn.addEventListener('click', () => this.prevSlide());
+
+                // Keyboard navigation
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowLeft') this.prevSlide();
+                    if (e.key === 'ArrowRight') this.nextSlide();
+                });
+
+                // Touch/swipe support
+                let startX = 0;
+                let endX = 0;
+
+                this.track.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                });
+
+                this.track.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                });
+
+                this.track.addEventListener('touchend', (e) => {
+                    endX = e.changedTouches[0].clientX;
+                    const diffX = startX - endX;
+
+                    if (Math.abs(diffX) > 50) { // Minimum swipe distance
+                        if (diffX > 0) {
+                            this.nextSlide();
+                        } else {
+                            this.prevSlide();
+                        }
+                    }
+                });
+
+                // Pause auto-play on hover
+                this.track.addEventListener('mouseenter', () => this.pauseAutoPlay());
+                this.track.addEventListener('mouseleave', () => this.startAutoPlay());
+
+                // Handle window resize
+                window.addEventListener('resize', () => {
+                    const newCardsToShow = this.getCardsToShow();
+                    if (newCardsToShow !== this.cardsToShow) {
+                        this.cardsToShow = newCardsToShow;
+                        this.maxIndex = Math.max(0, this.cards.length - this.cardsToShow);
+                        this.currentIndex = Math.min(this.currentIndex, this.maxIndex);
+                        this.createIndicators();
+                        this.updateCarousel();
+                    }
+                });
+            }
+
+            startAutoPlay() {
+                this.autoPlayInterval = setInterval(() => {
+                    this.nextSlide();
+                }, 4000);
+            }
+
+            pauseAutoPlay() {
+                if (this.autoPlayInterval) {
+                    clearInterval(this.autoPlayInterval);
+                }
+            }
+
+            resetAutoPlay() {
+                this.pauseAutoPlay();
+                this.startAutoPlay();
+            }
+        }
+
+        // Initialize carousel when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new SalesforceCarousel();
+        });
+
+        // Add click handlers for CTA buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('addon-cta')) {
+                const addonTitle = e.target.closest('.addon-card').querySelector('.addon-title').textContent;
+                alert(`Redirecting to ${addonTitle} installation page...`);
+            }
+        });
+    </script>
+</body>
+</html>

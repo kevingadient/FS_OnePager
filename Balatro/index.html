@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Yahtzee</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <div class="app">
+      <header class="app__header">
+        <h1>Yahtzee</h1>
+        <div class="app__meta">
+          <div class="meta__item">Round <span id="round">1</span></div>
+          <div class="meta__item">Target <span id="target">100</span></div>
+          <div class="meta__item">Score <span id="score">0</span></div>
+          <div class="meta__item">Hands <span id="hands">5</span></div>
+          <div class="meta__item">Coins <span id="coins">0</span></div>
+          <button id="soundToggle" class="btn">Sound: On</button>
+        </div>
+      </header>
+
+      <main class="app__main">
+        <aside class="panel">
+          <h2>Scoring Guide</h2>
+          <div id="scoringList" class="scoring__list"></div>
+        </aside>
+        <section class="board">
+          <div class="board__dice" id="dice"></div>
+          <div class="board__controls">
+            <button id="rollBtn" class="btn btn--primary">Roll</button>
+            <button id="discardBtn" class="btn">Discard</button>
+            <button id="finishHandBtn" class="btn" disabled>Score Hand</button>
+            <div class="board__status">
+              <span>Rerolls left: <strong id="rerolls">3</strong></span>
+              <span>Discards left: <strong id="discards">2</strong></span>
+            </div>
+          </div>
+          <div class="hand__summary" id="handSummary">—</div>
+        </section>
+
+        <aside class="sidebar">
+          <section class="panel">
+            <h2>Jokers</h2>
+            <div id="jokers" class="jokers"></div>
+          </section>
+          <section class="panel">
+            <h2>Hand Result</h2>
+            <div class="chipsmult">
+              <div>Chips: <span id="chips">0</span></div>
+              <div>Mult: <span id="mult">1</span></div>
+              <div>Total: <span id="total">0</span></div>
+            </div>
+            <div class="hand__actions">
+              <button id="nextHandBtn" class="btn" disabled>Next Hand</button>
+              <button id="nextRoundBtn" class="btn btn--success" disabled>Next Round</button>
+            </div>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <div id="shopModal" class="modal" hidden>
+      <div class="modal__dialog">
+        <div class="modal__header">
+          <h3>Shop - Jokers</h3>
+          <button id="closeShopBtn" class="btn">Close</button>
+        </div>
+        <div class="modal__info">Choose 1 Joker. After purchase (or closing), the next round begins.</div>
+        <div id="shopItems" class="shop__items"></div>
+      </div>
+    </div>
+
+    <div id="winModal" class="modal" hidden>
+      <div class="modal__dialog">
+        <div class="modal__header">
+          <h3>Round Cleared!</h3>
+          <button id="closeWinBtn" class="btn">Aww!</button>
+        </div>
+        <div class="win__content">
+          <img id="winCatImg" class="   " alt="A celebratory cat" />
+        </div>
+      </div>
+    </div>
+
+    <script src="./main.js"></script>
+  </body>
+  </html>
+
