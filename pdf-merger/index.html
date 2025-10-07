@@ -12,7 +12,13 @@
     <div class="container">
         <header>
             <h1>📄 PDF Merger & Page Organizer</h1>
-            <p>Upload PDF files, rearrange pages, and download your merged document</p>
+            <p>Merge multiple PDFs into a single file in seconds. Works online on any device - no registration needed.</p>
+            <div class="features">
+                <span class="feature">✓ Free to use</span>
+                <span class="feature">✓ No watermarks</span>
+                <span class="feature">✓ Secure & private</span>
+                <span class="feature">✓ Works on any device</span>
+            </div>
         </header>
 
         <main>
@@ -21,11 +27,14 @@
                 <div class="upload-area" id="uploadArea">
                     <div class="upload-content">
                         <div class="upload-icon">📁</div>
-                        <h3>Drop PDF files here or click to browse</h3>
-                        <p>You can upload multiple PDF files</p>
-                        <input type="file" id="fileInput" multiple accept=".pdf" hidden>
+                        <h3>Choose Files</h3>
+                        <p>or drop files here</p>
+                        <div class="supported-formats">
+                            <strong>Supported formats:</strong> PDF, DOC, XLS, PPT, PNG, JPG
+                        </div>
+                        <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg" hidden>
                         <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
-                            Choose Files
+                            Select files
                         </button>
                     </div>
                 </div>
@@ -36,8 +45,9 @@
                 <div class="section-header">
                     <h2>📑 PDF Pages</h2>
                     <div class="actions">
+                        <button id="removeCorruptedBtn" class="btn btn-secondary" onclick="removeCorruptedPages()" title="Remove corrupted pages">Clean Up</button>
                         <button id="clearAllBtn" class="btn btn-secondary">Clear All</button>
-                        <button id="downloadBtn" class="btn btn-primary">Download Merged PDF</button>
+                        <button id="downloadBtn" class="btn btn-primary">Finish</button>
                     </div>
                 </div>
                 
@@ -54,13 +64,19 @@
 
             <!-- Instructions Section -->
             <section class="instructions">
-                <h3>How to use:</h3>
+                <h3>How to merge PDF files online for free:</h3>
                 <ol>
-                    <li><strong>Upload PDFs:</strong> Click "Choose Files" or drag and drop PDF files into the upload area</li>
-                    <li><strong>Reorder pages:</strong> Drag and drop pages in the order you want them to appear</li>
-                    <li><strong>Remove pages:</strong> Click the "×" button on any page to remove it</li>
-                    <li><strong>Download:</strong> Click "Download Merged PDF" to get your reorganized document</li>
+                    <li><strong>Drag & drop your file</strong> into our free PDF Merger at the top of this page.</li>
+                    <li><strong>Add extra files if needed:</strong> PDFs, images, or other file types.</li>
+                    <li><strong>Rearrange and rotate the pages</strong> as necessary.</li>
+                    <li><strong>Hit 'Finish'</strong> to combine your files into a single PDF.</li>
+                    <li><strong>Download</strong> your merged file—done!</li>
                 </ol>
+                
+                <div class="security-info">
+                    <h4>🔒 Secure Online PDF Merging</h4>
+                    <p>Your files are secure with us. All processing happens locally in your browser, so your documents never leave your device. No uploads to external servers.</p>
+                </div>
             </section>
         </main>
 
@@ -74,6 +90,30 @@
 
         <!-- Toast Notifications -->
         <div id="toastContainer" class="toast-container"></div>
+
+        <!-- Page Preview Modal -->
+        <div id="previewModal" class="preview-modal" style="display: none;">
+            <div class="preview-modal-content">
+                <div class="preview-header">
+                    <h3 id="previewTitle">Page Preview</h3>
+                    <button class="close-btn" id="closePreviewBtn">&times;</button>
+                </div>
+                <div class="preview-body">
+                    <div class="preview-image-container">
+                        <img id="previewImage" src="" alt="Page preview">
+                    </div>
+                    <div class="preview-info">
+                        <p><strong>Page:</strong> <span id="previewPageNumber"></span></p>
+                        <p><strong>Source:</strong> <span id="previewSource"></span></p>
+                    </div>
+                </div>
+                <div class="preview-footer">
+                    <button class="btn btn-secondary" id="removeFromPreviewBtn">Remove Page</button>
+                    <button class="btn btn-primary" id="moveToTopBtn">Move to Top</button>
+                    <button class="btn btn-primary" id="moveToBottomBtn">Move to Bottom</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>

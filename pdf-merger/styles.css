@@ -35,6 +35,24 @@ header h1 {
 header p {
     font-size: 1.1rem;
     opacity: 0.9;
+    margin-bottom: 20px;
+}
+
+.features {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.feature {
+    background: rgba(255,255,255,0.2);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
 }
 
 /* Upload section */
@@ -75,7 +93,21 @@ header p {
 
 .upload-content p {
     color: #666;
+    margin-bottom: 15px;
+}
+
+.supported-formats {
+    color: #888;
+    font-size: 0.9rem;
     margin-bottom: 25px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.supported-formats strong {
+    color: #333;
 }
 
 /* Buttons */
@@ -196,12 +228,13 @@ header p {
     padding: 15px;
     text-align: center;
     transition: all 0.3s ease;
-    cursor: move;
+    cursor: grab;
     position: relative;
     min-height: 280px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    user-select: none;
 }
 
 .page-item:hover {
@@ -211,13 +244,17 @@ header p {
 }
 
 .page-item.sortable-ghost {
-    opacity: 0.5;
-    transform: rotate(5deg);
+    opacity: 0.3;
+    transform: rotate(2deg);
+    background: #667eea;
+    border-color: #764ba2;
 }
 
 .page-item.sortable-chosen {
-    transform: scale(1.05);
+    cursor: grabbing;
+    transform: scale(1.02);
     z-index: 1000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
 .page-preview {
@@ -238,6 +275,8 @@ header p {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .page-preview canvas {
@@ -283,6 +322,7 @@ header p {
     justify-content: center;
     transition: all 0.3s ease;
     opacity: 0;
+    z-index: 10;
 }
 
 .page-item:hover .remove-btn {
@@ -319,6 +359,26 @@ header p {
 
 .instructions strong {
     color: #333;
+}
+
+.security-info {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 30px;
+    border-left: 4px solid #28a745;
+}
+
+.security-info h4 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.security-info p {
+    color: #555;
+    margin: 0;
+    line-height: 1.6;
 }
 
 /* Loading overlay */
@@ -362,6 +422,127 @@ header p {
     color: #333;
     font-size: 1.1rem;
     font-weight: 500;
+}
+
+/* Page Preview Modal */
+.preview-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    padding: 20px;
+}
+
+.preview-modal-content {
+    background: white;
+    border-radius: 15px;
+    max-width: 90vw;
+    max-height: 90vh;
+    width: 800px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.preview-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.5rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #666;
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    background: #f8f9fa;
+    color: #333;
+}
+
+.preview-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.preview-image-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: #f8f9fa;
+    overflow: auto;
+}
+
+.preview-image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.preview-info {
+    padding: 15px 25px;
+    background: white;
+    border-top: 1px solid #e9ecef;
+}
+
+.preview-info p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.preview-info strong {
+    color: #333;
+}
+
+.preview-footer {
+    padding: 20px 25px;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 /* Toast notifications */
@@ -456,5 +637,31 @@ header p {
     
     .page-preview {
         height: 120px;
+    }
+    
+    .preview-modal {
+        padding: 10px;
+    }
+    
+    .preview-modal-content {
+        width: 100%;
+        max-height: 95vh;
+    }
+    
+    .preview-header {
+        padding: 15px 20px;
+    }
+    
+    .preview-header h3 {
+        font-size: 1.2rem;
+    }
+    
+    .preview-footer {
+        padding: 15px 20px;
+        flex-direction: column;
+    }
+    
+    .preview-footer .btn {
+        width: 100%;
     }
 }

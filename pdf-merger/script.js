@@ -1,6 +1,8 @@
 // Global variables
 let pdfPages = [];
 let sortableInstance = null;
+let currentPreviewPage = null;
+let originalPdfDocuments = []; // Store original PDF documents
 
 // DOM elements
 const fileInput = document.getElementById('fileInput');
@@ -13,6 +15,17 @@ const loadingText = document.getElementById('loadingText');
 const clearAllBtn = document.getElementById('clearAllBtn');
 const downloadBtn = document.getElementById('downloadBtn');
 const toastContainer = document.getElementById('toastContainer');
+
+// Preview modal elements
+const previewModal = document.getElementById('previewModal');
+const closePreviewBtn = document.getElementById('closePreviewBtn');
+const previewTitle = document.getElementById('previewTitle');
+const previewImage = document.getElementById('previewImage');
+const previewPageNumber = document.getElementById('previewPageNumber');
+const previewSource = document.getElementById('previewSource');
+const removeFromPreviewBtn = document.getElementById('removeFromPreviewBtn');
+const moveToTopBtn = document.getElementById('moveToTopBtn');
+const moveToBottomBtn = document.getElementById('moveToBottomBtn');
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -34,6 +47,19 @@ function initializeEventListeners() {
     
     // Upload area click
     uploadArea.addEventListener('click', () => fileInput.click());
+    
+    // Preview modal events
+    closePreviewBtn.addEventListener('click', closePreviewModal);
+    removeFromPreviewBtn.addEventListener('click', removeFromPreview);
+    moveToTopBtn.addEventListener('click', movePageToTop);
+    moveToBottomBtn.addEventListener('click', movePageToBottom);
+    
+    // Close modal when clicking outside
+    previewModal.addEventListener('click', function(event) {
+        if (event.target === previewModal) {
+            closePreviewModal();
+        }
+    });
 }
 
 // File handling functions
@@ -57,55 +83,91 @@ function handleDrop(event) {
     uploadArea.classList.remove('dragover');
     
     const files = Array.from(event.dataTransfer.files);
-    const pdfFiles = files.filter(file => file.type === 'application/pdf');
+    const supportedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'image/png',
+        'image/jpeg',
+        'image/jpg'
+    ];
     
-    if (pdfFiles.length !== files.length) {
-        showToast('Only PDF files are supported', 'warning');
+    const supportedFiles = files.filter(file => supportedTypes.includes(file.type));
+    
+    if (supportedFiles.length !== files.length) {
+        showToast('Some files are not supported. Only PDF, DOC, XLS, PPT, PNG, JPG files are allowed.', 'warning');
     }
     
-    if (pdfFiles.length > 0) {
-        processFiles(pdfFiles);
+    if (supportedFiles.length > 0) {
+        processFiles(supportedFiles);
     }
 }
 
 async function processFiles(files) {
-    showLoading('Processing PDF files...');
+    showLoading('Processing files...');
     
     try {
         let totalPages = 0;
         let processedPages = 0;
         
-        // First pass: count total pages
+        // First pass: count total pages and convert non-PDF files
+        const processedFiles = [];
+        
         for (const file of files) {
-            const arrayBuffer = await file.arrayBuffer();
-            const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-            totalPages += pdfDoc.getPageCount();
+            if (file.type === 'application/pdf') {
+                processedFiles.push(file);
+                const arrayBuffer = await file.arrayBuffer();
+                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+                totalPages += pdfDoc.getPageCount();
+            } else {
+                // Convert non-PDF files to PDF
+                showLoading(`Converting ${file.name}...`);
+                const convertedPdf = await convertToPdf(file);
+                if (convertedPdf) {
+                    processedFiles.push(convertedPdf);
+                    totalPages += 1; // Assume 1 page for converted files
+                }
+            }
         }
         
         // Second pass: extract pages
-        for (const file of files) {
+        for (const file of processedFiles) {
             const arrayBuffer = await file.arrayBuffer();
             const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
             const pageCount = pdfDoc.getPageCount();
+            
+            // Store the original PDF document
+            const docIndex = originalPdfDocuments.length;
+            originalPdfDocuments.push({
+                pdfDoc: pdfDoc,
+                fileName: file.name,
+                pageCount: pageCount
+            });
             
             for (let i = 0; i < pageCount; i++) {
                 const page = pdfDoc.getPage(i);
                 const pageNumber = i + 1;
                 
-                // Create a new PDF document with just this page
+                // Generate thumbnail
+                const thumbnail = await generateThumbnail(page);
+                
+                // Create a separate PDF document for this page to avoid reference issues
                 const singlePageDoc = await PDFLib.PDFDocument.create();
                 const [copiedPage] = await singlePageDoc.copyPages(pdfDoc, [i]);
                 singlePageDoc.addPage(copiedPage);
                 
-                // Generate thumbnail
-                const thumbnail = await generateThumbnail(page);
-                
-                // Add page to our collection
+                // Add page to our collection with both reference and separate document
                 pdfPages.push({
-                    id: Date.now() + Math.random(), // Unique ID
+                    id: Date.now() + Math.random() + i, // Unique ID with page index
                     sourceFile: file.name,
                     pageNumber: pageNumber,
-                    pdfDoc: singlePageDoc,
+                    docIndex: docIndex, // Reference to original document
+                    pageIndex: i, // Page index within the document
+                    pdfDoc: singlePageDoc, // Separate document for this page
                     thumbnail: thumbnail,
                     originalPage: page
                 });
@@ -117,23 +179,65 @@ async function processFiles(files) {
         
         displayPages();
         hideLoading();
-        showToast(`Successfully processed ${totalPages} pages from ${files.length} file(s)`, 'success');
+        showToast(`Successfully processed ${totalPages} pages from ${processedFiles.length} file(s)`, 'success');
         
     } catch (error) {
         hideLoading();
-        showToast('Error processing PDF files: ' + error.message, 'error');
+        showToast('Error processing files: ' + error.message, 'error');
         console.error('Error processing files:', error);
     }
 }
 
-async function generateThumbnail(page) {
+// Convert non-PDF files to PDF (simplified version - for images only)
+async function convertToPdf(file) {
+    try {
+        if (file.type.startsWith('image/')) {
+            // For images, create a simple PDF with the image
+            const pdfDoc = await PDFLib.PDFDocument.create();
+            const arrayBuffer = await file.arrayBuffer();
+            
+            let image;
+            if (file.type === 'image/png') {
+                image = await pdfDoc.embedPng(arrayBuffer);
+            } else if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
+                image = await pdfDoc.embedJpg(arrayBuffer);
+            } else {
+                throw new Error('Unsupported image format');
+            }
+            
+            const page = pdfDoc.addPage();
+            const { width, height } = page.getSize();
+            const imageSize = image.scale(0.8);
+            
+            page.drawImage(image, {
+                x: (width - imageSize.width) / 2,
+                y: (height - imageSize.height) / 2,
+                width: imageSize.width,
+                height: imageSize.height,
+            });
+            
+            const pdfBytes = await pdfDoc.save();
+            return new File([pdfBytes], file.name.replace(/\.[^/.]+$/, '.pdf'), { type: 'application/pdf' });
+        } else {
+            // For other file types, show a message that conversion is not supported
+            showToast(`File type ${file.type} conversion is not supported yet. Please convert to PDF first.`, 'warning');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error converting file to PDF:', error);
+        showToast(`Error converting ${file.name} to PDF`, 'error');
+        return null;
+    }
+}
+
+async function generateThumbnail(page, isPreview = false) {
     try {
         // Create a canvas to render the page
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
         
-        // Set canvas size for thumbnail
-        const scale = 0.3; // Scale down for thumbnail
+        // Set canvas size - higher quality for preview
+        const scale = isPreview ? 1.5 : 0.4; // Higher resolution for thumbnails
         const viewport = page.getViewport({ scale });
         
         canvas.width = viewport.width;
@@ -147,7 +251,13 @@ async function generateThumbnail(page) {
         
         await page.render(renderContext).promise;
         
-        return canvas.toDataURL('image/png');
+        // Convert to blob for better quality
+        return new Promise((resolve) => {
+            canvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                resolve(url);
+            }, 'image/png', 0.9);
+        });
     } catch (error) {
         console.error('Error generating thumbnail:', error);
         return null;
@@ -179,11 +289,11 @@ function createPageElement(page, index) {
     pageDiv.setAttribute('data-page-id', page.id);
     
     const thumbnail = page.thumbnail ? 
-        `<img src="${page.thumbnail}" alt="Page ${page.pageNumber}">` :
-        `<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">📄 Page ${page.pageNumber}</div>`;
+        `<img src="${page.thumbnail}" alt="Page ${page.pageNumber}" style="width: 100%; height: 100%; object-fit: contain; border-radius: 4px;">` :
+        `<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666; font-size: 14px;">📄 Page ${page.pageNumber}</div>`;
     
     pageDiv.innerHTML = `
-        <div class="page-preview">
+        <div class="page-preview" onclick="showPagePreview('${page.id}')">
             ${thumbnail}
         </div>
         <div class="page-info">
@@ -192,6 +302,19 @@ function createPageElement(page, index) {
         </div>
         <button class="remove-btn" onclick="removePage('${page.id}')" title="Remove page">×</button>
     `;
+    
+    // Add click event to the entire page item (except remove button)
+    pageDiv.addEventListener('click', function(event) {
+        if (!event.target.classList.contains('remove-btn')) {
+            showPagePreview(page.id);
+        }
+    });
+    
+    // Prevent drag when clicking remove button
+    const removeBtn = pageDiv.querySelector('.remove-btn');
+    removeBtn.addEventListener('mousedown', function(event) {
+        event.stopPropagation();
+    });
     
     return pageDiv;
 }
@@ -205,17 +328,32 @@ function initializeSortable() {
         animation: 150,
         ghostClass: 'sortable-ghost',
         chosenClass: 'sortable-chosen',
+        draggable: '.page-item',
         onEnd: function(evt) {
             // Update the pdfPages array based on new order
-            const newOrder = Array.from(pagesList.children).map(el => 
-                pdfPages.find(page => page.id === el.getAttribute('data-page-id'))
-            );
+            const newOrder = [];
+            const pageElements = Array.from(pagesList.children);
+            
+            for (const el of pageElements) {
+                const pageId = el.getAttribute('data-page-id');
+                const page = pdfPages.find(p => p.id == pageId);
+                if (page) {
+                    newOrder.push(page);
+                }
+            }
+            
             pdfPages = newOrder;
+            console.log('Pages reordered:', pdfPages.length, 'pages');
         }
     });
 }
 
 function removePage(pageId) {
+    const pageToRemove = pdfPages.find(page => page.id === pageId);
+    if (pageToRemove && pageToRemove.thumbnail && pageToRemove.thumbnail.startsWith('blob:')) {
+        URL.revokeObjectURL(pageToRemove.thumbnail);
+    }
+    
     pdfPages = pdfPages.filter(page => page.id !== pageId);
     displayPages();
     
@@ -230,14 +368,44 @@ function clearAllPages() {
     if (pdfPages.length === 0) return;
     
     if (confirm('Are you sure you want to clear all pages?')) {
+        // Clean up thumbnail URLs
+        pdfPages.forEach(page => {
+            if (page.thumbnail && page.thumbnail.startsWith('blob:')) {
+                URL.revokeObjectURL(page.thumbnail);
+            }
+        });
+        
         pdfPages = [];
+        originalPdfDocuments = []; // Clear original documents too
         displayPages();
         pagesSection.style.display = 'none';
         showToast('All pages cleared', 'success');
     }
 }
 
+function removeCorruptedPages() {
+    const validPages = getValidPages();
+    const corruptedCount = pdfPages.length - validPages.length;
+    
+    if (corruptedCount === 0) {
+        showToast('No corrupted pages found', 'success');
+        return;
+    }
+    
+    if (confirm(`Found ${corruptedCount} corrupted page(s). Remove them from the list?`)) {
+        pdfPages = validPages;
+        displayPages();
+        
+        if (pdfPages.length === 0) {
+            pagesSection.style.display = 'none';
+        }
+        
+        showToast(`${corruptedCount} corrupted page(s) removed`, 'success');
+    }
+}
+
 async function downloadMergedPDF() {
+    console.log('Starting merge with', pdfPages.length, 'pages');
     if (pdfPages.length === 0) {
         showToast('No pages to merge', 'warning');
         return;
@@ -250,9 +418,37 @@ async function downloadMergedPDF() {
         const mergedPdf = await PDFLib.PDFDocument.create();
         
         // Add all pages in the current order
-        for (const page of pdfPages) {
-            const [copiedPage] = await mergedPdf.copyPages(page.pdfDoc, [0]);
-            mergedPdf.addPage(copiedPage);
+        let pagesAdded = 0;
+        for (let i = 0; i < pdfPages.length; i++) {
+            const page = pdfPages[i];
+            
+            if (!page) {
+                console.warn(`Skipping null page at index ${i}`);
+                continue;
+            }
+            
+            if (!page.pdfDoc) {
+                console.warn(`Skipping page without pdfDoc at index ${i}`);
+                continue;
+            }
+            
+            try {
+                const [copiedPage] = await mergedPdf.copyPages(page.pdfDoc, [0]);
+                mergedPdf.addPage(copiedPage);
+                pagesAdded++;
+            } catch (pageError) {
+                console.error(`Error copying page ${i + 1}:`, pageError);
+                continue;
+            }
+        }
+        
+        console.log(`Added ${pagesAdded} pages to merged PDF`);
+        
+        // Check if we have any pages
+        if (pagesAdded === 0) {
+            hideLoading();
+            showToast('No valid pages to merge', 'error');
+            return;
         }
         
         // Generate the PDF bytes
@@ -273,7 +469,7 @@ async function downloadMergedPDF() {
         URL.revokeObjectURL(url);
         
         hideLoading();
-        showToast(`Successfully downloaded merged PDF with ${pdfPages.length} pages`, 'success');
+        showToast(`Successfully downloaded merged PDF with ${pagesAdded} pages`, 'success');
         
     } catch (error) {
         hideLoading();
@@ -285,6 +481,40 @@ async function downloadMergedPDF() {
 // Utility functions
 function updateProgress(percentage) {
     progressFill.style.width = `${percentage}%`;
+}
+
+// Debug function to validate all pages (non-destructive)
+function validatePages() {
+    console.log('Validating pages...');
+    let validPages = 0;
+    let invalidPages = 0;
+    const invalidPageIndices = [];
+    
+    pdfPages.forEach((page, index) => {
+        if (!page || !page.id || !page.pdfDoc) {
+            console.error(`Invalid page at index ${index}:`, page);
+            invalidPages++;
+            invalidPageIndices.push(index + 1);
+        } else {
+            validPages++;
+        }
+    });
+    
+    console.log(`Validation complete: ${validPages} valid, ${invalidPages} invalid pages`);
+    
+    if (invalidPages > 0) {
+        // Show warning but don't remove pages from display
+        showToast(`Warning: ${invalidPages} page(s) have corrupted data and will be skipped during merge`, 'warning');
+        console.error('Invalid page indices:', invalidPageIndices);
+        return false;
+    }
+    
+    return true;
+}
+
+// Get only valid pages for merging (non-destructive filtering)
+function getValidPages() {
+    return pdfPages.filter(page => page && page.id && page.pdfDoc);
 }
 
 function showLoading(text = 'Loading...') {
@@ -361,6 +591,106 @@ window.addEventListener('unhandledrejection', function(event) {
     showToast('An unexpected error occurred', 'error');
 });
 
+// Preview modal functions
+async function showPagePreview(pageId) {
+    const page = pdfPages.find(p => p.id === pageId);
+    if (!page) return;
+    
+    currentPreviewPage = page;
+    
+    // Update modal content
+    previewTitle.textContent = `Page ${page.pageNumber} Preview`;
+    previewPageNumber.textContent = page.pageNumber;
+    previewSource.textContent = page.sourceFile;
+    
+    // Use existing thumbnail or generate high-quality preview
+    if (page.thumbnail) {
+        previewImage.src = page.thumbnail;
+    } else {
+        showLoading('Generating preview...');
+        const previewImageData = await generateThumbnail(page.originalPage, true);
+        hideLoading();
+        previewImage.src = previewImageData || '';
+    }
+    
+    // Show modal
+    previewModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+function closePreviewModal() {
+    previewModal.style.display = 'none';
+    document.body.style.overflow = ''; // Restore scrolling
+    currentPreviewPage = null;
+}
+
+function removeFromPreview() {
+    if (currentPreviewPage) {
+        removePage(currentPreviewPage.id);
+        closePreviewModal();
+    }
+}
+
+function movePageToTop() {
+    if (currentPreviewPage) {
+        const pageIndex = pdfPages.findIndex(p => p.id === currentPreviewPage.id);
+        if (pageIndex > 0) {
+            // Validate page object before moving
+            const page = pdfPages[pageIndex];
+            if (!page || !page.pdfDoc) {
+                showToast('Error: Page data is corrupted', 'error');
+                return;
+            }
+            
+            // Create a clean copy of the page object to avoid reference issues
+            const pageToMove = {
+                ...page,
+                id: page.id, // Ensure ID is preserved
+                pdfDoc: page.pdfDoc, // Ensure PDF document is preserved
+                originalPage: page.originalPage, // Ensure original page is preserved
+                thumbnail: page.thumbnail,
+                sourceFile: page.sourceFile,
+                pageNumber: page.pageNumber
+            };
+            
+            pdfPages.splice(pageIndex, 1);
+            pdfPages.unshift(pageToMove);
+            displayPages();
+            showToast('Page moved to top', 'success');
+        }
+    }
+}
+
+function movePageToBottom() {
+    if (currentPreviewPage) {
+        const pageIndex = pdfPages.findIndex(p => p.id === currentPreviewPage.id);
+        if (pageIndex < pdfPages.length - 1) {
+            // Validate page object before moving
+            const page = pdfPages[pageIndex];
+            if (!page || !page.pdfDoc) {
+                showToast('Error: Page data is corrupted', 'error');
+                return;
+            }
+            
+            // Create a clean copy of the page object to avoid reference issues
+            const pageToMove = {
+                ...page,
+                id: page.id, // Ensure ID is preserved
+                pdfDoc: page.pdfDoc, // Ensure PDF document is preserved
+                originalPage: page.originalPage, // Ensure original page is preserved
+                thumbnail: page.thumbnail,
+                sourceFile: page.sourceFile,
+                pageNumber: page.pageNumber
+            };
+            
+            pdfPages.splice(pageIndex, 1);
+            pdfPages.push(pageToMove);
+            displayPages();
+            showToast('Page moved to bottom', 'success');
+        }
+    }
+}
+
 // Initialize tooltips and accessibility
 document.addEventListener('DOMContentLoaded', function() {
     // Add keyboard navigation support
@@ -372,5 +702,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 button.click();
             }
         });
+    });
+    
+    // Add keyboard support for preview modal
+    document.addEventListener('keydown', function(event) {
+        if (previewModal.style.display === 'flex') {
+            if (event.key === 'Escape') {
+                closePreviewModal();
+            }
+        }
     });
 });
