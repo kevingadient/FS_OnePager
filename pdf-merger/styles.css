@@ -238,7 +238,7 @@ header p {
 }
 
 .page-item:hover {
-    border-color: #eabe66;
+    border-color: #667eea;
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
