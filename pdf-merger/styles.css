@@ -204,7 +204,7 @@ header p {
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(135deg, #005AA7 0%, #FFFDE4 100%);
+    background: linear-gradient(135deg, #005AA7 0%, #00070d 100%);
     width: 0%;
     transition: width 0.3s ease;
 }
