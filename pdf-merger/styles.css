@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #eabc66 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #005AA7 0%, #FFFDE4 100%);
     min-height: 100vh;
     color: #333;
     line-height: 1.6;
@@ -62,7 +62,7 @@ header p {
 
 .upload-area {
     background: white;
-    border: 3px dashed #eabc66;
+    border: 3px dashed #005AA7;
     border-radius: 15px;
     padding: 60px 20px;
     text-align: center;
@@ -73,7 +73,7 @@ header p {
 
 .upload-area:hover,
 .upload-area.dragover {
-    border-color: #764ba2;
+    border-color: #FFFDE4;
     background: #f8f9ff;
     transform: translateY(-2px);
     box-shadow: 0 15px 40px rgba(0,0,0,0.15);
@@ -124,7 +124,7 @@ header p {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #eabc66 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #005AA7 0%, #428ed1 100%);
     color: white;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
@@ -146,7 +146,7 @@ header p {
 }
 
 .upload-btn {
-    background: linear-gradient(135deg, #eabc66 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #005AA7 0%, #428ed1 100%);
     color: white;
     padding: 15px 30px;
     border: none;
@@ -204,7 +204,7 @@ header p {
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(135deg, #eabc66 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #005AA7 0%, #FFFDE4 100%);
     width: 0%;
     transition: width 0.3s ease;
 }
@@ -247,7 +247,7 @@ header p {
     opacity: 0.3;
     transform: rotate(2deg);
     background: #667eea;
-    border-color: #764ba2;
+    border-color: #FFFDE4;
 }
 
 .page-item.sortable-chosen {
