@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Merger & Page Organizer</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📄 PDF Merger & Page Organizer</h1>
+            <p>Upload PDF files, rearrange pages, and download your merged document</p>
+        </header>
+
+        <main>
+            <!-- File Upload Section -->
+            <section class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <div class="upload-icon">📁</div>
+                        <h3>Drop PDF files here or click to browse</h3>
+                        <p>You can upload multiple PDF files</p>
+                        <input type="file" id="fileInput" multiple accept=".pdf" hidden>
+                        <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                            Choose Files
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PDF Pages Display Section -->
+            <section class="pages-section" id="pagesSection" style="display: none;">
+                <div class="section-header">
+                    <h2>📑 PDF Pages</h2>
+                    <div class="actions">
+                        <button id="clearAllBtn" class="btn btn-secondary">Clear All</button>
+                        <button id="downloadBtn" class="btn btn-primary">Download Merged PDF</button>
+                    </div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                
+                <div class="pages-container">
+                    <div id="pagesList" class="pages-list sortable-list">
+                        <!-- PDF pages will be dynamically inserted here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Instructions Section -->
+            <section class="instructions">
+                <h3>How to use:</h3>
+                <ol>
+                    <li><strong>Upload PDFs:</strong> Click "Choose Files" or drag and drop PDF files into the upload area</li>
+                    <li><strong>Reorder pages:</strong> Drag and drop pages in the order you want them to appear</li>
+                    <li><strong>Remove pages:</strong> Click the "×" button on any page to remove it</li>
+                    <li><strong>Download:</strong> Click "Download Merged PDF" to get your reorganized document</li>
+                </ol>
+            </section>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <p id="loadingText">Processing PDFs...</p>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toastContainer" class="toast-container"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
