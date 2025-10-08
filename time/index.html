@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2-Minute Timer with Spotify</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>2-Minute Timer</h1>
+            <p>Listen to Spotify while you wait for the audio alert</p>
+        </header>
+
+        <div class="timer-section">
+            <div class="time-settings">
+                <h3>Set Timer Duration</h3>
+                <div class="time-inputs">
+                    <div class="time-input-group">
+                        <label for="minutesInput">Minutes:</label>
+                        <input type="number" id="minutesInput" min="0" max="59" value="2" class="time-input">
+                    </div>
+                    <div class="time-input-group">
+                        <label for="secondsInput">Seconds:</label>
+                        <input type="number" id="secondsInput" min="0" max="59" value="0" class="time-input">
+                    </div>
+                    <button id="setTimeBtn" class="btn btn-secondary">Set Time</button>
+                </div>
+            </div>
+            
+            <div class="timer-display" id="timerDisplay">02:00</div>
+            <div class="timer-controls">
+                <button id="startBtn" class="btn btn-primary">Start Timer</button>
+                <button id="pauseBtn" class="btn btn-secondary" disabled>Pause</button>
+                <button id="resetBtn" class="btn btn-secondary">Reset</button>
+            </div>
+            <div class="timer-status" id="timerStatus">Ready to start</div>
+        </div>
+
+        <div class="spotify-section">
+            <h2>Listen to Music</h2>
+            <div class="music-player">
+                <div class="track-info">
+                    <div class="track-artwork" id="trackArtwork">🎵</div>
+                    <div class="track-details">
+                        <div class="track-title" id="trackTitle">Background Music</div>
+                        <div class="track-artist" id="trackArtist">Ambient Sounds</div>
+                    </div>
+                </div>
+                <div class="music-controls">
+                    <button id="prevTrack" class="btn btn-music">⏮</button>
+                    <button id="playPause" class="btn btn-music btn-large">▶</button>
+                    <button id="nextTrack" class="btn btn-music">⏭</button>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="time-display">
+                        <span id="currentTime">0:00</span>
+                        <span id="totalTime">0:00</span>
+                    </div>
+                </div>
+                <div class="volume-control">
+                    <span>🔊</span>
+                    <input type="range" id="musicVolume" min="0" max="100" value="70" class="slider">
+                    <span id="musicVolumeValue">70%</span>
+                </div>
+                <audio id="spotifyAudio" preload="metadata">
+                    <source src="https://www.soundjay.com/free-music/sounds/iron-man-01.mp3" type="audio/wav">
+                    <source src="https://www.soundjay.com/free-music/sounds/heart-of-the-sea-01.mp3" type="audio/wav">
+                </audio>
+            </div>
+        </div>
+
+        <div class="audio-section">
+            <h3>Audio Alert Settings</h3>
+            <div class="audio-controls">
+                <label for="volumeSlider">Alert Volume:</label>
+                <input type="range" id="volumeSlider" min="0" max="100" value="70" class="slider">
+                <span id="volumeValue">70%</span>
+            </div>
+            <div class="audio-controls">
+                <label for="soundSelect">Alert Sound:</label>
+                <select id="soundSelect" class="select">
+                    <option value="beep">Beep</option>
+                    <option value="chime">Chime</option>
+                    <option value="bell">Bell</option>
+                    <option value="notification">Notification</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="notifications" id="notifications"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
