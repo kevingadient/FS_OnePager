@@ -28,10 +28,13 @@
                     <span class="icon">⏸️</span>
                     Pause
                 </button>
-                <button id="downloadBtn" class="btn download-btn" disabled>
-                    <span class="icon">💾</span>
-                    Download
-                </button>
+                <div class="download-section">
+                    <input type="text" id="filenameInput" class="filename-input" placeholder="Enter filename..." maxlength="50">
+                    <button id="downloadBtn" class="btn download-btn" disabled>
+                        <span class="icon">💾</span>
+                        Download
+                    </button>
+                </div>
             </div>
             
             <div class="status">
@@ -41,6 +44,35 @@
             
             <div class="audio-visualizer">
                 <canvas id="visualizer" width="300" height="100"></canvas>
+            </div>
+            
+            <div class="waveform-section" id="waveformSection" style="display: none;">
+                <h3>Waveform</h3>
+                <div class="waveform-container">
+                    <canvas id="waveformCanvas" width="800" height="200"></canvas>
+                    <div class="waveform-overlay">
+                        <div class="playhead" id="playhead"></div>
+                        <div class="trim-start" id="trimStart"></div>
+                        <div class="trim-end" id="trimEnd"></div>
+                    </div>
+                </div>
+                <div class="trim-controls">
+                    <div class="trim-info">
+                        <span>Start: <span id="trimStartTime">0:00</span></span>
+                        <span>End: <span id="trimEndTime">0:00</span></span>
+                        <span>Duration: <span id="trimDuration">0:00</span></span>
+                    </div>
+                    <div class="trim-buttons">
+                        <button id="resetTrimBtn" class="btn" style="background: linear-gradient(135deg, #636e72, #2d3436); color: white;">
+                            <span class="icon">↺</span>
+                            Reset Trim
+                        </button>
+                        <button id="trimRecordingBtn" class="btn" style="background: linear-gradient(135deg, #00b894, #00a085); color: white;">
+                            <span class="icon">✂️</span>
+                            Apply Trim
+                        </button>
+                    </div>
+                </div>
             </div>
             
             <audio id="audioPlayer" controls style="display: none;"></audio>

@@ -115,6 +115,35 @@ h1 {
     background: linear-gradient(135deg, #0984e3, #0770c4);
 }
 
+.download-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.filename-input {
+    padding: 12px 16px;
+    border: 2px solid #ddd;
+    border-radius: 25px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.3s ease;
+    min-width: 200px;
+    background: white;
+}
+
+.filename-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.filename-input::placeholder {
+    color: #999;
+}
+
 .status {
     margin-bottom: 30px;
 }
@@ -143,6 +172,135 @@ h1 {
     border: 2px solid #ddd;
     border-radius: 10px;
     background: #f8f9fa;
+}
+
+.waveform-section {
+    margin: 30px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 15px;
+}
+
+.waveform-section h3 {
+    color: #2d3436;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: 400;
+}
+
+.waveform-container {
+    position: relative;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+#waveformCanvas {
+    display: block;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+.waveform-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.playhead {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: #ff6b6b;
+    pointer-events: none;
+    z-index: 3;
+    box-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
+}
+
+.trim-start, .trim-end {
+    position: absolute;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    background: #00b894;
+    pointer-events: none;
+    z-index: 2;
+    cursor: ew-resize;
+    pointer-events: auto;
+}
+
+.trim-start {
+    left: 0;
+    background: #00b894;
+}
+
+.trim-end {
+    right: 0;
+    background: #e17055;
+}
+
+.trim-start::before, .trim-end::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    width: 13px;
+    height: 13px;
+    background: inherit;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.trim-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.trim-info {
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+    color: #636e72;
+}
+
+.trim-info span {
+    font-weight: 500;
+}
+
+.trim-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.trim-buttons .btn {
+    padding: 10px 20px;
+    font-size: 14px;
+    min-width: auto;
+}
+
+@media (max-width: 600px) {
+    .trim-controls {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .trim-info {
+        justify-content: center;
+    }
+    
+    .trim-buttons {
+        justify-content: center;
+    }
 }
 
 .recordings-list {
