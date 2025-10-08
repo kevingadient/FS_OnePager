@@ -1,0 +1,231 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+h1 {
+    text-align: center;
+    padding: 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    margin: 0;
+    font-size: 2.5em;
+    font-weight: 300;
+}
+
+.recorder-section {
+    padding: 40px;
+    text-align: center;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 15px 25px;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 120px;
+    justify-content: center;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.record-btn {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+}
+
+.record-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #ff5252, #d63031);
+}
+
+.stop-btn {
+    background: linear-gradient(135deg, #6c5ce7, #5f3dc4);
+    color: white;
+}
+
+.stop-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #5a4fcf, #4c2db8);
+}
+
+.play-btn {
+    background: linear-gradient(135deg, #00b894, #00a085);
+    color: white;
+}
+
+.play-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #00a085, #008f75);
+}
+
+.pause-btn {
+    background: linear-gradient(135deg, #fdcb6e, #e17055);
+    color: white;
+}
+
+.pause-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #e17055, #d63031);
+}
+
+.download-btn {
+    background: linear-gradient(135deg, #74b9ff, #0984e3);
+    color: white;
+}
+
+.download-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0984e3, #0770c4);
+}
+
+.status {
+    margin-bottom: 30px;
+}
+
+.status-text {
+    font-size: 18px;
+    color: #2d3436;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.timer {
+    font-size: 24px;
+    color: #636e72;
+    font-weight: 300;
+    font-family: 'Courier New', monospace;
+}
+
+.audio-visualizer {
+    margin: 30px 0;
+    display: flex;
+    justify-content: center;
+}
+
+#visualizer {
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    background: #f8f9fa;
+}
+
+.recordings-list {
+    background: #f8f9fa;
+    padding: 30px;
+    border-top: 1px solid #e9ecef;
+}
+
+.recordings-list h3 {
+    color: #2d3436;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    font-weight: 400;
+}
+
+.recordings-container {
+    display: grid;
+    gap: 15px;
+}
+
+.recording-item {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.recording-item:hover {
+    transform: translateY(-2px);
+}
+
+.recording-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.recording-name {
+    font-weight: 600;
+    color: #2d3436;
+}
+
+.recording-duration {
+    font-size: 14px;
+    color: #636e72;
+}
+
+.recording-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.recording-controls .btn {
+    padding: 8px 15px;
+    font-size: 14px;
+    min-width: auto;
+}
+
+.icon {
+    font-size: 18px;
+}
+
+@media (max-width: 600px) {
+    .controls {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn {
+        width: 200px;
+    }
+    
+    .recording-item {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .recording-controls {
+        justify-content: center;
+    }
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Recorder</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Voice Recorder</h1>
+        
+        <div class="recorder-section">
+            <div class="controls">
+                <button id="recordBtn" class="btn record-btn">
+                    <span class="icon">🎤</span>
+                    Record
+                </button>
+                <button id="stopBtn" class="btn stop-btn" disabled>
+                    <span class="icon">⏹️</span>
+                    Stop
+                </button>
+                <button id="playBtn" class="btn play-btn" disabled>
+                    <span class="icon">▶️</span>
+                    Play
+                </button>
+                <button id="pauseBtn" class="btn pause-btn" disabled>
+                    <span class="icon">⏸️</span>
+                    Pause
+                </button>
+                <button id="downloadBtn" class="btn download-btn" disabled>
+                    <span class="icon">💾</span>
+                    Download
+                </button>
+            </div>
+            
+            <div class="status">
+                <div id="statusText" class="status-text">Ready to record</div>
+                <div id="timer" class="timer">00:00</div>
+            </div>
+            
+            <div class="audio-visualizer">
+                <canvas id="visualizer" width="300" height="100"></canvas>
+            </div>
+            
+            <audio id="audioPlayer" controls style="display: none;"></audio>
+        </div>
+        
+        <div class="recordings-list">
+            <h3>Recordings</h3>
+            <div id="recordingsList" class="recordings-container">
+                <!-- Recordings will be added here -->
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
