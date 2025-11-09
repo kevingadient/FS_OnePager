@@ -371,6 +371,7 @@
             text-align: center;
             transition: all 0.3s ease;
             border: 1px solid rgba(0, 168, 255, 0.1);
+            cursor: pointer;
         }
         
         .skill-item:hover {
@@ -399,20 +400,28 @@
         }
         
         .skill-description {
-        opacity: 0;
-        visibility: hidden;
-        max-height: 0;
-        transition: opacity 0.3s ease, max-height 0.3s ease, visibility 0.3s;
-        overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            max-height: 0;
+            transition: opacity 0.3s ease, max-height 0.3s ease, visibility 0.3s ease;
+            overflow: hidden;
+            margin-top: 10px;
+            color: #cbd5f5;
+        }
+
+        .skill-item.is-open .skill-description {
+            opacity: 1;
+            visibility: visible;
+            max-height: 200px;
         }
 
         @media (hover: hover) {
-        .skill-item:hover .skill-description {
-            opacity: 1;
-            visibility: visible;
-            max-height: 200px; /* groß genug für deinen Text */
+            .skill-item:hover .skill-description {
+                opacity: 1;
+                visibility: visible;
+                max-height: 200px; /* groß genug für deinen Text */
+            }
         }
-}
 
         /* Contact Section */
         .contact {
@@ -1014,18 +1023,35 @@ Automatisiere die Erstellung von Angeboten, Verträgen und Reports direkt aus Sa
 
         const updateBackToTopVisibility = () => {
             if (!backToTopButton) return;
-            const scrolled = window.scrollY || document.documentElement.scrollTop;
+            const scrolled = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
             backToTopButton.classList.toggle('show', scrolled > 400);
+        };
+
+        const supportsSmoothScroll = 'scrollBehavior' in document.documentElement.style;
+
+        const scrollToTop = () => {
+            if (prefersReducedMotion.matches || !supportsSmoothScroll) {
+                window.scrollTo(0, 0);
+                return;
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
         if (backToTopButton) {
             backToTopButton.addEventListener('click', () => {
-                if (prefersReducedMotion.matches) {
-                    window.scrollTo(0, 0);
-                } else {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                scrollToTop();
+            });
+            backToTopButton.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    scrollToTop();
                 }
             });
+            backToTopButton.addEventListener('touchend', (event) => {
+                event.preventDefault();
+                scrollToTop();
+            }, { passive: false });
 
             updateBackToTopVisibility();
             window.addEventListener('scroll', updateBackToTopVisibility, { passive: true });
@@ -1076,18 +1102,53 @@ Automatisiere die Erstellung von Angeboten, Verträgen und Reports direkt aus Sa
         }
     </script>
     <script>
-      // Toggle skill descriptions on click (for mobile)
-        document.querySelectorAll('.skill-item').forEach(item => {
-            item.addEventListener('click', () => {
-            // Nur auf Touch-Geräten aktiv
-            if (window.matchMedia('(hover: none)').matches) {
-                const desc = item.querySelector('.skill-description');
-                if (desc) {
-                desc.style.display = (desc.style.display === 'block') ? 'none' : 'block';
-                }
+        // Toggle skill descriptions on click (for mobile / touch devices)
+        const touchMediaQuery = window.matchMedia('(hover: none)');
+
+        const toggleSkillItem = (item) => {
+            if (!touchMediaQuery.matches) return;
+            const isOpen = item.classList.toggle('is-open');
+            item.setAttribute('aria-expanded', isOpen.toString());
+            const description = item.querySelector('.skill-description');
+            if (description) {
+                description.setAttribute('aria-hidden', (!isOpen).toString());
             }
+        };
+
+        document.querySelectorAll('.skill-item').forEach(item => {
+            const description = item.querySelector('.skill-description');
+            if (description) {
+                description.setAttribute('aria-hidden', touchMediaQuery.matches ? 'true' : 'false');
+            }
+            item.addEventListener('click', () => toggleSkillItem(item));
+            item.addEventListener('keydown', (event) => {
+                if ((event.key === 'Enter' || event.key === ' ') && touchMediaQuery.matches) {
+                    event.preventDefault();
+                    toggleSkillItem(item);
+                }
             });
+            item.setAttribute('role', 'button');
+            item.setAttribute('tabindex', '0');
+            item.setAttribute('aria-expanded', 'false');
         });
+
+        const resetSkillItems = () => {
+            if (touchMediaQuery.matches) return;
+            document.querySelectorAll('.skill-item.is-open').forEach(item => {
+                item.classList.remove('is-open');
+                item.setAttribute('aria-expanded', 'false');
+                const description = item.querySelector('.skill-description');
+                if (description) {
+                    description.setAttribute('aria-hidden', touchMediaQuery.matches ? 'true' : 'false');
+                }
+            });
+        };
+
+        if (typeof touchMediaQuery.addEventListener === 'function') {
+            touchMediaQuery.addEventListener('change', resetSkillItems);
+        } else if (typeof touchMediaQuery.addListener === 'function') {
+            touchMediaQuery.addListener(resetSkillItems);
+        }
     </script>
     <script>
         class SalesforceCarousel {
