@@ -17,10 +17,10 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Genevaß, Verdana, sans-serif;
             line-height: 1.6;
-            background: #0a0f1c;
-            color: #fff;
+            background: #14213d;
+            color: #e5e5e5;
             overflow-x: hidden;
         }
         
@@ -36,7 +36,7 @@
             top: 0;
             left: 0;
             right: 0;
-            background: rgba(88, 100, 130, 0.95);
+            background: #14213d;
             backdrop-filter: blur(10px);
             z-index: 1000;
             padding: 15px 0;
@@ -52,10 +52,12 @@
         .logo {
             font-size: 24px;
             font-weight: bold;
-            background: linear-gradient(45deg, #fbfeff, #a2c2e8);
+            background: linear-gradient(45deg, #fbfeff, #fca311);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            background-size: 200% 200%;
+            animation: logoGradient 3s ease-in-out infinite;
         }
         
         .nav-links {
@@ -63,16 +65,28 @@
             list-style: none;
             gap: 30px;
         }
+
+        @keyframes logoGradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
         
         .nav-links a {
-            color: #fff;
+            color: #e5e5e5;
             text-decoration: none;
             transition: color 0.3s ease;
             position: relative;
         }
         
         .nav-links a:hover {
-            color: #00a8ff;
+            color: #fca311;
         }
         
         .nav-links a::after {
@@ -82,7 +96,7 @@
             left: 0;
             width: 0;
             height: 2px;
-            background: #00a8ff;
+            background: #fca311;
             transition: width 0.3s ease;
         }
         
@@ -95,7 +109,7 @@
             min-height: 100vh;
             display: flex;
             align-items: center;
-            background: linear-gradient(135deg, #4c5d85 0%, #1e275a 100%);
+            background: linear-gradient(135deg, #000000 0%, #14213d 100%);
             position: relative;
             overflow: hidden;
         }
@@ -124,7 +138,7 @@
             font-size: 3.5rem;
             font-weight: 700;
             margin-bottom: 20px;
-            background: linear-gradient(45deg, #fff, #00a8ff);
+            background: linear-gradient(45deg, #e5e5e5, #fca311);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -166,25 +180,26 @@
         }
         
         .btn-primary {
-            background: linear-gradient(45deg, #00a8ff, #0078ff);
+            background: linear-gradient(45deg, #fca311, #e5e5e5);
             color: white;
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 168, 255, 0.4);
+            box-shadow: 0 10px 30px #fca311;
         }
         
         .btn-secondary {
             background: transparent;
-            color: #00a8ff;
-            border: 2px solid #00a8ff;
+            color: #fca311;
+            border: 2px solid #fca311;
         }
         
         .btn-secondary:hover {
-            background: #00a8ff;
+            background: #fca311;
             color: white;
-            transform: translateY(-2px);
+            transform: translateY(-1px);
+            box-shadow: 2px 2px 50px 1px #fca311;
         }
         
         /* Back to top button */
@@ -196,7 +211,7 @@
             height: 52px;
             border-radius: 50%;
             border: none;
-            background: linear-gradient(135deg, #00a8ff, #0078ff);
+            background: #fca311;
             color: #fff;
             font-size: 1.5rem;
             display: flex;
@@ -275,7 +290,7 @@
             text-align: center;
             font-size: 2.5rem;
             margin-bottom: 60px;
-            background: linear-gradient(45deg, #fff, #00a8ff);
+            background: linear-gradient(45deg, #e5e5e5, #fca311);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -304,7 +319,7 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(45deg, #00a8ff, #0078ff);
+            background: linear-gradient(45deg, #fca311, #e5e5e5);
         }
         
         .service-card:hover {
@@ -313,21 +328,116 @@
         }
         
         .service-icon {
+            margin: auto;
             font-size: 3rem;
             margin-bottom: 20px;
-            color: #00a8ff;
+            color: #fca311;
             margin: auto;
         }
         
         .service-card h3 {
             font-size: 1.5rem;
             margin-bottom: 15px;
-            color: #fff;
+            color: #e5e5e5;
         }
         
         .service-card p {
             color: #8892b0;
             line-height: 1.6;
+        }
+        
+        /* Projects Section */
+        .projects {
+            padding: 100px 0;
+            background: #0d1b2a;
+        }
+
+        .projects-intro {
+            text-align: center;
+            max-width: 720px;
+            margin: 0 auto 50px auto;
+            color: #c9d6f0;
+            line-height: 1.7;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .project-card {
+            background: linear-gradient(135deg, rgba(20, 33, 61, 0.85), rgba(12, 21, 40, 0.95));
+            border: 1px solid rgba(252, 163, 17, 0.25);
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(145deg, rgba(252, 163, 17, 0.12), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 35px rgba(12, 21, 40, 0.5);
+        }
+
+        .project-card:hover::before {
+            opacity: 1;
+        }
+
+        .project-icon {
+            font-size: 2.2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(252, 163, 17, 0.12);
+            color: #fca311;
+            display: grid;
+            place-items: center;
+        }
+
+        .project-card h3 {
+            font-size: 1.4rem;
+            color: #e5e5e5;
+        }
+
+        .project-card p {
+            color: #aeb7d4;
+            line-height: 1.6;
+        }
+
+        .project-highlights {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 0;
+            color: #d7e1ff;
+            padding-left: 0;
+        }
+
+        .project-highlights li {
+            position: relative;
+            padding-left: 26px;
+        }
+
+        .project-highlights li::before {
+            content: '▹';
+            position: absolute;
+            left: 0;
+            color: #fca311;
         }
         
         /* Skills Section */
@@ -346,7 +456,7 @@
         .skills-text h2 {
             font-size: 2.5rem;
             margin-bottom: 30px;
-            background: linear-gradient(45deg, #fff, #00a8ff);
+            background: linear-gradient(45deg, #e5e5e5, #fca311);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -376,11 +486,11 @@
         
         .skill-item:hover {
             transform: scale(1.05);
-            border-color: #00a8ff;
+            border-color: #fca311;
         }
         
         .skill-item h4 {
-            color: #00a8ff;
+            color: #e5e5e5;
             font-size: 1rem;
             margin-bottom: 10px;
         }
@@ -394,7 +504,7 @@
         
         .skill-progress {
             height: 100%;
-            background: linear-gradient(45deg, #00a8ff, #0078ff);
+            background: linear-gradient(45deg, #fca311, #e5e5e5);
             border-radius: 4px;
             animation: fillBar 2s ease-in-out;
         }
@@ -438,7 +548,7 @@
         .contact h2 {
             font-size: 2.5rem;
             margin-bottom: 30px;
-            background: linear-gradient(45deg, #fff, #00a8ff);
+            background: linear-gradient(45deg, #e5e5e5, #fca311);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -461,13 +571,13 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            color: #00a8ff;
+            color: #fca311;
             text-decoration: none;
             transition: color 0.3s ease;
         }
         
         .contact-item:hover {
-            color: #fff;
+            color: #e5e5e5;
         }
 
         /* Carousel */
@@ -796,7 +906,7 @@
                     <p>Hi 👋 <br />
                     Ich bin Kevin und helfe dabei, mit Salesforce richtig durchzustarten. Vergiss komplizierte Prozesse. Denn ich sorge dafür, dass dein CRM funktioniert und deine Kunden den Service lieben.</p>
                     <div class="cta-buttons">
-                        <a href="#contact" class="btn btn-primary">Lass mal reden</a>
+                        <a href="#contact" class="btn btn-secondary">Lass mal reden</a>
                         <a href="#services" class="btn btn-secondary">Was ich mache</a>
                     </div>
                 </div>
@@ -817,7 +927,7 @@
                 <div class="service-card">
                     <div class="service-icon">🚀</div>
                     <h3>Salesforce Setup</h3>
-                    <p>Dein Salesforce startklar machen. Perfekt abgestimmt auf dein Bedürfnisse, ohne unnötigen Schnickschnack.</p>
+                    <p>Dein Salesforce startklar machen. Perfekt abgestimmt auf deine Bedürfnisse, ohne unnötigen Schnickschnack.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">⚡</div>
@@ -844,6 +954,49 @@
                     <h3>Training für dein Team</h3>
                     <p>Dein Team lernt Salesforce lieben! Praktische Schulungen, die wirklich Mehrwert bieten.</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <h2 class="section-title">Projekte aus der Praxis</h2>
+            <p class="projects-intro">
+                Jedes Unternehmen ist einzigartig, mit eigenen Prozessen, Systemen und Zielen. Genau das macht jedes Projekt spannend. Hier ein Einblick, wie ich Teams dabei unterstützt habe, Salesforce nicht nur einzuführen, sondern zum Herzstück ihres Erfolgs zu machen. Von der ersten Idee bis zum laufenden Betrieb.
+            </p>
+            <div class="projects-grid">
+                <article class="project-card">
+                    <div class="project-icon">🏦</div>
+                    <h3>Service Cloud inklusive Anbindung von Voicebot</h3>
+                    <p>Gemeinsam haben wir den gesamten Kundensupport zentralisiert, manuelle Aufgaben automatisiert und Transparenz durch aussagekräftige Berichte geschaffen.</p>
+                    <ul class="project-highlights">
+                        <li>40% kürzere Erstellungszeit dank schlanker Case-Erstellung</li>
+                        <li>Self-Service Knowledge Base, die das Support-Team spürbar entlastet</li>
+                        <li>Voicebot-Integration, die häufige Fragen blitzschnell beantwortet und Gerät schläft nicht.</li>
+                    </ul>
+                </article>
+                <article class="project-card">
+                    <div class="project-icon">🚢</div>
+                    <h3>Migration von Salesforce Classic zu Lightning</h3>
+                    <p>Die komplette Salesforce-Umgebung wurde modernisiert. Objekte, Workflows und individueller Code wurden auf Lightning migriert und die tägliche Arbeit dadurch deutlich intuitiver.</p>
+                    <ul class="project-highlights">
+                        <li>Moderiserung flexibler Lightning-Architektur für zukünftige Erweiterungen</li>
+                        <li>Intuitive Lightning Pages für schnellere Navigation</li>
+                        <li>Migration von S-Controls, Apex und Process Builder zu Flows für nachhaltige Automatisierung</li>
+                        
+                    </ul>
+                </article>
+                <article class="project-card">
+                    <div class="project-icon">📝</div>
+                    <h3>Automnatisierung der Vertragserstellung</h3>
+                    <p>Die gesamte Vertragserstellung wurde automatisiert. Verträge werden jetzt direkt aus Salesforce generiert, geprüft und versendet.</p>
+                    <ul class="project-highlights">
+                        <li>90 % Zeitersparnis bei der Vertragserstellung</li>
+                        <li>Automatische Anpassung an kantonale Anforderungen für fehlerfreie Abläufe</li>
+                        <li>Sichere und nachvollziehbare Ablage in der internen Datenbank ohne Datenverlust</li>
+                    </ul>
+                </article>
             </div>
         </div>
     </section>
@@ -879,7 +1032,7 @@
         </div>
     </section>
 
-    <!-- Carousel Section 
+    <!-- Carousel Section
     <section class="carousel-section">
         <div class="section-header">
             <h1 class="section-title">Salesforce Partner Addons</h1>
@@ -1001,7 +1154,7 @@ Automatisiere die Erstellung von Angeboten, Verträgen und Reports direkt aus Sa
                         <span>LinkedIn</span>
                     </a>
                 </div>
-                <a href="mailto:kev.gadient@gmail.com" class="btn btn-primary">Unverbindlich anfragen</a>
+                <a href="mailto:kev.gadient@gmail.com" class="btn btn-secondary">Unverbindlich anfragen</a>
             </div>
         </div>
     </section>
