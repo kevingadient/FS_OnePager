@@ -12,6 +12,10 @@
             box-sizing: border-box;
         }
         
+        html {
+            scroll-behavior: smooth;
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
@@ -181,6 +185,46 @@
             background: #00a8ff;
             color: white;
             transform: translateY(-2px);
+        }
+        
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #00a8ff, #0078ff);
+            color: #fff;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 12px 30px rgba(0, 168, 255, 0.35);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+            z-index: 1200;
+        }
+        
+        .back-to-top:hover {
+            box-shadow: 0 16px 35px rgba(0, 168, 255, 0.45);
+            transform: translateY(-4px);
+        }
+        
+        .back-to-top:focus {
+            outline: 3px solid rgba(0, 168, 255, 0.4);
+            outline-offset: 4px;
+        }
+        
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
         }
         
         .hero-visual {
@@ -959,6 +1003,34 @@ Automatisiere die Erstellung von Angeboten, Verträgen und Reports direkt aus Sa
             <p>&copy; 2025 Flowlogic Consulting • Salesforce für dein Service-Team</p>
         </div>
     </footer>
+
+    <button type="button" class="back-to-top" aria-label="Zurück zum Seitenanfang" title="Zurück zum Seitenanfang">
+        <span aria-hidden="true">↑</span>
+    </button>
+
+    <script>
+        const backToTopButton = document.querySelector('.back-to-top');
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+        const updateBackToTopVisibility = () => {
+            if (!backToTopButton) return;
+            const scrolled = window.scrollY || document.documentElement.scrollTop;
+            backToTopButton.classList.toggle('show', scrolled > 400);
+        };
+
+        if (backToTopButton) {
+            backToTopButton.addEventListener('click', () => {
+                if (prefersReducedMotion.matches) {
+                    window.scrollTo(0, 0);
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+
+            updateBackToTopVisibility();
+            window.addEventListener('scroll', updateBackToTopVisibility, { passive: true });
+        }
+    </script>
 
     <script>
         // Smooth scrolling for navigation links
