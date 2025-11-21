@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="FlowLogic.png">
-    <title>Flowlogic | Salesforce Architecture | CRM Beratung & Entwicklung</title>
+    <title>Kontakt | Flowlogic</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -13,40 +13,40 @@
     <!-- Header -->
     <header>
         <nav class="container">
-
             <div class="logo">Flowlogic Consulting</div>
             <ul class="nav-links">
-                <li><a href="index.html" style="color: #fca311;">Home</a></li>
+                <li><a href="index.html">Home</a></li>
                 <li><a href="services.html">Was ich mache</a></li>
                 <li><a href="projects.html">Projekte</a></li>
                 <li><a href="skills.html">Warum genau ich</a></li>
-                <li><a href="contact.html">Kontakt</a></li>
-                <!--<li><a href="/Balatro/index.html">??</a></li>-->
+                <li><a href="contact.html" style="color: #fca311;">Kontakt</a></li>
             </ul>
         </nav>
     </header>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
+    <!-- Contact Section -->
+    <section id="contact" class="contact" style="padding-top: 120px;">
         <div class="container">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h1>Salesforce für dein Service-Team</h1>
-                    <div class="subtitle">CRM-Lösungen, die dein Service-Team zum Fliegen bringen</div>
-                    <p>Hi 👋 <br />
-                        Ich bin Kevin und helfe dabei, mit Salesforce richtig durchzustarten. Vergiss komplizierte
-                        Prozesse. Denn ich sorge dafür, dass dein CRM funktioniert und deine Kunden den Service lieben.
-                    </p>
-                    <div class="cta-buttons">
-                        <a href="contact.html" class="btn btn-secondary">Lass mal reden</a>
-                        <a href="services.html" class="btn btn-secondary">Was ich mache</a>
-                    </div>
+            <div class="contact-content">
+                <h2>No Coffee - No Talkie </h2>
+                <p>Hast du Bock auf ein Salesforce, das zu deinem Business passt? Ruf mich an, schreib mir oder lass uns
+                    bei einem Kaffee reden. Kostet nix* und bringt dich weiter!</p>
+                <p style="font-size: small;font-style: italic">*Kaffe geht auf dich</p>
+                <div class="contact-info">
+                    <a href="mailto:kev.gadient@gmail.com" class="contact-item">
+                        <span>📧</span>
+                        <span>kev.gadient@gmail.com</span>
+                    </a>
+                    <a href="tel:+41792594327" class="contact-item">
+                        <span>📞</span>
+                        <span>+41 79 259 4327</span>
+                    </a>
+                    <a href="https://www.linkedin.com/in/kevingadient/" class="contact-item">
+                        <span>💼</span>
+                        <span>LinkedIn</span>
+                    </a>
                 </div>
-                <div class="hero-visual">
-                    <div class="sf-logo">
-                        <img src="Boat.jpeg" alt="Kevin - Salesforce Solution Architect" loading="lazy" />
-                    </div>
-                </div>
+                <a href="mailto:kev.gadient@gmail.com" class="btn btn-secondary">Unverbindlich anfragen</a>
             </div>
         </div>
     </section>
@@ -101,9 +101,7 @@
             updateBackToTopVisibility();
             window.addEventListener('scroll', updateBackToTopVisibility, { passive: true });
         }
-    </script>
 
-    <script>
         // Header background on scroll
         window.addEventListener('scroll', function () {
             const header = document.querySelector('header');

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="FlowLogic.png">
+    <title>Projekte | Flowlogic</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="container">
+            <div class="logo">Flowlogic Consulting</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="services.html">Was ich mache</a></li>
+                <li><a href="projects.html" style="color: #fca311;">Projekte</a></li>
+                <li><a href="skills.html">Warum genau ich</a></li>
+                <li><a href="contact.html">Kontakt</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects" style="padding-top: 120px;">
+        <div class="container">
+            <h2 class="section-title">Projekte aus der Praxis</h2>
+            <p class="projects-intro">
+                Jedes Unternehmen ist einzigartig, mit eigenen Prozessen, Systemen und Zielen. Genau das macht jedes
+                Projekt spannend. Hier ein Einblick, wie ich Teams dabei unterstützt habe, Salesforce nicht nur
+                einzuführen, sondern zum Herzstück ihres Erfolgs zu machen. Von der ersten Idee bis zum laufenden
+                Betrieb.
+            </p>
+            <div class="projects-grid">
+                <article class="project-card">
+                    <div class="project-icon">🏦</div>
+                    <h3>Service Cloud inklusive Anbindung von Voicebot</h3>
+                    <p>Gemeinsam haben wir den gesamten Kundensupport zentralisiert, manuelle Aufgaben automatisiert und
+                        Transparenz durch aussagekräftige Berichte geschaffen.</p>
+                    <ul class="project-highlights">
+                        <li>40% kürzere Erstellungszeit dank schlanker Case-Erstellung</li>
+                        <li>Self-Service Knowledge Base, die das Support-Team spürbar entlastet</li>
+                        <li>Voicebot-Integration, die häufige Fragen blitzschnell beantwortet und Gerät schläft nicht.
+                        </li>
+                    </ul>
+                </article>
+                <article class="project-card">
+                    <div class="project-icon">🚢</div>
+                    <h3>Migration von Salesforce Classic zu Lightning</h3>
+                    <p>Die komplette Salesforce-Umgebung wurde modernisiert. Objekte, Workflows und individueller Code
+                        wurden auf Lightning migriert und die tägliche Arbeit dadurch deutlich intuitiver.</p>
+                    <ul class="project-highlights">
+                        <li>Moderiserung flexibler Lightning-Architektur für zukünftige Erweiterungen</li>
+                        <li>Intuitive Lightning Pages für schnellere Navigation</li>
+                        <li>Migration von S-Controls, Apex und Process Builder zu Flows für nachhaltige Automatisierung
+                        </li>
+
+                    </ul>
+                </article>
+                <article class="project-card">
+                    <div class="project-icon">📝</div>
+                    <h3>Automnatisierung der Vertragserstellung</h3>
+                    <p>Die gesamte Vertragserstellung wurde automatisiert. Verträge werden jetzt direkt aus Salesforce
+                        generiert, geprüft und versendet.</p>
+                    <ul class="project-highlights">
+                        <li>90 % Zeitersparnis bei der Vertragserstellung</li>
+                        <li>Automatische Anpassung an kantonale Anforderungen für fehlerfreie Abläufe</li>
+                        <li>Sichere und nachvollziehbare Ablage in der internen Datenbank ohne Datenverlust</li>
+                    </ul>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Flowlogic Consulting • Salesforce für dein Service-Team</p>
+        </div>
+    </footer>
+
+    <button type="button" class="back-to-top" aria-label="Zurück zum Seitenanfang" title="Zurück zum Seitenanfang">
+        <span aria-hidden="true">↑</span>
+    </button>
+
+    <script>
+        const backToTopButton = document.querySelector('.back-to-top');
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+        const updateBackToTopVisibility = () => {
+            if (!backToTopButton) return;
+            const scrolled = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+            backToTopButton.classList.toggle('show', scrolled > 400);
+        };
+
+        const supportsSmoothScroll = 'scrollBehavior' in document.documentElement.style;
+
+        const scrollToTop = () => {
+            if (prefersReducedMotion.matches || !supportsSmoothScroll) {
+                window.scrollTo(0, 0);
+                return;
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        if (backToTopButton) {
+            backToTopButton.addEventListener('click', () => {
+                scrollToTop();
+            });
+            backToTopButton.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    scrollToTop();
+                }
+            });
+            backToTopButton.addEventListener('touchend', (event) => {
+                event.preventDefault();
+                scrollToTop();
+            }, { passive: false });
+
+            updateBackToTopVisibility();
+            window.addEventListener('scroll', updateBackToTopVisibility, { passive: true });
+        }
+
+        // Header background on scroll
+        window.addEventListener('scroll', function () {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(10, 15, 28, 0.98)';
+            } else {
+                header.style.background = 'rgba(10, 15, 28, 0.95)';
+            }
+        });
+    </script>
+</body>
+
+</html>
