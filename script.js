@@ -45,6 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('lang', lang);
         } catch (error) {
             console.error('Error loading translations:', error);
+            // Fallback: If fetch fails (e.g., file:// protocol), do not break other functionality
+            // We could optionally load default text or just log the error.
         }
     };
 
