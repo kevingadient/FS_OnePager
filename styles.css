@@ -497,11 +497,13 @@
             color: #fca311;
             display: grid;
             place-items: center;
+            margin: 0 auto;
         }
 
         .project-card h3 {
             font-size: 1.4rem;
             color: #e5e5e5;
+            text-align: center;
         }
 
         .project-card p {
