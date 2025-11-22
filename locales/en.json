@@ -1,0 +1,72 @@
+{
+    "nav": {
+        "home": "Home",
+        "services": "Services",
+        "projects": "Projects",
+        "skills": "Skills",
+        "contact": "Contact"
+    },
+    "hero": {
+        "title": "Salesforce for your Service Team",
+        "subtitle": "CRM solutions that make your service team fly",
+        "text": "Hi 👋 <br /> I'm Kevin and I help you get off to a flying start with Salesforce. Forget complicated processes. Because I make sure your CRM works and your customers love the service.",
+        "cta_talk": "Let's talk",
+        "cta_services": "What I do"
+    },
+    "footer": {
+        "text": "&copy; 2025 Flowlogic Consulting • Salesforce for your Service Team"
+    },
+    "services": {
+        "title": "How I can help you",
+        "card1_title": "Salesforce Setup",
+        "card1_text": "Get your Salesforce ready to go. Perfectly tailored to your needs, without unnecessary frills.",
+        "card2_title": "Tailored Features",
+        "card2_text": "Need something special? I build custom apps and functions that do exactly what your team needs.",
+        "card3_title": "Data Migration",
+        "card3_text": "Old Excel spreadsheets and systems? No problem! I'll move all your data safely and cleanly into Salesforce.",
+        "card4_title": "Automation",
+        "card4_text": "Let the technology work for you! Automatic follow-ups, emails, and workflows, giving you more time for the important things.",
+        "card5_title": "Dashboards & Reports",
+        "card5_text": "Finally understand what's going on! Simple dashboards show you where you stand and where you're headed.",
+        "card6_title": "Team Training",
+        "card6_text": "Your team will learn to love Salesforce! Practical training that really offers value."
+    },
+    "projects": {
+        "title": "Real-world Projects",
+        "intro": "Every company is unique, with its own processes, systems, and goals. That's exactly what makes every project exciting. Here's a glimpse of how I've helped teams not only introduce Salesforce but make it the heart of their success. From the first idea to ongoing operations.",
+        "card1_title": "Service Cloud including Voicebot integration",
+        "card1_text": "Together we centralized the entire customer support, automated manual tasks, and created transparency through meaningful reports.",
+        "card1_li1": "40% shorter creation time thanks to lean case creation",
+        "card1_li2": "Self-Service Knowledge Base that noticeably relieves the support team",
+        "card1_li3": "Voicebot integration that answers frequent questions lightning fast and never sleeps.",
+        "card2_title": "Migration from Salesforce Classic to Lightning",
+        "card2_text": "The entire Salesforce environment was modernized. Objects, workflows, and custom code were migrated to Lightning, making daily work much more intuitive.",
+        "card2_li1": "Modernizing flexible Lightning architecture for future extensions",
+        "card2_li2": "Intuitive Lightning Pages for faster navigation",
+        "card2_li3": "Migration of S-Controls, Apex, and Process Builder to Flows for sustainable automation",
+        "card3_title": "Automation of Contract Creation",
+        "card3_text": "The entire contract creation process was automated. Contracts are now generated, checked, and sent directly from Salesforce.",
+        "card3_li1": "90% time savings in contract creation",
+        "card3_li2": "Automatic adaptation to cantonal requirements for error-free processes",
+        "card3_li3": "Secure and traceable filing in the internal database without data loss"
+    },
+    "skills": {
+        "title": "Why work with me?",
+        "text1": "Since 2016, everything for me has revolved around Salesforce. No buzzwords, but with a clear understanding of the challenges of your customer service employees.",
+        "text2": "I accompany you from the first idea to go-live. And afterwards too. Because a CRM only unfolds its real value when people like working with it, simply and securely.",
+        "skill1_title": "Administration",
+        "skill1_desc": "Efficient setup, user management, and ongoing maintenance of your Salesforce environment.",
+        "skill2_title": "Architecture",
+        "skill2_desc": "Scalable system architecture focusing on performance, security, and extensibility.",
+        "skill3_title": "Process Automation",
+        "skill3_desc": "Automation of your business processes with Flows, Approval Processes, and custom logic.",
+        "skill4_title": "Data Management",
+        "skill4_desc": "Structured data maintenance, migration concepts, and clean data models for better insights."
+    },
+    "contact": {
+        "title": "No Coffee - No Talkie",
+        "text": "Up for a Salesforce that fits your business? Call me, write me, or let's talk over coffee. Costs nothing* and gets you further!",
+        "note": "*Coffee is on you",
+        "btn": "Request without obligation"
+    }
+}

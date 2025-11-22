@@ -15,12 +15,21 @@
         <nav class="container">
             <div class="logo">Flowlogic Consulting</div>
             <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="services.html">Was ich mache</a></li>
-                <li><a href="projects.html">Projekte</a></li>
-                <li><a href="skills.html" style="color: #fca311;">Warum genau ich</a></li>
-                <li><a href="contact.html">Kontakt</a></li>
+                <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+                <li><a href="services.html" data-i18n="nav.services">Services</a></li>
+                <li><a href="projects.html" data-i18n="nav.projects">Projects</a></li>
+                <li><a href="skills.html" style="color: #fca311;" data-i18n="nav.skills">Skills</a></li>
+                <li><a href="contact.html" data-i18n="nav.contact">Contact</a></li>
             </ul>
+            <div class="lang-switcher">
+                <button class="lang-btn" data-lang="de">DE</button>
+                <button class="lang-btn" data-lang="en">EN</button>
+            </div>
+            <div class="hamburger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
         </nav>
     </header>
 
@@ -29,31 +38,37 @@
         <div class="container">
             <div class="skills-content">
                 <div class="skills-text">
-                    <h2>Warum mit mir arbeiten?</h2>
-                    <p>Seit 2016 dreht sich bei mir alles um Salesforce. Ohne Buzzwords, dafür mit einem klaren
+                    <h2 data-i18n="skills.title">Warum mit mir arbeiten?</h2>
+                    <p data-i18n="skills.text1">Seit 2016 dreht sich bei mir alles um Salesforce. Ohne Buzzwords, dafür
+                        mit einem klaren
                         Verständnis für die Herausforderungen deiner Customer Service Mitarbeiter</p>
-                    <p>Ich begleite dich von der ersten Idee bis zum Go-live. Und danach auch. Denn ein CRM entfaltet
+                    <p data-i18n="skills.text2">Ich begleite dich von der ersten Idee bis zum Go-live. Und danach auch.
+                        Denn ein CRM entfaltet
                         erst dann seinen echten Wert, wenn die Menschen damit gerne, simpel und sicher arbeiten.</p>
                 </div>
                 <div class="skills-grid">
                     <div class="skill-item">
-                        <h4>Administration</h4>
-                        <div class="skill-description">Effiziente Einrichtung, Benutzerverwaltung und laufende Pflege
+                        <h4 data-i18n="skills.skill1_title">Administration</h4>
+                        <div class="skill-description" data-i18n="skills.skill1_desc">Effiziente Einrichtung,
+                            Benutzerverwaltung und laufende Pflege
                             deiner Salesforce-Umgebung.</div>
                     </div>
                     <div class="skill-item">
-                        <h4>Architektur</h4>
-                        <div class="skill-description">Skalierbare Systemarchitektur mit Fokus auf Performance,
+                        <h4 data-i18n="skills.skill2_title">Architektur</h4>
+                        <div class="skill-description" data-i18n="skills.skill2_desc">Skalierbare Systemarchitektur mit
+                            Fokus auf Performance,
                             Sicherheit und Erweiterbarkeit.</div>
                     </div>
                     <div class="skill-item">
-                        <h4>Process Automation</h4>
-                        <div class="skill-description">Automatisierung deiner Geschäftsprozesse mit Flows,
+                        <h4 data-i18n="skills.skill3_title">Process Automation</h4>
+                        <div class="skill-description" data-i18n="skills.skill3_desc">Automatisierung deiner
+                            Geschäftsprozesse mit Flows,
                             Approval-Prozessen und benutzerdefinierten Logiken.</div>
                     </div>
                     <div class="skill-item">
-                        <h4>Data Management</h4>
-                        <div class="skill-description">Strukturierte Datenpflege, Migrationskonzepte und saubere
+                        <h4 data-i18n="skills.skill4_title">Data Management</h4>
+                        <div class="skill-description" data-i18n="skills.skill4_desc">Strukturierte Datenpflege,
+                            Migrationskonzepte und saubere
                             Datenmodelle für bessere Insights.</div>
                     </div>
                 </div>
@@ -64,7 +79,7 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <p>&copy; 2025 Flowlogic Consulting • Salesforce für dein Service-Team</p>
+            <p data-i18n="footer.text">&copy; 2025 Flowlogic Consulting • Salesforce für dein Service-Team</p>
         </div>
     </footer>
 
@@ -192,6 +207,7 @@
             touchMediaQuery.addListener(resetSkillItems);
         }
     </script>
+    <script src="script.js"></script>
 </body>
 
 </html>

@@ -16,13 +16,22 @@
 
             <div class="logo">Flowlogic Consulting</div>
             <ul class="nav-links">
-                <li><a href="index.html" style="color: #fca311;">Home</a></li>
-                <li><a href="services.html">Was ich mache</a></li>
-                <li><a href="projects.html">Projekte</a></li>
-                <li><a href="skills.html">Warum genau ich</a></li>
-                <li><a href="contact.html">Kontakt</a></li>
+                <li><a href="index.html" style="color: #fca311;" data-i18n="nav.home">Home</a></li>
+                <li><a href="services.html" data-i18n="nav.services">Services</a></li>
+                <li><a href="projects.html" data-i18n="nav.projects">Projects</a></li>
+                <li><a href="skills.html" data-i18n="nav.skills">Skills</a></li>
+                <li><a href="contact.html" data-i18n="nav.contact">Contact</a></li>
                 <!--<li><a href="/Balatro/index.html">??</a></li>-->
             </ul>
+            <div class="lang-switcher">
+                <button class="lang-btn" data-lang="de">DE</button>
+                <button class="lang-btn" data-lang="en">EN</button>
+            </div>
+            <div class="hamburger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
         </nav>
     </header>
 
@@ -31,15 +40,17 @@
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text">
-                    <h1>Salesforce für dein Service-Team</h1>
-                    <div class="subtitle">CRM-Lösungen, die dein Service-Team zum Fliegen bringen</div>
-                    <p>Hi 👋 <br />
+                    <h1 data-i18n="hero.title">Salesforce für dein Service-Team</h1>
+                    <div class="subtitle" data-i18n="hero.subtitle">CRM-Lösungen, die dein Service-Team zum Fliegen
+                        bringen</div>
+                    <p data-i18n="hero.text">Hi 👋 <br />
                         Ich bin Kevin und helfe dabei, mit Salesforce richtig durchzustarten. Vergiss komplizierte
                         Prozesse. Denn ich sorge dafür, dass dein CRM funktioniert und deine Kunden den Service lieben.
                     </p>
                     <div class="cta-buttons">
-                        <a href="contact.html" class="btn btn-secondary">Lass mal reden</a>
-                        <a href="services.html" class="btn btn-secondary">Was ich mache</a>
+                        <a href="contact.html" class="btn btn-secondary" data-i18n="hero.cta_talk">Lass mal reden</a>
+                        <a href="services.html" class="btn btn-secondary" data-i18n="hero.cta_services">Was ich
+                            mache</a>
                     </div>
                 </div>
                 <div class="hero-visual">
@@ -54,7 +65,7 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <p>&copy; 2025 Flowlogic Consulting • Salesforce für dein Service-Team</p>
+            <p data-i18n="footer.text">&copy; 2025 Flowlogic Consulting • Salesforce für dein Service-Team</p>
         </div>
     </footer>
 
@@ -114,6 +125,7 @@
             }
         });
     </script>
+    <script src="script.js"></script>
 </body>
 
 </html>

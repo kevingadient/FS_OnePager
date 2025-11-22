@@ -1,0 +1,72 @@
+{
+    "nav": {
+        "home": "Home",
+        "services": "Services",
+        "projects": "Projects",
+        "skills": "Skills",
+        "contact": "Contact"
+    },
+    "hero": {
+        "title": "Salesforce für dein Service-Team",
+        "subtitle": "CRM-Lösungen, die dein Service-Team zum Fliegen bringen",
+        "text": "Hi 👋 <br /> Ich bin Kevin und helfe dabei, mit Salesforce richtig durchzustarten. Vergiss komplizierte Prozesse. Denn ich sorge dafür, dass dein CRM funktioniert und deine Kunden den Service lieben.",
+        "cta_talk": "Lass mal reden",
+        "cta_services": "Was ich mache"
+    },
+    "footer": {
+        "text": "&copy; 2025 Flowlogic Consulting • Salesforce für dein Service-Team"
+    },
+    "services": {
+        "title": "So kann ich dir helfen",
+        "card1_title": "Salesforce Setup",
+        "card1_text": "Dein Salesforce startklar machen. Perfekt abgestimmt auf deine Bedürfnisse, ohne unnötigen Schnickschnack.",
+        "card2_title": "Massgeschneiderte Features",
+        "card2_text": "Brauchst du etwas Spezielles? Ich baue dir Custom Apps und Funktionen, die genau das machen, was dein Team braucht.",
+        "card3_title": "Daten umziehen",
+        "card3_text": "Alte Excel-Tabellen und Systeme? Kein Problem! Ich bringe all deine Daten sicher und sauber in Salesforce rüber.",
+        "card4_title": "Automatisierung",
+        "card4_text": "Lass die Technik für dich arbeiten! Automatische Follow-ups, E-Mails und Workflows und somit mehr Zeit für die wichtigen Dinge.",
+        "card5_title": "Dashboards & Reports",
+        "card5_text": "Endlich verstehen, was läuft! Einfache Dashboards zeigen dir, wo ihr steht und wo es hingeht.",
+        "card6_title": "Training für dein Team",
+        "card6_text": "Dein Team lernt Salesforce lieben! Praktische Schulungen, die wirklich Mehrwert bieten."
+    },
+    "projects": {
+        "title": "Projekte aus der Praxis",
+        "intro": "Jedes Unternehmen ist einzigartig, mit eigenen Prozessen, Systemen und Zielen. Genau das macht jedes Projekt spannend. Hier ein Einblick, wie ich Teams dabei unterstützt habe, Salesforce nicht nur einzuführen, sondern zum Herzstück ihres Erfolgs zu machen. Von der ersten Idee bis zum laufenden Betrieb.",
+        "card1_title": "Service Cloud inklusive Anbindung von Voicebot",
+        "card1_text": "Gemeinsam haben wir den gesamten Kundensupport zentralisiert, manuelle Aufgaben automatisiert und Transparenz durch aussagekräftige Berichte geschaffen.",
+        "card1_li1": "40% kürzere Erstellungszeit dank schlanker Case-Erstellung",
+        "card1_li2": "Self-Service Knowledge Base, die das Support-Team spürbar entlastet",
+        "card1_li3": "Voicebot-Integration, die häufige Fragen blitzschnell beantwortet und Gerät schläft nicht.",
+        "card2_title": "Migration von Salesforce Classic zu Lightning",
+        "card2_text": "Die komplette Salesforce-Umgebung wurde modernisiert. Objekte, Workflows und individueller Code wurden auf Lightning migriert und die tägliche Arbeit dadurch deutlich intuitiver.",
+        "card2_li1": "Moderiserung flexibler Lightning-Architektur für zukünftige Erweiterungen",
+        "card2_li2": "Intuitive Lightning Pages für schnellere Navigation",
+        "card2_li3": "Migration von S-Controls, Apex und Process Builder zu Flows für nachhaltige Automatisierung",
+        "card3_title": "Automnatisierung der Vertragserstellung",
+        "card3_text": "Die gesamte Vertragserstellung wurde automatisiert. Verträge werden jetzt direkt aus Salesforce generiert, geprüft und versendet.",
+        "card3_li1": "90 % Zeitersparnis bei der Vertragserstellung",
+        "card3_li2": "Automatische Anpassung an kantonale Anforderungen für fehlerfreie Abläufe",
+        "card3_li3": "Sichere und nachvollziehbare Ablage in der internen Datenbank ohne Datenverlust"
+    },
+    "skills": {
+        "title": "Warum mit mir arbeiten?",
+        "text1": "Seit 2016 dreht sich bei mir alles um Salesforce. Ohne Buzzwords, dafür mit einem klaren Verständnis für die Herausforderungen deiner Customer Service Mitarbeiter",
+        "text2": "Ich begleite dich von der ersten Idee bis zum Go-live. Und danach auch. Denn ein CRM entfaltet erst dann seinen echten Wert, wenn die Menschen damit gerne, simpel und sicher arbeiten.",
+        "skill1_title": "Administration",
+        "skill1_desc": "Effiziente Einrichtung, Benutzerverwaltung und laufende Pflege deiner Salesforce-Umgebung.",
+        "skill2_title": "Architektur",
+        "skill2_desc": "Skalierbare Systemarchitektur mit Fokus auf Performance, Sicherheit und Erweiterbarkeit.",
+        "skill3_title": "Process Automation",
+        "skill3_desc": "Automatisierung deiner Geschäftsprozesse mit Flows, Approval-Prozessen und benutzerdefinierten Logiken.",
+        "skill4_title": "Data Management",
+        "skill4_desc": "Strukturierte Datenpflege, Migrationskonzepte und saubere Datenmodelle für bessere Insights."
+    },
+    "contact": {
+        "title": "No Coffee - No Talkie",
+        "text": "Hast du Bock auf ein Salesforce, das zu deinem Business passt? Ruf mich an, schreib mir oder lass uns bei einem Kaffee reden. Kostet nix* und bringt dich weiter!",
+        "note": "*Kaffe geht auf dich",
+        "btn": "Unverbindlich anfragen"
+    }
+}

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,55 +8,75 @@
     <title>Was ich mache | Flowlogic</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <!-- Header -->
     <header>
         <nav class="container">
             <div class="logo">Flowlogic Consulting</div>
             <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="services.html" style="color: #fca311;">Was ich mache</a></li>
-                <li><a href="projects.html">Projekte</a></li>
-                <li><a href="skills.html">Warum genau ich</a></li>
-                <li><a href="contact.html">Kontakt</a></li>
+                <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+                <li><a href="services.html" style="color: #fca311;" data-i18n="nav.services">Services</a></li>
+                <li><a href="projects.html" data-i18n="nav.projects">Projects</a></li>
+                <li><a href="skills.html" data-i18n="nav.skills">Skills</a></li>
+                <li><a href="contact.html" data-i18n="nav.contact">Contact</a></li>
             </ul>
+            <div class="lang-switcher">
+                <button class="lang-btn" data-lang="de">DE</button>
+                <button class="lang-btn" data-lang="en">EN</button>
+            </div>
+            <div class="hamburger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
         </nav>
     </header>
 
     <!-- Services Section -->
     <section id="services" class="services" style="padding-top: 120px;">
         <div class="container">
-            <h2 class="section-title">So kann ich dir helfen</h2>
+            <h2 class="section-title" data-i18n="services.title">So kann ich dir helfen</h2>
             <div class="services-grid">
                 <div class="service-card">
                     <div class="service-icon">🚀</div>
-                    <h3>Salesforce Setup</h3>
-                    <p>Dein Salesforce startklar machen. Perfekt abgestimmt auf deine Bedürfnisse, ohne unnötigen Schnickschnack.</p>
+                    <h3 data-i18n="services.card1_title">Salesforce Setup</h3>
+                    <p data-i18n="services.card1_text">Dein Salesforce startklar machen. Perfekt abgestimmt auf deine
+                        Bedürfnisse, ohne unnötigen
+                        Schnickschnack.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">⚡</div>
-                    <h3>Massgeschneiderte Features</h3>
-                    <p>Brauchst du etwas Spezielles? Ich baue dir Custom Apps und Funktionen, die genau das machen, was dein Team braucht.</p>
+                    <h3 data-i18n="services.card2_title">Massgeschneiderte Features</h3>
+                    <p data-i18n="services.card2_text">Brauchst du etwas Spezielles? Ich baue dir Custom Apps und
+                        Funktionen, die genau das machen, was
+                        dein Team braucht.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">📦</div>
-                    <h3>Daten umziehen</h3>
-                    <p>Alte Excel-Tabellen und Systeme? Kein Problem! Ich bringe all deine Daten sicher und sauber in Salesforce rüber.</p>
+                    <h3 data-i18n="services.card3_title">Daten umziehen</h3>
+                    <p data-i18n="services.card3_text">Alte Excel-Tabellen und Systeme? Kein Problem! Ich bringe all
+                        deine Daten sicher und sauber in
+                        Salesforce rüber.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">🤖</div>
-                    <h3>Automatisierung</h3>
-                    <p>Lass die Technik für dich arbeiten! Automatische Follow-ups, E-Mails und Workflows und somit mehr Zeit für die wichtigen Dinge.</p>
+                    <h3 data-i18n="services.card4_title">Automatisierung</h3>
+                    <p data-i18n="services.card4_text">Lass die Technik für dich arbeiten! Automatische Follow-ups,
+                        E-Mails und Workflows und somit mehr
+                        Zeit für die wichtigen Dinge.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">📊</div>
-                    <h3>Dashboards & Reports</h3>
-                    <p>Endlich verstehen, was läuft! Einfache Dashboards zeigen dir, wo ihr steht und wo es hingeht.</p>
+                    <h3 data-i18n="services.card5_title">Dashboards & Reports</h3>
+                    <p data-i18n="services.card5_text">Endlich verstehen, was läuft! Einfache Dashboards zeigen dir, wo
+                        ihr steht und wo es hingeht.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">🎯</div>
-                    <h3>Training für dein Team</h3>
-                    <p>Dein Team lernt Salesforce lieben! Praktische Schulungen, die wirklich Mehrwert bieten.</p>
+                    <h3 data-i18n="services.card6_title">Training für dein Team</h3>
+                    <p data-i18n="services.card6_text">Dein Team lernt Salesforce lieben! Praktische Schulungen, die
+                        wirklich Mehrwert bieten.</p>
                 </div>
             </div>
         </div>
@@ -64,7 +85,7 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <p>&copy; 2025 Flowlogic Consulting • Salesforce für dein Service-Team</p>
+            <p data-i18n="footer.text">&copy; 2025 Flowlogic Consulting • Salesforce für dein Service-Team</p>
         </div>
     </footer>
 
@@ -111,9 +132,9 @@
             updateBackToTopVisibility();
             window.addEventListener('scroll', updateBackToTopVisibility, { passive: true });
         }
-        
+
         // Header background on scroll
-        window.addEventListener('scroll', function() {
+        window.addEventListener('scroll', function () {
             const header = document.querySelector('header');
             if (window.scrollY > 100) {
                 header.style.background = 'rgba(10, 15, 28, 0.98)';
@@ -122,5 +143,7 @@
             }
         });
     </script>
+    <script src="script.js"></script>
 </body>
+
 </html>

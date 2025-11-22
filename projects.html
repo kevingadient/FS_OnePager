@@ -15,20 +15,29 @@
         <nav class="container">
             <div class="logo">Flowlogic Consulting</div>
             <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="services.html">Was ich mache</a></li>
-                <li><a href="projects.html" style="color: #fca311;">Projekte</a></li>
-                <li><a href="skills.html">Warum genau ich</a></li>
-                <li><a href="contact.html">Kontakt</a></li>
+                <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+                <li><a href="services.html" data-i18n="nav.services">Services</a></li>
+                <li><a href="projects.html" style="color: #fca311;" data-i18n="nav.projects">Projects</a></li>
+                <li><a href="skills.html" data-i18n="nav.skills">Skills</a></li>
+                <li><a href="contact.html" data-i18n="nav.contact">Contact</a></li>
             </ul>
+            <div class="lang-switcher">
+                <button class="lang-btn" data-lang="de">DE</button>
+                <button class="lang-btn" data-lang="en">EN</button>
+            </div>
+            <div class="hamburger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
         </nav>
     </header>
 
     <!-- Projects Section -->
     <section id="projects" class="projects" style="padding-top: 120px;">
         <div class="container">
-            <h2 class="section-title">Projekte aus der Praxis</h2>
-            <p class="projects-intro">
+            <h2 class="section-title" data-i18n="projects.title">Projekte aus der Praxis</h2>
+            <p class="projects-intro" data-i18n="projects.intro">
                 Jedes Unternehmen ist einzigartig, mit eigenen Prozessen, Systemen und Zielen. Genau das macht jedes
                 Projekt spannend. Hier ein Einblick, wie ich Teams dabei unterstützt habe, Salesforce nicht nur
                 einzuführen, sondern zum Herzstück ihres Erfolgs zu machen. Von der ersten Idee bis zum laufenden
@@ -37,38 +46,48 @@
             <div class="projects-grid">
                 <article class="project-card">
                     <div class="project-icon">🏦</div>
-                    <h3>Service Cloud inklusive Anbindung von Voicebot</h3>
-                    <p>Gemeinsam haben wir den gesamten Kundensupport zentralisiert, manuelle Aufgaben automatisiert und
+                    <h3 data-i18n="projects.card1_title">Service Cloud inklusive Anbindung von Voicebot</h3>
+                    <p data-i18n="projects.card1_text">Gemeinsam haben wir den gesamten Kundensupport zentralisiert,
+                        manuelle Aufgaben automatisiert und
                         Transparenz durch aussagekräftige Berichte geschaffen.</p>
                     <ul class="project-highlights">
-                        <li>40% kürzere Erstellungszeit dank schlanker Case-Erstellung</li>
-                        <li>Self-Service Knowledge Base, die das Support-Team spürbar entlastet</li>
-                        <li>Voicebot-Integration, die häufige Fragen blitzschnell beantwortet und Gerät schläft nicht.
+                        <li data-i18n="projects.card1_li1">40% kürzere Erstellungszeit dank schlanker Case-Erstellung
+                        </li>
+                        <li data-i18n="projects.card1_li2">Self-Service Knowledge Base, die das Support-Team spürbar
+                            entlastet</li>
+                        <li data-i18n="projects.card1_li3">Voicebot-Integration, die häufige Fragen blitzschnell
+                            beantwortet und Gerät schläft nicht.
                         </li>
                     </ul>
                 </article>
                 <article class="project-card">
                     <div class="project-icon">🚢</div>
-                    <h3>Migration von Salesforce Classic zu Lightning</h3>
-                    <p>Die komplette Salesforce-Umgebung wurde modernisiert. Objekte, Workflows und individueller Code
+                    <h3 data-i18n="projects.card2_title">Migration von Salesforce Classic zu Lightning</h3>
+                    <p data-i18n="projects.card2_text">Die komplette Salesforce-Umgebung wurde modernisiert. Objekte,
+                        Workflows und individueller Code
                         wurden auf Lightning migriert und die tägliche Arbeit dadurch deutlich intuitiver.</p>
                     <ul class="project-highlights">
-                        <li>Moderiserung flexibler Lightning-Architektur für zukünftige Erweiterungen</li>
-                        <li>Intuitive Lightning Pages für schnellere Navigation</li>
-                        <li>Migration von S-Controls, Apex und Process Builder zu Flows für nachhaltige Automatisierung
+                        <li data-i18n="projects.card2_li1">Moderiserung flexibler Lightning-Architektur für zukünftige
+                            Erweiterungen</li>
+                        <li data-i18n="projects.card2_li2">Intuitive Lightning Pages für schnellere Navigation</li>
+                        <li data-i18n="projects.card2_li3">Migration von S-Controls, Apex und Process Builder zu Flows
+                            für nachhaltige Automatisierung
                         </li>
 
                     </ul>
                 </article>
                 <article class="project-card">
                     <div class="project-icon">📝</div>
-                    <h3>Automnatisierung der Vertragserstellung</h3>
-                    <p>Die gesamte Vertragserstellung wurde automatisiert. Verträge werden jetzt direkt aus Salesforce
+                    <h3 data-i18n="projects.card3_title">Automnatisierung der Vertragserstellung</h3>
+                    <p data-i18n="projects.card3_text">Die gesamte Vertragserstellung wurde automatisiert. Verträge
+                        werden jetzt direkt aus Salesforce
                         generiert, geprüft und versendet.</p>
                     <ul class="project-highlights">
-                        <li>90 % Zeitersparnis bei der Vertragserstellung</li>
-                        <li>Automatische Anpassung an kantonale Anforderungen für fehlerfreie Abläufe</li>
-                        <li>Sichere und nachvollziehbare Ablage in der internen Datenbank ohne Datenverlust</li>
+                        <li data-i18n="projects.card3_li1">90 % Zeitersparnis bei der Vertragserstellung</li>
+                        <li data-i18n="projects.card3_li2">Automatische Anpassung an kantonale Anforderungen für
+                            fehlerfreie Abläufe</li>
+                        <li data-i18n="projects.card3_li3">Sichere und nachvollziehbare Ablage in der internen Datenbank
+                            ohne Datenverlust</li>
                     </ul>
                 </article>
             </div>
@@ -78,7 +97,7 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <p>&copy; 2025 Flowlogic Consulting • Salesforce für dein Service-Team</p>
+            <p data-i18n="footer.text">&copy; 2025 Flowlogic Consulting • Salesforce für dein Service-Team</p>
         </div>
     </footer>
 
@@ -136,6 +155,7 @@
             }
         });
     </script>
+    <script src="script.js"></script>
 </body>
 
 </html>
