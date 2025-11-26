@@ -184,6 +184,16 @@
             }
         }
 
+        @keyframes textGradient {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 200% 50%;
+            }
+        }
+
         .toggle .line1 {
             transform: rotate(-45deg) translate(-5px, 6px);
         }
@@ -229,11 +239,12 @@
             font-size: 3.5rem;
             font-weight: 700;
             margin-bottom: 20px;
-            background: linear-gradient(45deg, #e5e5e5, #fca311);
+            background: linear-gradient(45deg, #e5e5e5, #fca311, #e5e5e5);
+            background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: fadeInUp 1s ease;
+            animation: fadeInUp 1s ease, textGradient 5s linear infinite;
         }
 
         .hero-text .subtitle {
@@ -901,6 +912,14 @@
         }
 
         /* Animations */
+        .animate-on-scroll {
+            opacity: 0;
+        }
+
+        .animate-on-scroll.is-visible {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;

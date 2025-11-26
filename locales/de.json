@@ -41,10 +41,10 @@
         "card1_li3": "Voicebot-Integration, die häufige Fragen blitzschnell beantwortet und Gerät schläft nicht.",
         "card2_title": "Migration von Salesforce Classic zu Lightning",
         "card2_text": "Die komplette Salesforce-Umgebung wurde modernisiert. Objekte, Workflows und individueller Code wurden auf Lightning migriert und die tägliche Arbeit dadurch deutlich intuitiver.",
-        "card2_li1": "Moderiserung flexibler Lightning-Architektur für zukünftige Erweiterungen",
+        "card2_li1": "Modernisierung flexibler Lightning-Architektur für zukünftige Erweiterungen",
         "card2_li2": "Intuitive Lightning Pages für schnellere Navigation",
         "card2_li3": "Migration von S-Controls, Apex und Process Builder zu Flows für nachhaltige Automatisierung",
-        "card3_title": "Automnatisierung der Vertragserstellung",
+        "card3_title": "Automatisierung der Vertragserstellung",
         "card3_text": "Die gesamte Vertragserstellung wurde automatisiert. Verträge werden jetzt direkt aus Salesforce generiert, geprüft und versendet.",
         "card3_li1": "90 % Zeitersparnis bei der Vertragserstellung",
         "card3_li2": "Automatische Anpassung an kantonale Anforderungen für fehlerfreie Abläufe",
@@ -52,7 +52,7 @@
     },
     "skills": {
         "title": "Warum mit mir arbeiten?",
-        "text1": "Seit 2016 dreht sich bei mir alles um Salesforce. Ohne Buzzwords, dafür mit einem klaren Verständnis für die Herausforderungen deiner Customer Service Mitarbeiter",
+        "text1": "Seit 2016 dreht sich bei mir alles um Salesforce. Ohne Buzzwords, dafür mit einem klaren Verständnis für die Herausforderungen deiner Customer Service Mitarbeiter.",
         "text2": "Ich begleite dich von der ersten Idee bis zum Go-live. Und danach auch. Denn ein CRM entfaltet erst dann seinen echten Wert, wenn die Menschen damit gerne, simpel und sicher arbeiten.",
         "skill1_title": "Administration",
         "skill1_desc": "Effiziente Einrichtung, Benutzerverwaltung und laufende Pflege deiner Salesforce-Umgebung.",
@@ -66,7 +66,7 @@
     "contact": {
         "title": "No Coffee - No Talkie",
         "text": "Hast du Bock auf ein Salesforce, das zu deinem Business passt? Ruf mich an, schreib mir oder lass uns bei einem Kaffee reden. Kostet nix* und bringt dich weiter!",
-        "note": "*Kaffe geht auf dich",
+        "note": "*Kaffee geht auf dich",
         "btn": "Unverbindlich anfragen"
     }
 }
