@@ -48,34 +48,34 @@
 html {
     scroll-behavior: smooth;
     font-size: 16px;
+    background-color: var(--bg-primary);
 }
 
 body {
     font-family: var(--font-sans);
     line-height: 1.7;
-    background-color: var(--bg-primary);
+    background-color: transparent;
     color: var(--text-primary);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Ambient Slow Floating Royal Blue Background Orbs */
+/* Ambient Slow Floating Royal Blue Background Orbs (Strictly Behind All Content) */
 .ambient-background {
     position: fixed;
     inset: 0;
     pointer-events: none;
-    z-index: 1;
+    z-index: 0;
     overflow: hidden;
 }
 
 .ambient-orb {
     position: absolute;
     border-radius: 50%;
-    filter: blur(75px);
-    opacity: 0.38;
+    filter: blur(85px);
+    opacity: 0.3;
     will-change: transform;
-    mix-blend-mode: multiply;
 }
 
 .ambient-orb-1 {
@@ -229,6 +229,7 @@ body {
 /* Parallax Sections & Background Floating Shapes */
 .parallax-section {
     position: relative;
+    z-index: 2;
     padding: 140px 0;
     overflow: hidden;
     will-change: transform;
@@ -666,6 +667,7 @@ nav {
     border: 1px solid var(--border-light);
     transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
     position: relative;
+    z-index: 3;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -877,6 +879,8 @@ nav {
     transition: var(--transition-smooth);
     cursor: pointer;
     box-shadow: var(--shadow-soft);
+    position: relative;
+    z-index: 3;
 }
 
 .skill-item:hover {
@@ -961,6 +965,8 @@ nav {
     gap: 16px;
     transition: var(--transition-smooth);
     box-shadow: var(--shadow-soft);
+    position: relative;
+    z-index: 3;
 }
 
 .blog-card:hover {
