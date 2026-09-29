@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../images/FlowLogic.png">
+    <title>Salesforce Starttermine 2025 | Flowlogic Blog</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        /* Inline styles for specific blog post overrides if needed, generic blog styles in styles.css */
+        .blog-post-content {
+            background: rgba(20, 33, 61, 0.85);
+            padding: 4rem;
+            border-radius: 20px;
+            margin-top: 2rem;
+            color: #e5e5e5;
+        }
+
+        .blog-post-content h2 {
+            color: #fca311;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .blog-post-content p {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            color: #d1d5db;
+        }
+
+        .blog-post-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .blog-post-date {
+            color: #fca311;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #fca311;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="container">
+            <div class="logo">Flowlogic Consulting</div>
+            <ul class="nav-links">
+                <li><a href="../index.html" data-i18n="nav.home">Home</a></li>
+                <li><a href="../services.html" data-i18n="nav.services">Services</a></li>
+                <li><a href="../projects.html" data-i18n="nav.projects">Projects</a></li>
+                <li><a href="../skills.html" data-i18n="nav.skills">Skills</a></li>
+                <li><a href="../blog.html" style="color: #fca311;" data-i18n="nav.blog">Blog</a></li>
+                <li><a href="../contact.html" data-i18n="nav.contact">Contact</a></li>
+            </ul>
+            <div class="lang-switcher">
+                <button class="lang-btn" data-lang="de">DE</button>
+                <button class="lang-btn" data-lang="en">EN</button>
+            </div>
+            <div class="hamburger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Blog Post Section -->
+    <section class="blog-post" style="padding-top: 120px; padding-bottom: 100px;">
+        <div class="container">
+            <a href="../blog.html" class="back-link">&larr; Zurück zum Blog</a>
+
+            <article class="blog-post-content">
+                <div class="blog-post-header">
+                    <span class="blog-post-date">02.10.2025</span>
+                    <h1 class="section-title" style="margin-bottom: 0;">Salesforce Starttermine 2025</h1>
+                </div>
+
+                <div class="content-body">
+                    <p>
+                        Das neue Jahr bringt spannende Neuerungen im Salesforce-Ökosystem. Damit Sie Ihre Projekte und
+                        Updates optimal planen können, haben wir die wichtigsten Termine für 2025 zusammengefasst.
+                    </p>
+
+                    <h2>Spring '25 Release</h2>
+                    <p>
+                        Der Rollout für das Spring '25 Release beginnt im Januar. Die Sandbox-Preview-Phase startet
+                        voraussichtlich am <strong>4. Januar 2025</strong>. Nutzen Sie diese Zeit, um neue Features in
+                        Ihrer Sandbox zu testen, bevor sie in die Produktionsumgebung gelangen.
+                    </p>
+                    <p>
+                        Wichtige Neuerungen erwarten wir im Bereich <strong>Einstein GPT</strong> und
+                        <strong>Flow-Automatisierung</strong>.
+                    </p>
+
+                    <h2>Summer '25 Release</h2>
+                    <p>
+                        Das Summer '25 Release wird voraussichtlich im <strong>Mai 2025</strong> in die Produktion
+                        gehen. Achten Sie auf die Preview-Fenster im April.
+                    </p>
+
+                    <h2>Winter '26 Release</h2>
+                    <p>
+                        Gegen Ende des Jahres, im <strong>September/Oktober 2025</strong>, folgt das Winter '26 Release.
+                    </p>
+
+                    <h2>Dreamforce 2025</h2>
+                    <p>
+                        Die größte Salesforce-Konferenz des Jahres findet voraussichtlich wieder im <strong>September
+                            2025</strong> in San Francisco statt. Merken Sie sich den Termin vor!
+                    </p>
+
+                    <p>
+                        <em>Hinweis: Alle Termine sind vorläufig und können sich seitens Salesforce noch ändern.</em>
+                    </p>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p data-i18n="footer.text">&copy; 2025 Flowlogic Consulting • Salesforce für dein Service-Team</p>
+        </div>
+    </footer>
+
+    <button type="button" class="back-to-top" aria-label="Zurück zum Seitenanfang" title="Zurück zum Seitenanfang">
+        <span aria-hidden="true">↑</span>
+    </button>
+
+    <script>
+        const backToTopButton = document.querySelector('.back-to-top');
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+        const updateBackToTopVisibility = () => {
+            if (!backToTopButton) return;
+            const scrolled = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+            backToTopButton.classList.toggle('show', scrolled > 400);
+        };
+
+        const supportsSmoothScroll = 'scrollBehavior' in document.documentElement.style;
+
+        const scrollToTop = () => {
+            if (prefersReducedMotion.matches || !supportsSmoothScroll) {
+                window.scrollTo(0, 0);
+                return;
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        if (backToTopButton) {
+            backToTopButton.addEventListener('click', () => {
+                scrollToTop();
+            });
+            backToTopButton.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    scrollToTop();
+                }
+            });
+            backToTopButton.addEventListener('touchend', (event) => {
+                event.preventDefault();
+                scrollToTop();
+            }, { passive: false });
+
+            updateBackToTopVisibility();
+            window.addEventListener('scroll', updateBackToTopVisibility, { passive: true });
+        }
+
+        // Header background on scroll
+        window.addEventListener('scroll', function () {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(10, 15, 28, 0.98)';
+            } else {
+                header.style.background = 'rgba(10, 15, 28, 0.95)';
+            }
+        });
+    </script>
+    <script src="../script.js"></script>
+</body>
+
+</html>

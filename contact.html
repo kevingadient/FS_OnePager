@@ -4,8 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="FlowLogic.png">
+    <link rel="icon" href="images/FlowLogic.png">
     <title>Kontakt | Flowlogic</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -13,13 +16,14 @@
     <!-- Header -->
     <header>
         <nav class="container">
-            <div class="logo">Flowlogic Consulting</div>
+            <a href="index.html" class="logo">Flowlogic.</a>
             <ul class="nav-links">
                 <li><a href="index.html" data-i18n="nav.home">Home</a></li>
                 <li><a href="services.html" data-i18n="nav.services">Services</a></li>
                 <li><a href="projects.html" data-i18n="nav.projects">Projects</a></li>
                 <li><a href="skills.html" data-i18n="nav.skills">Skills</a></li>
-                <li><a href="contact.html" style="color: #fca311;" data-i18n="nav.contact">Contact</a></li>
+                <li><a href="blog.html" data-i18n="nav.blog">Blog</a></li>
+                <li><a href="contact.html" class="active" data-i18n="nav.contact">Contact</a></li>
             </ul>
             <div class="lang-switcher">
                 <button class="lang-btn" data-lang="de">DE</button>
@@ -34,14 +38,16 @@
     </header>
 
     <!-- Contact Section -->
-    <section id="contact" class="contact" style="padding-top: 120px;">
+    <section id="contact" class="contact" style="padding-top: 160px; min-height: 85vh; display: flex; align-items: center;">
         <div class="container">
             <div class="contact-content animate-on-scroll">
-                <h2 data-i18n="contact.title">No Coffee - No Talkie </h2>
-                <p data-i18n="contact.text">Hast du Bock auf ein Salesforce, das zu deinem Business passt? Ruf mich an,
-                    schreib mir oder lass uns
-                    bei einem Kaffee reden. Kostet nix* und bringt dich weiter!</p>
-                <p style="font-size: small;font-style: italic" data-i18n="contact.note">*Kaffee geht auf dich</p>
+                <div class="editorial-meta" style="justify-content: center; color: rgba(255,255,255,0.7);">
+                    <span class="editorial-counter" style="color: #fff; border-color: rgba(255,255,255,0.3);">06</span>
+                    <span>PROFILE / GET IN TOUCH</span>
+                </div>
+                <h2 data-i18n="contact.title">No Coffee - No Talkie</h2>
+                <p data-i18n="contact.text">Hast du Bock auf ein Salesforce, das zu deinem Business passt? Ruf mich an, schreib mir oder lass uns bei einem Kaffee reden. Kostet nix* und bringt dich weiter!</p>
+                <p style="font-size: 0.9rem; font-style: italic; opacity: 0.8; margin-bottom: 32px;" data-i18n="contact.note">*Kaffee geht auf dich</p>
                 <div class="contact-info">
                     <a href="mailto:kev.gadient@gmail.com" class="contact-item">
                         <span>📧</span>
@@ -51,13 +57,49 @@
                         <span>📞</span>
                         <span>+41 79 259 4327</span>
                     </a>
-                    <a href="https://www.linkedin.com/in/kevingadient/" class="contact-item">
+                    <a href="https://www.linkedin.com/in/kevingadient/" class="contact-item" target="_blank" rel="noopener">
                         <span>💼</span>
                         <span>LinkedIn</span>
                     </a>
                 </div>
-                <a href="mailto:kev.gadient@gmail.com" class="btn btn-secondary" data-i18n="contact.btn">Unverbindlich
-                    anfragen</a>
+
+                <!-- Spam-Safe Contact Form -->
+                <div class="contact-form-container">
+                    <form id="contact-form" class="contact-form" action="https://formspree.io/f/xknkgopz" method="POST">
+                        <!-- Honeypot anti-spam trap (invisible to humans) -->
+                        <div style="display:none !important;" aria-hidden="true">
+                            <input type="text" name="_gotcha" id="hp_gotcha" tabindex="-1" autocomplete="off">
+                        </div>
+                        <input type="hidden" name="_to" value="kev.gadient@gmail.com">
+                        <input type="hidden" id="form_start_time" name="_form_time" value="">
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <input type="text" id="contact-name" name="name" data-i18n="contact.name_ph" placeholder="Dein Name *" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" id="contact-email" name="email" data-i18n="contact.email_ph" placeholder="Deine E-Mail *" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="text" id="contact-subject" name="subject" data-i18n="contact.subject_ph" placeholder="Betreff / Firma">
+                        </div>
+
+                        <div class="form-group">
+                            <textarea id="contact-message" name="message" rows="4" data-i18n="contact.message_ph" placeholder="Deine Nachricht *" required></textarea>
+                        </div>
+
+                        <!-- Anti-Spam Security Challenge -->
+                        <div class="spam-challenge-box">
+                            <label for="spam-answer"><span data-i18n="contact.spam_question">Sicherheitsfrage:</span> <strong id="spam-math-expr">4 + 3 = ?</strong></label>
+                            <input type="number" id="spam-answer" name="spam_answer" placeholder="?" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-secondary form-submit-btn" data-i18n="contact.send_btn">↳ Nachricht senden</button>
+                        <div id="form-status" class="form-status-message"></div>
+                    </form>
+                </div>
             </div>
         </div>
     </section>
@@ -73,56 +115,6 @@
         <span aria-hidden="true">↑</span>
     </button>
 
-    <script>
-        const backToTopButton = document.querySelector('.back-to-top');
-        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-        const updateBackToTopVisibility = () => {
-            if (!backToTopButton) return;
-            const scrolled = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
-            backToTopButton.classList.toggle('show', scrolled > 400);
-        };
-
-        const supportsSmoothScroll = 'scrollBehavior' in document.documentElement.style;
-
-        const scrollToTop = () => {
-            if (prefersReducedMotion.matches || !supportsSmoothScroll) {
-                window.scrollTo(0, 0);
-                return;
-            }
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-
-        if (backToTopButton) {
-            backToTopButton.addEventListener('click', () => {
-                scrollToTop();
-            });
-            backToTopButton.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    scrollToTop();
-                }
-            });
-            backToTopButton.addEventListener('touchend', (event) => {
-                event.preventDefault();
-                scrollToTop();
-            }, { passive: false });
-
-            updateBackToTopVisibility();
-            window.addEventListener('scroll', updateBackToTopVisibility, { passive: true });
-        }
-
-        // Header background on scroll
-        window.addEventListener('scroll', function () {
-            const header = document.querySelector('header');
-            if (window.scrollY > 100) {
-                header.style.background = 'rgba(10, 15, 28, 0.98)';
-            } else {
-                header.style.background = 'rgba(10, 15, 28, 0.95)';
-            }
-        });
-    </script>
     <script src="script.js"></script>
 </body>
 

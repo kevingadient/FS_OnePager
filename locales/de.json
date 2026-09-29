@@ -67,6 +67,15 @@
         "title": "No Coffee - No Talkie",
         "text": "Hast du Bock auf ein Salesforce, das zu deinem Business passt? Ruf mich an, schreib mir oder lass uns bei einem Kaffee reden. Kostet nix* und bringt dich weiter!",
         "note": "*Kaffee geht auf dich",
-        "btn": "Unverbindlich anfragen"
+        "btn": "Unverbindlich anfragen",
+        "name_ph": "Dein Name *",
+        "email_ph": "Deine E-Mail *",
+        "subject_ph": "Betreff / Firma",
+        "message_ph": "Deine Nachricht *",
+        "spam_question": "Sicherheitsfrage:",
+        "send_btn": "↳ Nachricht senden",
+        "success_msg": "Vielen Dank! Deine Nachricht wurde erfolgreich gesendet.",
+        "error_spam": "Bitte beantworte die Sicherheitsfrage korrekt.",
+        "error_rate": "Du hast vor Kurzem bereits eine Nachricht gesendet. Bitte warte einen Moment."
     }
 }

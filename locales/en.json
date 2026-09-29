@@ -67,6 +67,15 @@
         "title": "No Coffee - No Talkie",
         "text": "Up for a Salesforce that fits your business? Call me, write me, or let's talk over coffee. Costs nothing* and gets you further!",
         "note": "*Coffee is on you",
-        "btn": "Request without obligation"
+        "btn": "Request without obligation",
+        "name_ph": "Your Name *",
+        "email_ph": "Your Email *",
+        "subject_ph": "Subject / Company",
+        "message_ph": "Your Message *",
+        "spam_question": "Security question:",
+        "send_btn": "↳ Send Message",
+        "success_msg": "Thank you! Your message has been sent successfully.",
+        "error_spam": "Please answer the security question correctly.",
+        "error_rate": "You sent a message recently. Please wait a moment."
     }
 }

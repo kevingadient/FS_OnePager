@@ -4,8 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="FlowLogic.png">
+    <link rel="icon" href="images/FlowLogic.png">
     <title>Was ich mache | Flowlogic</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -13,12 +16,13 @@
     <!-- Header -->
     <header>
         <nav class="container">
-            <div class="logo">Flowlogic Consulting</div>
+            <a href="index.html" class="logo">Flowlogic.</a>
             <ul class="nav-links">
                 <li><a href="index.html" data-i18n="nav.home">Home</a></li>
-                <li><a href="services.html" style="color: #fca311;" data-i18n="nav.services">Services</a></li>
+                <li><a href="services.html" class="active" data-i18n="nav.services">Services</a></li>
                 <li><a href="projects.html" data-i18n="nav.projects">Projects</a></li>
                 <li><a href="skills.html" data-i18n="nav.skills">Skills</a></li>
+                <li><a href="blog.html" data-i18n="nav.blog">Blog</a></li>
                 <li><a href="contact.html" data-i18n="nav.contact">Contact</a></li>
             </ul>
             <div class="lang-switcher">
@@ -34,49 +38,76 @@
     </header>
 
     <!-- Services Section -->
-    <section id="services" class="services" style="padding-top: 120px;">
+    <section id="services" class="services" style="padding-top: 140px;">
         <div class="container">
-            <h2 class="section-title" data-i18n="services.title">So kann ich dir helfen</h2>
+            <div class="section-header-editorial">
+                <div class="editorial-meta">
+                    <span class="editorial-counter">02</span>
+                    <span class="editorial-category">Profile / Services</span>
+                    <span class="editorial-year">2025</span>
+                </div>
+                <h2 class="section-title" data-i18n="services.title">So kann ich dir helfen</h2>
+            </div>
             <div class="services-grid">
                 <div class="service-card animate-on-scroll">
-                    <div class="service-icon">🚀</div>
+                    <div class="service-card-meta">
+                        <span class="service-card-num">01</span>
+                        <span>SOLUTIONS</span>
+                    </div>
+                    <div class="service-icon"><img src="images/rocket-gold.png" alt="🚀"></div>
                     <h3 data-i18n="services.card1_title">Salesforce Setup</h3>
-                    <p data-i18n="services.card1_text">Dein Salesforce startklar machen. Perfekt abgestimmt auf deine
-                        Bedürfnisse, ohne unnötigen
-                        Schnickschnack.</p>
+                    <p data-i18n="services.card1_text">Dein Salesforce startklar machen. Perfekt abgestimmt auf deine Bedürfnisse, ohne unnötigen Schnickschnack.</p>
+                    <div class="service-card-arrow">↗ Anfragen</div>
                 </div>
                 <div class="service-card animate-on-scroll">
-                    <div class="service-icon">⚡</div>
+                    <div class="service-card-meta">
+                        <span class="service-card-num">02</span>
+                        <span>CUSTOM CODE</span>
+                    </div>
+                    <div class="service-icon"><img src="images/lightning-gear.png" alt="⚡"></div>
                     <h3 data-i18n="services.card2_title">Massgeschneiderte Features</h3>
-                    <p data-i18n="services.card2_text">Brauchst du etwas Spezielles? Ich baue dir Custom Apps und
-                        Funktionen, die genau das machen, was
-                        dein Team braucht.</p>
+                    <p data-i18n="services.card2_text">Brauchst du etwas Spezielles? Ich baue dir Custom Apps und Funktionen, die genau das machen, was dein Team braucht.</p>
+                    <div class="service-card-arrow">↗ Anfragen</div>
                 </div>
                 <div class="service-card animate-on-scroll">
-                    <div class="service-icon">📦</div>
+                    <div class="service-card-meta">
+                        <span class="service-card-num">03</span>
+                        <span>MIGRATION</span>
+                    </div>
+                    <div class="service-icon"><img src="images/box-gold.png" alt="📦"></div>
                     <h3 data-i18n="services.card3_title">Daten umziehen</h3>
-                    <p data-i18n="services.card3_text">Alte Excel-Tabellen und Systeme? Kein Problem! Ich bringe all
-                        deine Daten sicher und sauber in
-                        Salesforce rüber.</p>
+                    <p data-i18n="services.card3_text">Alte Excel-Tabellen und Systeme? Kein Problem! Ich bringe all deine Daten sicher und sauber in Salesforce rüber.</p>
+                    <div class="service-card-arrow">↗ Anfragen</div>
                 </div>
                 <div class="service-card animate-on-scroll">
-                    <div class="service-icon">🤖</div>
+                    <div class="service-card-meta">
+                        <span class="service-card-num">04</span>
+                        <span>AUTOMATION</span>
+                    </div>
+                    <div class="service-icon"><img src="images/robot-gold.png" alt="🤖"></div>
                     <h3 data-i18n="services.card4_title">Automatisierung</h3>
-                    <p data-i18n="services.card4_text">Lass die Technik für dich arbeiten! Automatische Follow-ups,
-                        E-Mails und Workflows und somit mehr
-                        Zeit für die wichtigen Dinge.</p>
+                    <p data-i18n="services.card4_text">Lass die Technik für dich arbeiten! Automatische Follow-ups, E-Mails und Workflows und somit mehr Zeit für die wichtigen Dinge.</p>
+                    <div class="service-card-arrow">↗ Anfragen</div>
                 </div>
                 <div class="service-card animate-on-scroll">
-                    <div class="service-icon">📊</div>
+                    <div class="service-card-meta">
+                        <span class="service-card-num">05</span>
+                        <span>INSIGHTS</span>
+                    </div>
+                    <div class="service-icon"><img src="images/chart-gold.png" alt="📊"></div>
                     <h3 data-i18n="services.card5_title">Dashboards & Reports</h3>
-                    <p data-i18n="services.card5_text">Endlich verstehen, was läuft! Einfache Dashboards zeigen dir, wo
-                        ihr steht und wo es hingeht.</p>
+                    <p data-i18n="services.card5_text">Endlich verstehen, was läuft! Einfache Dashboards zeigen dir, wo ihr steht und wo es hingeht.</p>
+                    <div class="service-card-arrow">↗ Anfragen</div>
                 </div>
                 <div class="service-card animate-on-scroll">
-                    <div class="service-icon">🎯</div>
+                    <div class="service-card-meta">
+                        <span class="service-card-num">06</span>
+                        <span>ENABLEMENT</span>
+                    </div>
+                    <div class="service-icon"><img src="images/target-gold.png" alt="🎯"></div>
                     <h3 data-i18n="services.card6_title">Training für dein Team</h3>
-                    <p data-i18n="services.card6_text">Dein Team lernt Salesforce lieben! Praktische Schulungen, die
-                        wirklich Mehrwert bieten.</p>
+                    <p data-i18n="services.card6_text">Dein Team lernt Salesforce lieben! Praktische Schulungen, die wirklich Mehrwert bieten.</p>
+                    <div class="service-card-arrow">↗ Anfragen</div>
                 </div>
             </div>
         </div>
@@ -93,56 +124,6 @@
         <span aria-hidden="true">↑</span>
     </button>
 
-    <script>
-        const backToTopButton = document.querySelector('.back-to-top');
-        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-        const updateBackToTopVisibility = () => {
-            if (!backToTopButton) return;
-            const scrolled = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
-            backToTopButton.classList.toggle('show', scrolled > 400);
-        };
-
-        const supportsSmoothScroll = 'scrollBehavior' in document.documentElement.style;
-
-        const scrollToTop = () => {
-            if (prefersReducedMotion.matches || !supportsSmoothScroll) {
-                window.scrollTo(0, 0);
-                return;
-            }
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-
-        if (backToTopButton) {
-            backToTopButton.addEventListener('click', () => {
-                scrollToTop();
-            });
-            backToTopButton.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    scrollToTop();
-                }
-            });
-            backToTopButton.addEventListener('touchend', (event) => {
-                event.preventDefault();
-                scrollToTop();
-            }, { passive: false });
-
-            updateBackToTopVisibility();
-            window.addEventListener('scroll', updateBackToTopVisibility, { passive: true });
-        }
-
-        // Header background on scroll
-        window.addEventListener('scroll', function () {
-            const header = document.querySelector('header');
-            if (window.scrollY > 100) {
-                header.style.background = 'rgba(10, 15, 28, 0.98)';
-            } else {
-                header.style.background = 'rgba(10, 15, 28, 0.95)';
-            }
-        });
-    </script>
     <script src="script.js"></script>
 </body>
 

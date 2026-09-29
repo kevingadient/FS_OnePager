@@ -4,8 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="FlowLogic.png">
+    <link rel="icon" href="images/FlowLogic.png">
     <title>Warum genau ich | Flowlogic</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -13,12 +16,13 @@
     <!-- Header -->
     <header>
         <nav class="container">
-            <div class="logo">Flowlogic Consulting</div>
+            <a href="index.html" class="logo">Flowlogic.</a>
             <ul class="nav-links">
                 <li><a href="index.html" data-i18n="nav.home">Home</a></li>
                 <li><a href="services.html" data-i18n="nav.services">Services</a></li>
                 <li><a href="projects.html" data-i18n="nav.projects">Projects</a></li>
-                <li><a href="skills.html" style="color: #fca311;" data-i18n="nav.skills">Skills</a></li>
+                <li><a href="skills.html" class="active" data-i18n="nav.skills">Skills</a></li>
+                <li><a href="blog.html" data-i18n="nav.blog">Blog</a></li>
                 <li><a href="contact.html" data-i18n="nav.contact">Contact</a></li>
             </ul>
             <div class="lang-switcher">
@@ -34,42 +38,49 @@
     </header>
 
     <!-- Skills Section -->
-    <section id="skills" class="skills" style="padding-top: 120px;">
+    <section id="skills" class="skills" style="padding-top: 140px;">
         <div class="container">
+            <div class="section-header-editorial">
+                <div class="editorial-meta">
+                    <span class="editorial-counter">04</span>
+                    <span class="editorial-category">Profile / Core Capabilities</span>
+                    <span class="editorial-year">2025</span>
+                </div>
+            </div>
             <div class="skills-content">
                 <div class="skills-text animate-on-scroll">
                     <h2 data-i18n="skills.title">Warum mit mir arbeiten?</h2>
-                    <p data-i18n="skills.text1">Seit 2016 dreht sich bei mir alles um Salesforce. Ohne Buzzwords, dafür
-                        mit einem klaren
-                        Verständnis für die Herausforderungen deiner Customer Service Mitarbeiter.</p>
-                    <p data-i18n="skills.text2">Ich begleite dich von der ersten Idee bis zum Go-live. Und danach auch.
-                        Denn ein CRM entfaltet
-                        erst dann seinen echten Wert, wenn die Menschen damit gerne, simpel und sicher arbeiten.</p>
+                    <p data-i18n="skills.text1">Seit 2016 dreht sich bei mir alles um Salesforce. Ohne Buzzwords, dafür mit einem klaren Verständnis für die Herausforderungen deiner Customer Service Mitarbeiter.</p>
+                    <p data-i18n="skills.text2">Ich begleite dich von der ersten Idee bis zum Go-live. Und danach auch. Denn ein CRM entfaltet erst dann seinen echten Wert, wenn die Menschen damit gerne, simpel und sicher arbeiten.</p>
                 </div>
                 <div class="skills-grid">
                     <div class="skill-item animate-on-scroll">
-                        <h4 data-i18n="skills.skill1_title">Administration</h4>
-                        <div class="skill-description" data-i18n="skills.skill1_desc">Effiziente Einrichtung,
-                            Benutzerverwaltung und laufende Pflege
-                            deiner Salesforce-Umgebung.</div>
+                        <div class="skill-header">
+                            <h4 data-i18n="skills.skill1_title">Administration</h4>
+                        </div>
+                        <div class="skill-bar"><div class="skill-progress"></div></div>
+                        <div class="skill-description" data-i18n="skills.skill1_desc">Effiziente Einrichtung, Benutzerverwaltung und laufende Pflege deiner Salesforce-Umgebung.</div>
                     </div>
                     <div class="skill-item animate-on-scroll">
-                        <h4 data-i18n="skills.skill2_title">Architektur</h4>
-                        <div class="skill-description" data-i18n="skills.skill2_desc">Skalierbare Systemarchitektur mit
-                            Fokus auf Performance,
-                            Sicherheit und Erweiterbarkeit.</div>
+                        <div class="skill-header">
+                            <h4 data-i18n="skills.skill2_title">Architektur</h4>
+                        </div>
+                        <div class="skill-bar"><div class="skill-progress"></div></div>
+                        <div class="skill-description" data-i18n="skills.skill2_desc">Skalierbare Systemarchitektur mit Fokus auf Performance, Sicherheit und Erweiterbarkeit.</div>
                     </div>
                     <div class="skill-item animate-on-scroll">
-                        <h4 data-i18n="skills.skill3_title">Process Automation</h4>
-                        <div class="skill-description" data-i18n="skills.skill3_desc">Automatisierung deiner
-                            Geschäftsprozesse mit Flows,
-                            Approval-Prozessen und benutzerdefinierten Logiken.</div>
+                        <div class="skill-header">
+                            <h4 data-i18n="skills.skill3_title">Process Automation</h4>
+                        </div>
+                        <div class="skill-bar"><div class="skill-progress"></div></div>
+                        <div class="skill-description" data-i18n="skills.skill3_desc">Automatisierung deiner Geschäftsprozesse mit Flows, Approval-Prozessen und benutzerdefinierten Logiken.</div>
                     </div>
                     <div class="skill-item animate-on-scroll">
-                        <h4 data-i18n="skills.skill4_title">Data Management</h4>
-                        <div class="skill-description" data-i18n="skills.skill4_desc">Strukturierte Datenpflege,
-                            Migrationskonzepte und saubere
-                            Datenmodelle für bessere Insights.</div>
+                        <div class="skill-header">
+                            <h4 data-i18n="skills.skill4_title">Data Management</h4>
+                        </div>
+                        <div class="skill-bar"><div class="skill-progress"></div></div>
+                        <div class="skill-description" data-i18n="skills.skill4_desc">Strukturierte Datenpflege, Migrationskonzepte und saubere Datenmodelle für bessere Insights.</div>
                     </div>
                 </div>
             </div>
@@ -87,126 +98,6 @@
         <span aria-hidden="true">↑</span>
     </button>
 
-    <script>
-        const backToTopButton = document.querySelector('.back-to-top');
-        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-        const updateBackToTopVisibility = () => {
-            if (!backToTopButton) return;
-            const scrolled = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
-            backToTopButton.classList.toggle('show', scrolled > 400);
-        };
-
-        const supportsSmoothScroll = 'scrollBehavior' in document.documentElement.style;
-
-        const scrollToTop = () => {
-            if (prefersReducedMotion.matches || !supportsSmoothScroll) {
-                window.scrollTo(0, 0);
-                return;
-            }
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-
-        if (backToTopButton) {
-            backToTopButton.addEventListener('click', () => {
-                scrollToTop();
-            });
-            backToTopButton.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    scrollToTop();
-                }
-            });
-            backToTopButton.addEventListener('touchend', (event) => {
-                event.preventDefault();
-                scrollToTop();
-            }, { passive: false });
-
-            updateBackToTopVisibility();
-            window.addEventListener('scroll', updateBackToTopVisibility, { passive: true });
-        }
-
-        // Header background on scroll
-        window.addEventListener('scroll', function () {
-            const header = document.querySelector('header');
-            if (window.scrollY > 100) {
-                header.style.background = 'rgba(10, 15, 28, 0.98)';
-            } else {
-                header.style.background = 'rgba(10, 15, 28, 0.95)';
-            }
-        });
-
-        // Animate skill bars when in view
-        const observerOptions = {
-            threshold: 0.5,
-            rootMargin: '0px 0px -100px 0px'
-        };
-
-        const observer = new IntersectionObserver(function (entries) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const skillBars = entry.target.querySelectorAll('.skill-progress');
-                    skillBars.forEach(bar => {
-                        bar.style.animation = 'fillBar 2s ease-in-out forwards';
-                    });
-                }
-            });
-        }, observerOptions);
-
-        const skillsSection = document.querySelector('.skills');
-        if (skillsSection) {
-            observer.observe(skillsSection);
-        }
-
-        // Toggle skill descriptions on click (for mobile / touch devices)
-        const touchMediaQuery = window.matchMedia('(hover: none)');
-
-        const toggleSkillItem = (item) => {
-            if (!touchMediaQuery.matches) return;
-            const isOpen = item.classList.toggle('is-open');
-            item.setAttribute('aria-expanded', isOpen.toString());
-            const description = item.querySelector('.skill-description');
-            if (description) {
-                description.setAttribute('aria-hidden', (!isOpen).toString());
-            }
-        };
-
-        document.querySelectorAll('.skill-item').forEach(item => {
-            const description = item.querySelector('.skill-description');
-            if (description) {
-                description.setAttribute('aria-hidden', touchMediaQuery.matches ? 'true' : 'false');
-            }
-            item.addEventListener('click', () => toggleSkillItem(item));
-            item.addEventListener('keydown', (event) => {
-                if ((event.key === 'Enter' || event.key === ' ') && touchMediaQuery.matches) {
-                    event.preventDefault();
-                    toggleSkillItem(item);
-                }
-            });
-            item.setAttribute('role', 'button');
-            item.setAttribute('tabindex', '0');
-            item.setAttribute('aria-expanded', 'false');
-        });
-
-        const resetSkillItems = () => {
-            if (touchMediaQuery.matches) return;
-            document.querySelectorAll('.skill-item.is-open').forEach(item => {
-                item.classList.remove('is-open');
-                item.setAttribute('aria-expanded', 'false');
-                const description = item.querySelector('.skill-description');
-                if (description) {
-                    description.setAttribute('aria-hidden', touchMediaQuery.matches ? 'true' : 'false');
-                }
-            });
-        };
-
-        if (typeof touchMediaQuery.addEventListener === 'function') {
-            touchMediaQuery.addEventListener('change', resetSkillItems);
-        } else if (typeof touchMediaQuery.addListener === 'function') {
-            touchMediaQuery.addListener(resetSkillItems);
-        }
-    </script>
     <script src="script.js"></script>
 </body>
 

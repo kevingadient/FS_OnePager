@@ -4,8 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="FlowLogic.png">
+    <link rel="icon" href="images/FlowLogic.png">
     <title>Projekte | Flowlogic</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -13,12 +16,13 @@
     <!-- Header -->
     <header>
         <nav class="container">
-            <div class="logo">Flowlogic Consulting</div>
+            <a href="index.html" class="logo">Flowlogic.</a>
             <ul class="nav-links">
                 <li><a href="index.html" data-i18n="nav.home">Home</a></li>
                 <li><a href="services.html" data-i18n="nav.services">Services</a></li>
-                <li><a href="projects.html" style="color: #fca311;" data-i18n="nav.projects">Projects</a></li>
+                <li><a href="projects.html" class="active" data-i18n="nav.projects">Projects</a></li>
                 <li><a href="skills.html" data-i18n="nav.skills">Skills</a></li>
+                <li><a href="blog.html" data-i18n="nav.blog">Blog</a></li>
                 <li><a href="contact.html" data-i18n="nav.contact">Contact</a></li>
             </ul>
             <div class="lang-switcher">
@@ -34,60 +38,65 @@
     </header>
 
     <!-- Projects Section -->
-    <section id="projects" class="projects" style="padding-top: 120px;">
+    <section id="projects" class="projects" style="padding-top: 140px;">
         <div class="container">
-            <h2 class="section-title" data-i18n="projects.title">Projekte aus der Praxis</h2>
-            <p class="projects-intro" data-i18n="projects.intro">
-                Jedes Unternehmen ist einzigartig, mit eigenen Prozessen, Systemen und Zielen. Genau das macht jedes
-                Projekt spannend. Hier ein Einblick, wie ich Teams dabei unterstützt habe, Salesforce nicht nur
-                einzuführen, sondern zum Herzstück ihres Erfolgs zu machen. Von der ersten Idee bis zum laufenden
-                Betrieb.
-            </p>
+            <div class="section-header-editorial">
+                <div class="editorial-meta">
+                    <span class="editorial-counter">03</span>
+                    <span class="editorial-category">Profile / Case Studies</span>
+                    <span class="editorial-year">2025</span>
+                </div>
+                <h2 class="section-title" data-i18n="projects.title">Projekte aus der Praxis</h2>
+                <p class="projects-intro" data-i18n="projects.intro">
+                    Jedes Unternehmen ist einzigartig, mit eigenen Prozessen, Systemen und Zielen. Genau das macht jedes
+                    Projekt spannend. Hier ein Einblick, wie ich Teams dabei unterstützt habe, Salesforce nicht nur
+                    einzuführen, sondern zum Herzstück ihres Erfolgs zu machen. Von der ersten Idee bis zum laufenden
+                    Betrieb.
+                </p>
+            </div>
             <div class="projects-grid">
                 <article class="project-card animate-on-scroll">
-                    <div class="project-icon">🏦</div>
+                    <div class="service-card-meta">
+                        <span class="service-card-num">01</span>
+                        <span>SERVICE CLOUD</span>
+                    </div>
+                    <div class="project-icon"><img src="images/phone-gold.png" alt="🏦"></div>
                     <h3 data-i18n="projects.card1_title">Service Cloud inklusive Anbindung von Voicebot</h3>
-                    <p data-i18n="projects.card1_text">Gemeinsam haben wir den gesamten Kundensupport zentralisiert,
-                        manuelle Aufgaben automatisiert und
-                        Transparenz durch aussagekräftige Berichte geschaffen.</p>
+                    <p data-i18n="projects.card1_text">Gemeinsam haben wir den gesamten Kundensupport zentralisiert, manuelle Aufgaben automatisiert und Transparenz durch aussagekräftige Berichte geschaffen.</p>
                     <ul class="project-highlights">
-                        <li data-i18n="projects.card1_li1">40% kürzere Erstellungszeit dank schlanker Case-Erstellung
-                        </li>
-                        <li data-i18n="projects.card1_li2">Self-Service Knowledge Base, die das Support-Team spürbar
-                            entlastet</li>
-                        <li data-i18n="projects.card1_li3">Voicebot-Integration, die häufige Fragen blitzschnell
-                            beantwortet und Gerät schläft nicht.
-                        </li>
+                        <li data-i18n="projects.card1_li1">40% kürzere Erstellungszeit dank schlanker Case-Erstellung</li>
+                        <li data-i18n="projects.card1_li2">Self-Service Knowledge Base, die das Support-Team spürbar entlastet</li>
+                        <li data-i18n="projects.card1_li3">Voicebot-Integration, die häufige Fragen blitzschnell beantwortet.</li>
                     </ul>
                 </article>
-                <article class="project-card animate-on-scroll">
-                    <div class="project-icon">🚢</div>
-                    <h3 data-i18n="projects.card2_title">Migration von Salesforce Classic zu Lightning</h3>
-                    <p data-i18n="projects.card2_text">Die komplette Salesforce-Umgebung wurde modernisiert. Objekte,
-                        Workflows und individueller Code
-                        wurden auf Lightning migriert und die tägliche Arbeit dadurch deutlich intuitiver.</p>
-                    <ul class="project-highlights">
-                        <li data-i18n="projects.card2_li1">Modernisierung flexibler Lightning-Architektur für zukünftige
-                            Erweiterungen</li>
-                        <li data-i18n="projects.card2_li2">Intuitive Lightning Pages für schnellere Navigation</li>
-                        <li data-i18n="projects.card2_li3">Migration von S-Controls, Apex und Process Builder zu Flows
-                            für nachhaltige Automatisierung
-                        </li>
 
+                <article class="project-card featured-blue animate-on-scroll">
+                    <div class="service-card-meta">
+                        <span class="service-card-num" style="color: #fff; border-color: rgba(255,255,255,0.3);">02</span>
+                        <span style="color: rgba(255,255,255,0.8);">LIGHTNING MIGRATION</span>
+                    </div>
+                    <div class="project-icon"><img src="images/ship-gold.png" alt="🚢"></div>
+                    <h3 data-i18n="projects.card2_title">Migration von Salesforce Classic zu Lightning</h3>
+                    <p data-i18n="projects.card2_text">Die komplette Salesforce-Umgebung wurde modernisiert. Objekte, Workflows und individueller Code wurden auf Lightning migriert.</p>
+                    <ul class="project-highlights">
+                        <li data-i18n="projects.card2_li1">Modernisierung flexibler Lightning-Architektur für zukünftige Erweiterungen</li>
+                        <li data-i18n="projects.card2_li2">Intuitive Lightning Pages für schnellere Navigation</li>
+                        <li data-i18n="projects.card2_li3">Migration von Apex & Process Builder zu Flows</li>
                     </ul>
                 </article>
+
                 <article class="project-card animate-on-scroll">
-                    <div class="project-icon">📝</div>
+                    <div class="service-card-meta">
+                        <span class="service-card-num">03</span>
+                        <span>CONTRACT AUTOMATION</span>
+                    </div>
+                    <div class="project-icon"><img src="images/document-gold.png" alt="📝"></div>
                     <h3 data-i18n="projects.card3_title">Automatisierung der Vertragserstellung</h3>
-                    <p data-i18n="projects.card3_text">Die gesamte Vertragserstellung wurde automatisiert. Verträge
-                        werden jetzt direkt aus Salesforce
-                        generiert, geprüft und versendet.</p>
+                    <p data-i18n="projects.card3_text">Die gesamte Vertragserstellung wurde automatisiert. Verträge werden jetzt direkt aus Salesforce generiert, geprüft und versendet.</p>
                     <ul class="project-highlights">
                         <li data-i18n="projects.card3_li1">90 % Zeitersparnis bei der Vertragserstellung</li>
-                        <li data-i18n="projects.card3_li2">Automatische Anpassung an kantonale Anforderungen für
-                            fehlerfreie Abläufe</li>
-                        <li data-i18n="projects.card3_li3">Sichere und nachvollziehbare Ablage in der internen Datenbank
-                            ohne Datenverlust</li>
+                        <li data-i18n="projects.card3_li2">Automatische Anpassung an kantonale Anforderungen</li>
+                        <li data-i18n="projects.card3_li3">Sichere und nachvollvisible Ablage in der Datenbank</li>
                     </ul>
                 </article>
             </div>
@@ -105,56 +114,6 @@
         <span aria-hidden="true">↑</span>
     </button>
 
-    <script>
-        const backToTopButton = document.querySelector('.back-to-top');
-        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-        const updateBackToTopVisibility = () => {
-            if (!backToTopButton) return;
-            const scrolled = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
-            backToTopButton.classList.toggle('show', scrolled > 400);
-        };
-
-        const supportsSmoothScroll = 'scrollBehavior' in document.documentElement.style;
-
-        const scrollToTop = () => {
-            if (prefersReducedMotion.matches || !supportsSmoothScroll) {
-                window.scrollTo(0, 0);
-                return;
-            }
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-
-        if (backToTopButton) {
-            backToTopButton.addEventListener('click', () => {
-                scrollToTop();
-            });
-            backToTopButton.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    scrollToTop();
-                }
-            });
-            backToTopButton.addEventListener('touchend', (event) => {
-                event.preventDefault();
-                scrollToTop();
-            }, { passive: false });
-
-            updateBackToTopVisibility();
-            window.addEventListener('scroll', updateBackToTopVisibility, { passive: true });
-        }
-
-        // Header background on scroll
-        window.addEventListener('scroll', function () {
-            const header = document.querySelector('header');
-            if (window.scrollY > 100) {
-                header.style.background = 'rgba(10, 15, 28, 0.98)';
-            } else {
-                header.style.background = 'rgba(10, 15, 28, 0.95)';
-            }
-        });
-    </script>
     <script src="script.js"></script>
 </body>
 
