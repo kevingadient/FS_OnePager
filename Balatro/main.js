@@ -103,6 +103,19 @@ function playScorePop() { playBeep(880, 90, 0.045, 'sine'); }
 function playMultRise() { playBeep(420, 140, 0.04, 'sawtooth'); }
 function playTotalCount() { playAudioClip(soundFiles.count, 0.6); }
 
+function formatNumber(num) {
+  if (num === null || num === undefined) return '0';
+  const val = typeof num === 'number' ? num : parseFloat(num);
+  if (isNaN(val)) return String(num);
+  if (Math.abs(val) >= 1000000) {
+    const expStr = val.toExponential(2);
+    const [mantissa, exp] = expStr.split('e+');
+    const expNum = parseInt(exp, 10);
+    return `${mantissa} × 10<sup>${expNum}</sup>`;
+  }
+  return val.toLocaleString();
+}
+
 function randDie() {
   return Math.floor(Math.random() * 6) + 1;
 }
@@ -286,34 +299,34 @@ async function onFinishHand() {
   const steps = buildScoringSteps();
   for (const step of steps) {
     if (step.kind === 'chips') {
-      el.handSummary.textContent = `+${step.delta} chips — ${step.label}`;
+      el.handSummary.innerHTML = `+${formatNumber(step.delta)} chips — ${step.label}`;
       el.chips.classList.add('highlight-yellow');
       const from = chipsDisplay;
       const to = chipsDisplay + step.delta;
       await tweenNumber(from, to, 400, (v) => {
-        el.chips.textContent = String(Math.round(v));
+        el.chips.innerHTML = formatNumber(Math.round(v));
       });
       el.chips.classList.remove('highlight-yellow');
       chipsDisplay = to;
       playScorePop();
     } else if (step.kind === 'multAdd') {
-      el.handSummary.textContent = `+${step.delta} mult — ${step.label}`;
+      el.handSummary.innerHTML = `+${formatNumber(step.delta)} mult — ${step.label}`;
       el.mult.classList.add('highlight-yellow');
       const from = multDisplay;
       const to = multDisplay + step.delta;
       await tweenNumber(from, to, 350, (v) => {
-        el.mult.textContent = String(Math.round(v * 100) / 100);
+        el.mult.innerHTML = formatNumber(Math.round(v * 100) / 100);
       });
       el.mult.classList.remove('highlight-yellow');
       multDisplay = to;
       playMultRise();
     } else if (step.kind === 'multMul') {
-      el.handSummary.textContent = `x${step.factor} mult — ${step.label}`;
+      el.handSummary.innerHTML = `x${formatNumber(step.factor)} mult — ${step.label}`;
       el.mult.classList.add('highlight-yellow');
       const from = multDisplay;
       const to = multDisplay * step.factor;
       await tweenNumber(from, to, 450, (v) => {
-        el.mult.textContent = String(Math.round(v * 100) / 100);
+        el.mult.innerHTML = formatNumber(Math.round(v * 100) / 100);
       });
       el.mult.classList.remove('highlight-yellow');
       multDisplay = to;
@@ -322,10 +335,10 @@ async function onFinishHand() {
   }
 
   const finalTotal = Math.round(chipsDisplay * multDisplay);
-  el.handSummary.textContent = `Total: ${finalTotal}`;
+  el.handSummary.innerHTML = `Total: ${formatNumber(finalTotal)}`;
   el.total.classList.add('highlight-yellow');
   await tweenNumber(0, finalTotal, 500, (v) => {
-    el.total.textContent = String(Math.round(v));
+    el.total.innerHTML = formatNumber(Math.round(v));
   });
   el.total.classList.remove('highlight-yellow');
   playTotalCount();
@@ -395,10 +408,10 @@ function renderDice() {
 }
 
 function render() {
-  el.round.textContent = String(state.round);
-  el.target.textContent = String(state.target);
-  el.score.textContent = String(state.score);
-  el.coins.textContent = String(state.coins);
+  el.round.innerHTML = formatNumber(state.round);
+  el.target.innerHTML = formatNumber(state.target);
+  el.score.innerHTML = formatNumber(state.score);
+  el.coins.innerHTML = formatNumber(state.coins);
   el.rerolls.textContent = String(state.rerolls);
   el.discards.textContent = String(state.discards);
   el.hands.textContent = String(state.hands);
@@ -418,12 +431,12 @@ function render() {
   renderScoringGuide();
 
   const p = previewScore();
-  el.handSummary.textContent = state.handFinished ? `Scored: ${p.label}` : '';
-  el.chips.textContent = String(p.chips);
-  el.mult.textContent = String(p.mult);
-  el.total.textContent = String(p.total);
+  el.handSummary.innerHTML = state.handFinished ? `Scored: ${p.label}` : '';
+  el.chips.innerHTML = formatNumber(p.chips);
+  el.mult.innerHTML = formatNumber(p.mult);
+  el.total.innerHTML = formatNumber(p.total);
 
-  if (el.totalDisplay) el.totalDisplay.textContent = state.score + ' pts';
+  if (el.totalDisplay) el.totalDisplay.innerHTML = formatNumber(state.score) + ' pts';
 
   renderJokers();
 }
@@ -440,10 +453,10 @@ function renderScoringGuide() {
     name.textContent = row.name;
     const chips = document.createElement('div');
     chips.className = 'chips';
-    chips.textContent = typeof row.chips === 'string' ? row.chips : `Chips ${row.chips}`;
+    chips.innerHTML = typeof row.chips === 'string' ? row.chips : `Chips ${formatNumber(row.chips)}`;
     const mult = document.createElement('div');
     mult.className = 'mult';
-    mult.textContent = `Mult ${row.mult}`;
+    mult.innerHTML = `Mult ${formatNumber(row.mult)}`;
     div.appendChild(name);
     div.appendChild(chips);
     div.appendChild(mult);
@@ -593,11 +606,11 @@ function openHistoryModal() {
         <div class="history-card__body">
           <div class="history-card__dice">${diceHtml}</div>
           <div class="history-card__score">
-            <span>Chips: <strong>${h.chips}</strong></span>
+            <span>Chips: <strong>${formatNumber(h.chips)}</strong></span>
             <span>×</span>
-            <span>Mult: <strong>${h.mult}</strong></span>
+            <span>Mult: <strong>${formatNumber(h.mult)}</strong></span>
             <span>=</span>
-            <span class="history-card__total">${h.total} pts</span>
+            <span class="history-card__total">${formatNumber(h.total)} pts</span>
           </div>
         </div>
       `;
