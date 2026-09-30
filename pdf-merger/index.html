@@ -3,119 +3,346 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Merger & Page Organizer</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>PDF Merger & Visual Page Organizer</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- External Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>📄 PDF Merger & Page Organizer</h1>
-            <p>Merge multiple PDFs into a single file in seconds. Works online on any device - no registration needed.</p>
-            <div class="features">
-                <span class="feature">✓ Free to use</span>
-                <span class="feature">✓ No watermarks</span>
-                <span class="feature">✓ Secure & private</span>
-                <span class="feature">✓ Works on any device</span>
+    <!-- Background Decor Shapes -->
+    <div class="bg-decorations">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="shape shape-circle-1"></div>
+        <div class="shape shape-circle-2"></div>
+        <div class="shape shape-triangle-1"></div>
+        <div class="shape shape-ring-1"></div>
+        <div class="shape shape-ring-2"></div>
+    </div>
+
+    <!-- Main Application Shell -->
+    <div class="app-shell">
+        
+        <!-- Header Bar -->
+        <header class="top-nav">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M14 2V8H20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 18V12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M9 15L12 12L15 15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>PDF Studio</h1>
+                    <span>Merge & Page Organizer</span>
+                </div>
+            </div>
+
+            <div class="nav-tools">
+                <div class="search-pill">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" id="searchInput" placeholder="Search pages or files..." oninput="filterPages()">
+                </div>
+
+                <div class="nav-actions">
+                    <button class="icon-btn" title="View Options" id="layoutToggleBtn" onclick="toggleLayoutView()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                    </button>
+                    <button class="icon-btn" title="Settings">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    </button>
+                </div>
             </div>
         </header>
 
-        <main>
-            <!-- File Upload Section -->
-            <section class="upload-section">
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-content">
-                        <div class="upload-icon">📁</div>
-                        <h3>Choose Files</h3>
-                        <p>or drop files here</p>
-                        <div class="supported-formats">
-                            <strong>Supported formats:</strong> PDF, DOC, XLS, PPT, PNG, JPG
+        <!-- USP Feature Highlights Grid (Ref: Dribbble feature cards) -->
+        <section class="quick-tools-grid">
+            <div class="tool-card tool-merge">
+                <div class="tool-badge">★</div>
+                <div class="tool-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/><line x1="12" x2="12" y1="7" y2="17"/><line x1="7" x2="17" y1="12" y2="12"/></svg>
+                </div>
+                <div class="tool-info">
+                    <h3>Merge PDF</h3>
+                    <p>Combine multiple documents into 1 file</p>
+                </div>
+            </div>
+
+            <div class="tool-card tool-split">
+                <div class="tool-badge">✂</div>
+                <div class="tool-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" x2="8.12" y1="4" y2="15.88"/><line x1="14.47" x2="20" y1="14.48" y2="20"/><line x1="8.12" x2="12" y1="8.12" y2="12"/></svg>
+                </div>
+                <div class="tool-info">
+                    <h3>Split & Extract</h3>
+                    <p>Extract select pages into new PDFs</p>
+                </div>
+            </div>
+
+            <div class="tool-card tool-img2pdf">
+                <div class="tool-badge">🖼</div>
+                <div class="tool-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                </div>
+                <div class="tool-info">
+                    <h3>Image to PDF</h3>
+                    <p>Convert PNG, JPG, WebP into PDF pages</p>
+                </div>
+            </div>
+
+            <div class="tool-card tool-organize">
+                <div class="tool-badge">📑</div>
+                <div class="tool-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/><path d="M15 3v5h5"/><path d="m10 13 2 2 4-4"/></svg>
+                </div>
+                <div class="tool-info">
+                    <h3>Page Reorder</h3>
+                    <p>Sort, rotate, or delete individual pages</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Workspace (Dual Column / Card Layout matching Reference) -->
+        <div class="workspace-grid">
+
+            <!-- LEFT PANEL: Upload & Interactive Page Grid -->
+            <main class="main-workspace-card">
+                
+                <!-- Hero Section & Drag/Drop Dropzone -->
+                <div class="upload-hero-container" id="uploadHero">
+                    <div class="hero-illustration">
+                        <!-- Custom Vector Decorative Illustration -->
+                        <div class="illustration-graphic">
+                            <div class="folder-back"></div>
+                            <div class="sheet sheet-1">
+                                <div class="sheet-line"></div>
+                                <div class="sheet-line short"></div>
+                            </div>
+                            <div class="sheet sheet-2">
+                                <div class="sheet-thumb">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ecb775" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/></svg>
+                                </div>
+                            </div>
+                            <div class="folder-front"></div>
+                            <div class="floating-sparkle sparkle-1">✦</div>
+                            <div class="floating-sparkle sparkle-2">★</div>
                         </div>
-                        <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg" hidden>
-                        <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
-                            Select files
+                    </div>
+
+                    <div class="dropzone-area" id="uploadArea">
+                        <input type="file" id="fileInput" multiple accept=".pdf,.png,.jpg,.jpeg,.webp" hidden>
+                        
+                        <div class="dropzone-content">
+                            <div class="cloud-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
+                            </div>
+                            <h2>Drop files here to start</h2>
+                            <p>Select PDF documents or images to merge and rearrange</p>
+                            
+                            <div class="upload-btn-group">
+                                <button class="btn btn-primary btn-glow" onclick="document.getElementById('fileInput').click()">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                                    Select PDF Files
+                                </button>
+                            </div>
+
+                            <div class="format-badges">
+                                <span class="badge">PDF</span>
+                                <span class="badge">PNG</span>
+                                <span class="badge">JPG</span>
+                                <span class="badge">WEBP</span>
+                                <span class="security-tag">🔒 100% Private Browser Processing</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Page Previews Section (Displayed when files uploaded) -->
+                <div class="pages-preview-workspace" id="pagesSection" style="display: none;">
+                    
+                    <!-- Workspace Bar -->
+                    <div class="workspace-bar">
+                        <div class="bar-title">
+                            <h2>Page Previews</h2>
+                            <span class="count-pill" id="pageCountBadge">0 Pages</span>
+                        </div>
+
+                        <div class="bar-controls">
+                            <button class="btn btn-subtle" onclick="rotateAllPages(90)" title="Rotate all pages 90°">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6"/><path d="M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                                Rotate All
+                            </button>
+                            <button class="btn btn-subtle" onclick="sortPagesByName()" title="Sort pages by source name">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="M11 4h10"/><path d="M11 8h7"/><path d="M11 12h4"/></svg>
+                                Sort
+                            </button>
+                            <button class="btn btn-subtle text-danger" onclick="clearAllPages()" title="Remove all pages">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                                Clear All
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar during PDF processing -->
+                    <div class="progress-bar-container" id="progressBarContainer" style="display: none;">
+                        <div class="progress-info">
+                            <span id="progressStatusText">Rendering page previews...</span>
+                            <span id="progressPercentText">0%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+
+                    <!-- Drag & Drop Pages List Grid -->
+                    <div class="pages-grid" id="pagesList">
+                        <!-- Dynamic page thumbnail cards injected here -->
+                    </div>
+
+                    <!-- Add More Files Action Floating Bar -->
+                    <div class="add-more-bar">
+                        <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                            Add More Files
                         </button>
                     </div>
-                </div>
-            </section>
 
-            <!-- PDF Pages Display Section -->
-            <section class="pages-section" id="pagesSection" style="display: none;">
-                <div class="section-header">
-                    <h2>📑 PDF Pages</h2>
-                    <div class="actions">
-                        <button id="removeCorruptedBtn" class="btn btn-secondary" onclick="removeCorruptedPages()" title="Remove corrupted pages">Clean Up</button>
-                        <button id="clearAllBtn" class="btn btn-secondary">Clear All</button>
-                        <button id="downloadBtn" class="btn btn-primary">Finish</button>
+                </div>
+            </main>
+
+            <!-- RIGHT PANEL: Selected Files & Merge Controls (Ref: Dribbble right column) -->
+            <aside class="side-panel-card">
+                
+
+
+                <!-- Selected Files List Container -->
+                <div class="selected-files-section">
+                    <div class="section-title">
+                        <h4>Selected Files</h4>
+                        <span class="file-count-badge" id="fileCountBadge">0 Files</span>
+                    </div>
+
+                    <div class="files-list" id="filesListContainer">
+                        <div class="empty-files-placeholder">
+                            <div class="placeholder-icon">📂</div>
+                            <p>No files uploaded yet</p>
+                            <span>Uploaded files will appear here</span>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
+
+                <!-- Extract & Export Tool Options -->
+                <div class="export-options-section">
+                    <h4>Export Settings</h4>
+                    
+                    <div class="form-group">
+                        <label for="outputFilenameInput">Output File Name</label>
+                        <div class="input-with-suffix">
+                            <input type="text" id="outputFilenameInput" value="Merged_Document" placeholder="Enter file name">
+                            <span class="suffix">.pdf</span>
+                        </div>
+                    </div>
+
+                    <div class="options-summary" id="optionsSummary">
+                        <div class="summary-item">
+                            <span>Total Pages:</span>
+                            <strong id="summaryTotalPages">0</strong>
+                        </div>
+                        <div class="summary-item">
+                            <span>Documents:</span>
+                            <strong id="summaryTotalFiles">0</strong>
+                        </div>
+                    </div>
+
+                    <!-- Primary Download Action Button -->
+                    <button class="btn btn-primary btn-large btn-glow btn-full" id="downloadBtn" onclick="downloadMergedPDF()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                        Finish & Download PDF
+                    </button>
                 </div>
-                
-                <div class="pages-container">
-                    <div id="pagesList" class="pages-list sortable-list">
-                        <!-- PDF pages will be dynamically inserted here -->
+
+                <!-- Features & Privacy Footer -->
+                <div class="side-footer">
+                    <div class="privacy-pill">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <span>Local Browser Processing</span>
                     </div>
                 </div>
-            </section>
 
-            <!-- Instructions Section -->
-            <section class="instructions">
-                <h3>How to merge PDF files online for free:</h3>
-                <ol>
-                    <li><strong>Drag & drop your file</strong> into our free PDF Merger at the top of this page.</li>
-                    <li><strong>Add extra files if needed:</strong> PDFs, images, or other file types.</li>
-                    <li><strong>Rearrange and rotate the pages</strong> as necessary.</li>
-                    <li><strong>Hit 'Finish'</strong> to combine your files into a single PDF.</li>
-                    <li><strong>Download</strong> your merged file—done!</li>
-                </ol>
-                
-                <div class="security-info">
-                    <h4>🔒 Secure Online PDF Merging</h4>
-                    <p>Your files are secure with us. All processing happens locally in your browser, so your documents never leave your device. No uploads to external servers.</p>
-                </div>
-            </section>
-        </main>
+            </aside>
 
-        <!-- Loading Overlay -->
-        <div id="loadingOverlay" class="loading-overlay" style="display: none;">
-            <div class="loading-content">
-                <div class="spinner"></div>
-                <p id="loadingText">Processing PDFs...</p>
-            </div>
         </div>
+    </div>
 
-        <!-- Toast Notifications -->
-        <div id="toastContainer" class="toast-container"></div>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-glass-card">
+            <div class="spinner-ring">
+                <div></div><div></div><div></div><div></div>
+            </div>
+            <h3 id="loadingText">Processing PDF pages...</h3>
+            <p>Rendering high quality page previews</p>
+        </div>
+    </div>
 
-        <!-- Page Preview Modal -->
-        <div id="previewModal" class="preview-modal" style="display: none;">
-            <div class="preview-modal-content">
-                <div class="preview-header">
-                    <h3 id="previewTitle">Page Preview</h3>
-                    <button class="close-btn" id="closePreviewBtn">&times;</button>
+    <!-- Toast Notifications Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Page Preview Modal (Full size inspection modal) -->
+    <div id="previewModal" class="preview-modal" style="display: none;">
+        <div class="preview-modal-card">
+            <div class="preview-header">
+                <div class="preview-title-wrap">
+                    <h3 id="previewTitle">Page Inspection</h3>
+                    <span id="previewBadge" class="badge">Page 1</span>
                 </div>
-                <div class="preview-body">
-                    <div class="preview-image-container">
-                        <img id="previewImage" src="" alt="Page preview">
-                    </div>
-                    <div class="preview-info">
-                        <p><strong>Page:</strong> <span id="previewPageNumber"></span></p>
-                        <p><strong>Source:</strong> <span id="previewSource"></span></p>
-                    </div>
+                <button class="modal-close-btn" id="closePreviewBtn" onclick="closePreviewModal()">&times;</button>
+            </div>
+            <div class="preview-body">
+                <div class="preview-canvas-wrapper" id="modalCanvasContainer">
+                    <canvas id="modalPreviewCanvas"></canvas>
+                    <img id="modalPreviewImage" src="" alt="Page preview" style="display: none;">
                 </div>
-                <div class="preview-footer">
-                    <button class="btn btn-secondary" id="removeFromPreviewBtn">Remove Page</button>
-                    <button class="btn btn-primary" id="moveToTopBtn">Move to Top</button>
-                    <button class="btn btn-primary" id="moveToBottomBtn">Move to Bottom</button>
+                <div class="preview-details">
+                    <p><strong>Source Document:</strong> <span id="previewSource">filename.pdf</span></p>
+                    <p><strong>Original Index:</strong> Page <span id="previewPageNumber">1</span></p>
+                    <p><strong>Rotation:</strong> <span id="previewRotationText">0°</span></p>
                 </div>
+            </div>
+            <div class="preview-footer">
+                <button class="btn btn-subtle" onclick="rotateCurrentPreview(90)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6"/><path d="M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                    Rotate 90°
+                </button>
+                <button class="btn btn-subtle" onclick="movePageToTop()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
+                    Move to Top
+                </button>
+                <button class="btn btn-subtle" onclick="movePageToBottom()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                    Move to Bottom
+                </button>
+                <button class="btn btn-danger" onclick="removeFromPreview()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/></svg>
+                    Remove Page
+                </button>
             </div>
         </div>
     </div>
 
+    <!-- Script File -->
     <script src="script.js"></script>
 </body>
 </html>
