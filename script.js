@@ -323,12 +323,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (data.errors && data.errors.length > 0) {
                         showStatus('error', null, data.errors.map(err => err.message).join(', '));
                     } else {
-                        showStatus('error', null, 'Fehler beim Senden. Bitte versuche es erneut oder per Mail an kev.gadient@gmail.com.');
+                        showStatus('error', null, 'Fehler beim Senden. Bitte versuche es erneut.');
                     }
                 }
             } catch (err) {
                 console.error('Contact form submission error:', err);
-                showStatus('error', null, 'Netzwerkfehler. Bitte direkt per Mail kontaktieren: kev.gadient@gmail.com');
+                showStatus('error', null, 'Netzwerkfehler. Bitte versuche es später erneut.');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalBtnText;
