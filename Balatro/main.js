@@ -19,6 +19,7 @@ const state = {
   numDice: 5,
   dice: Array.from({ length: 2 }, () => ({ value: 1, held: false })),
   jokers: [], // { id, name, type, amount, desc, cost }
+  handHistory: [], // array of { id, round, label, chips, mult, total, dice }
   handFinished: false,
   isRolling: false,
   isScoring: false,
@@ -51,11 +52,33 @@ const el = {
   winModal: document.getElementById('winModal'),
   closeWinBtn: document.getElementById('closeWinBtn'),
   winCatImg: document.getElementById('winCatImg'),
+  totalDisplay: document.getElementById('totalDisplay'),
+  sparklinePath: document.getElementById('sparklinePath'),
+  historyBtn: document.getElementById('historyBtn'),
+  historyModal: document.getElementById('historyModal'),
+  closeHistoryBtn: document.getElementById('closeHistoryBtn'),
+  historyList: document.getElementById('historyList'),
 };
 
-// Simple webaudio helper
-let audioCtx;
+// Sound Effects Engine
 let soundOn = true;
+let audioCtx;
+
+const soundFiles = {
+  roll: new Audio('./sounds/dice-roll.mp3'),
+  count: new Audio('./sounds/score-count.mp3'),
+};
+
+function playAudioClip(audioObj, volume = 0.5) {
+  if (!soundOn || !audioObj) return;
+  try {
+    const clone = audioObj.cloneNode();
+    clone.volume = volume;
+    clone.currentTime = 0;
+    clone.play().catch(() => {});
+  } catch (e) {}
+}
+
 function playBeep(frequency, durationMs, volume = 0.03, type = 'sine') {
   if (!soundOn) return;
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -75,10 +98,10 @@ function playBeep(frequency, durationMs, volume = 0.03, type = 'sine') {
 }
 
 function playClick() { playBeep(220, 60, 0.04, 'square'); }
-function playRollTick() { playBeep(520 + Math.random() * 120, 40, 0.03, 'triangle'); }
+function playRollTick() { playAudioClip(soundFiles.roll, 0.7); }
 function playScorePop() { playBeep(880, 90, 0.045, 'sine'); }
 function playMultRise() { playBeep(420, 140, 0.04, 'sawtooth'); }
-function playTotalCount() { playBeep(300, 400, 0.035, 'sine'); }
+function playTotalCount() { playAudioClip(soundFiles.count, 0.6); }
 
 function randDie() {
   return Math.floor(Math.random() * 6) + 1;
@@ -230,8 +253,6 @@ function onRoll() {
   if (state.rerolls <= 0 || state.handFinished || state.isRolling) return;
   state.isRolling = true;
   render();
-  const diceEls = el.dice.querySelectorAll('.die');
-  diceEls.forEach((d) => d.classList.add('die--rolling'));
   setTimeout(() => {
     rollDice();
     playRollTick();
@@ -239,7 +260,7 @@ function onRoll() {
     el.finishHandBtn.disabled = false;
     state.isRolling = false;
     render();
-  }, 500);
+  }, 600);
 }
 
 async function onFinishHand() {
@@ -315,15 +336,20 @@ async function onFinishHand() {
   state.coins += Math.max(15, Math.floor(finalTotal / 25));
   state.isScoring = false;
 
-  // If winning hand, show cat.gif celebration modal
-  if (isWinningHand && el.winModal && el.winCatImg && el.closeWinBtn) {
-    el.winCatImg.src = './cat.gif';
-    el.winModal.hidden = false;
-    const onCloseWin = () => {
-      el.closeWinBtn.removeEventListener('click', onCloseWin);
-      el.winModal.hidden = true;
-    };
-    el.closeWinBtn.addEventListener('click', onCloseWin);
+  // Record in hand history
+  state.handHistory.push({
+    id: state.handHistory.length + 1,
+    round: state.round,
+    label: baseForWinCheck.name,
+    chips: chipsDisplay,
+    mult: Math.round(multDisplay * 100) / 100,
+    total: finalTotal,
+    dice: state.dice.map((d) => d.value),
+  });
+
+  // If winning hand, show celebratory cat modal via CATAAS API
+  if (isWinningHand && el.winModal) {
+    openCatModal();
   }
 
   // enable next steps
@@ -350,14 +376,21 @@ function onDiscard() {
 function renderDice() {
   el.dice.innerHTML = '';
   state.dice.forEach((die, i) => {
-    const div = document.createElement('div');
-    div.className = 'die' + (die.held ? ' die--held' : '');
-    div.innerHTML = `
-      <div class="die__value">${die.value}</div>
-      <div class="die__label">${die.held ? 'Held' : 'Tap to hold'}</div>
+    const wrapper = document.createElement('div');
+    wrapper.className = 'die-wrapper' + (die.held ? ' die-wrapper--held' : '') + (state.isRolling && !die.held ? ' die-wrapper--rolling' : '');
+    wrapper.innerHTML = `
+      <div class="die-cube show-${die.value}">
+        <div class="side one"><div class="dot one-1"></div></div>
+        <div class="side two"><div class="dot two-1"></div><div class="dot two-2"></div></div>
+        <div class="side three"><div class="dot three-1"></div><div class="dot three-2"></div><div class="dot three-3"></div></div>
+        <div class="side four"><div class="dot four-1"></div><div class="dot four-2"></div><div class="dot four-3"></div><div class="dot four-4"></div></div>
+        <div class="side five"><div class="dot five-1"></div><div class="dot five-2"></div><div class="dot five-3"></div><div class="dot five-4"></div><div class="dot five-5"></div></div>
+        <div class="side six"><div class="dot six-1"></div><div class="dot six-2"></div><div class="dot six-3"></div><div class="dot six-4"></div><div class="dot six-5"></div><div class="dot six-6"></div></div>
+      </div>
+      <div class="die-badge">${die.held ? 'HELD' : 'HOLD'}</div>
     `;
-    div.addEventListener('click', () => toggleHold(i));
-    el.dice.appendChild(div);
+    wrapper.addEventListener('click', () => toggleHold(i));
+    el.dice.appendChild(wrapper);
   });
 }
 
@@ -389,6 +422,8 @@ function render() {
   el.chips.textContent = String(p.chips);
   el.mult.textContent = String(p.mult);
   el.total.textContent = String(p.total);
+
+  if (el.totalDisplay) el.totalDisplay.textContent = state.score + ' pts';
 
   renderJokers();
 }
@@ -534,11 +569,55 @@ function buyJoker(j) {
   return true;
 }
 
+function openHistoryModal() {
+  if (!el.historyModal || !el.historyList) return;
+  el.historyList.innerHTML = '';
+  if (state.handHistory.length === 0) {
+    el.historyList.innerHTML = `
+      <div style="padding: 32px 20px; text-align: center; color: var(--text-muted); font-size: 14px;">
+        No hands recorded yet. Roll dice and click <strong>Score Hand</strong> to build your history!
+      </div>
+    `;
+  } else {
+    [...state.handHistory].reverse().forEach((h) => {
+      const card = document.createElement('div');
+      card.className = 'history-card';
+      const diceHtml = h.dice.map(v => `<span class="mini-die">${v}</span>`).join('');
+      card.innerHTML = `
+        <div class="history-card__header">
+          <span class="badge-tag" style="margin: 0; padding: 2px 8px; font-size: 11px;">
+            Hand #${h.id} (Round ${h.round})
+          </span>
+          <span class="history-card__title">${h.label}</span>
+        </div>
+        <div class="history-card__body">
+          <div class="history-card__dice">${diceHtml}</div>
+          <div class="history-card__score">
+            <span>Chips: <strong>${h.chips}</strong></span>
+            <span>×</span>
+            <span>Mult: <strong>${h.mult}</strong></span>
+            <span>=</span>
+            <span class="history-card__total">${h.total} pts</span>
+          </div>
+        </div>
+      `;
+      el.historyList.appendChild(card);
+    });
+  }
+  el.historyModal.hidden = false;
+}
+
+function closeHistoryModal() {
+  if (el.historyModal) el.historyModal.hidden = true;
+}
+
 function init() {
   el.rollBtn.addEventListener('click', onRoll);
   el.finishHandBtn.addEventListener('click', onFinishHand);
   el.discardBtn.addEventListener('click', onDiscard);
   el.closeShopBtn.addEventListener('click', closeShop);
+  if (el.historyBtn) el.historyBtn.addEventListener('click', openHistoryModal);
+  if (el.closeHistoryBtn) el.closeHistoryBtn.addEventListener('click', closeHistoryModal);
   el.nextRoundBtn.addEventListener('click', () => {
     // open shop first; after closing, advance round
     openShop();
@@ -579,15 +658,19 @@ function showWinThenNextRound() {
 
 async function getRandomCatUrl() {
   try {
-    const resp = await fetch('https://api.thecatapi.com/v1/images/search?size=small&mime_types=jpg,png,gif&order=RANDOM&limit=1');
+    const resp = await fetch('https://cataas.com/cat?json=true');
     const data = await resp.json();
-    if (Array.isArray(data) && data[0] && data[0].url) {
-      return data[0].url;
+    if (data && data.url) {
+      return data.url.startsWith('http') ? data.url : `https://cataas.com${data.url}`;
+    }
+    const catId = data ? (data._id || data.id) : null;
+    if (catId) {
+      return `https://cataas.com/cat/${catId}`;
     }
   } catch (e) {
-    // ignore and fall back
+    // fall back
   }
-  return null;
+  return `https://cataas.com/cat?t=${Date.now()}`;
 }
 
 function openCatModal(onClose) {

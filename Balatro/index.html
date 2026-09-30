@@ -3,70 +3,144 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Yahtzee</title>
+    <title>Balatro</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
-    <div class="app">
-      <header class="app__header">
-        <h1>Yahtzee</h1>
-        <div class="app__meta">
-          <div class="meta__item">Round <span id="round">1</span></div>
-          <div class="meta__item">Target <span id="target">100</span></div>
-          <div class="meta__item">Score <span id="score">0</span></div>
-          <div class="meta__item">Hands <span id="hands">5</span></div>
-          <div class="meta__item">Coins <span id="coins">0</span></div>
-          <button id="soundToggle" class="btn">Sound: On</button>
+    <!-- Game App Layout -->
+    <div class="app-layout">
+      <!-- Navbar with Stats -->
+      <header class="game-navbar">
+        <div class="game-navbar__inner">
+          <a href="#" class="logo">
+            <div class="logo__icon">✦</div>
+            Balatro
+          </a>
+          
+          <div class="game-stats-pills">
+            <div class="stat-pill">
+              <span class="stat-pill__label">Round</span>
+              <span class="stat-pill__value" id="round">1</span>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-pill__label">Target</span>
+              <span class="stat-pill__value" id="target">100</span>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-pill__label">Score</span>
+              <span class="stat-pill__value" id="score">0</span>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-pill__label">Coins</span>
+              <span class="stat-pill__value" id="coins">0</span>
+            </div>
+          </div>
+
+          <div class="nav__actions">
+            <button id="historyBtn" class="btn">History 📜</button>
+            <button id="soundToggle" class="btn">Sound: On</button>
+            <button id="headerPlayBtn" class="btn btn--primary">Play Round ➔</button>
+          </div>
         </div>
       </header>
 
-      <main class="app__main">
-        <aside class="panel">
-          <h2>Scoring Guide</h2>
-          <div id="scoringList" class="scoring__list"></div>
+      <!-- Main Game Arena -->
+      <main class="game-arena">
+        <!-- Left Sidebar: Scoring Guide -->
+        <aside class="game-panel">
+          <div class="panel__header">
+            <h3>Scoring Guide</h3>
+            <span class="serif-italic" style="font-size: 13px; color: var(--accent-mint);">Rules</span>
+          </div>
+          <div id="scoringList" class="scoring-table-visual"></div>
         </aside>
-        <section class="board">
-          <div class="board__dice" id="dice"></div>
-          <div class="board__controls">
-            <button id="rollBtn" class="btn btn--primary">Roll</button>
-            <button id="discardBtn" class="btn">Discard</button>
-            <button id="finishHandBtn" class="btn" disabled>Score Hand</button>
-            <div class="board__status">
-              <span>Rerolls left: <strong id="rerolls">3</strong></span>
-              <span>Discards left: <strong id="discards">2</strong></span>
+
+        <!-- Center Main Stage: Game Desk -->
+        <section class="game-desk">
+          <!-- Sparkline & Status Header -->
+          <div class="chart-widget">
+            <div class="chart-widget__header">
+              <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+                <span class="badge-tag" style="margin: 0;">
+                  <span class="badge-tag__dot"></span>
+                  Active Hand
+                </span>
+                <span style="font-size: 13px; color: var(--text-muted);">
+                  Hands: <strong id="hands" style="color: #fff;">1</strong> &nbsp;|&nbsp; 
+                  Rerolls: <strong id="rerolls" style="color: var(--accent-mint);">3</strong> &nbsp;|&nbsp; 
+                  Discards: <strong id="discards" style="color: var(--accent-mint);">2</strong>
+                </span>
+              </div>
+              <span class="chart-widget__score" id="totalDisplay">0 pts</span>
+            </div>
+            <svg class="chart-svg" viewBox="0 0 400 60">
+              <defs>
+                <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#17ff88" stop-opacity="0.35"/>
+                  <stop offset="100%" stop-color="#17ff88" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path d="M 0,55 Q 100,40 200,35 T 400,15 L 400,60 L 0,60 Z" fill="url(#chartGradient)" />
+              <path id="sparklinePath" d="M 0,55 Q 100,40 200,35 T 400,15" fill="none" stroke="#17ff88" stroke-width="3" stroke-linecap="round" />
+              <circle cx="400" cy="15" r="4" fill="#17ff88" />
+            </svg>
+          </div>
+
+          <!-- Dice Display Grid -->
+          <div id="dice" class="dice-grid"></div>
+
+          <!-- Controls Bar -->
+          <div class="desk-controls">
+            <button id="rollBtn" class="btn btn--primary btn--lg">Roll Dice ➔</button>
+            <button id="finishHandBtn" class="btn btn--lg" disabled>Score Hand</button>
+            <button id="discardBtn" class="btn btn--lg">Discard</button>
+          </div>
+
+          <!-- Hand Result Panel -->
+          <div class="hand-result">
+            <div class="chipsmult-display">
+              <div class="metric-item">
+                <span class="metric-item__label">Chips</span>
+                <span class="metric-item__val" id="chips">0</span>
+              </div>
+              <span style="color: var(--text-dim); font-size: 18px;">×</span>
+              <div class="metric-item">
+                <span class="metric-item__label">Mult</span>
+                <span class="metric-item__val" id="mult">1</span>
+              </div>
+              <span style="color: var(--text-dim); font-size: 18px;">=</span>
+              <div class="metric-item">
+                <span class="metric-item__label">Total</span>
+                <span class="metric-item__val metric-item__val--highlight" id="total">0</span>
+              </div>
+            </div>
+            <div class="hand-actions-bar">
+              <button id="nextHandBtn" class="btn" disabled>Next Hand</button>
+              <button id="nextRoundBtn" class="btn btn--primary" disabled>Next Round</button>
             </div>
           </div>
-          <div class="hand__summary" id="handSummary">—</div>
+          <div id="handSummary" class="hand__summary" style="font-size: 13px; color: var(--accent-mint); text-align: center;">—</div>
         </section>
 
-        <aside class="sidebar">
-          <section class="panel">
-            <h2>Jokers</h2>
-            <div id="jokers" class="jokers"></div>
-          </section>
-          <section class="panel">
-            <h2>Hand Result</h2>
-            <div class="chipsmult">
-              <div>Chips: <span id="chips">0</span></div>
-              <div>Mult: <span id="mult">1</span></div>
-              <div>Total: <span id="total">0</span></div>
-            </div>
-            <div class="hand__actions">
-              <button id="nextHandBtn" class="btn" disabled>Next Hand</button>
-              <button id="nextRoundBtn" class="btn btn--success" disabled>Next Round</button>
-            </div>
-          </section>
+        <!-- Right Sidebar: Jokers Deck -->
+        <aside class="game-panel">
+          <div class="panel__header">
+            <h3>Active Jokers</h3>
+            <button onclick="openShop()" class="btn" style="font-size: 11px; padding: 4px 10px;">Shop 🛒</button>
+          </div>
+          <div id="jokers" class="jokers-grid-vertical"></div>
         </aside>
       </main>
     </div>
 
+    <!-- Shop Modal -->
     <div id="shopModal" class="modal" hidden>
       <div class="modal__dialog">
         <div class="modal__header">
-          <h3>Shop - Jokers</h3>
+          <h3>Shop — Jokers Store</h3>
           <button id="closeShopBtn" class="btn">Close</button>
         </div>
         <div class="modal__info">Choose 1 Joker. After purchase (or closing), the next round begins.</div>
@@ -74,19 +148,45 @@
       </div>
     </div>
 
+    <!-- Past Hands History Modal -->
+    <div id="historyModal" class="modal" hidden>
+      <div class="modal__dialog" style="max-width: 600px;">
+        <div class="modal__header">
+          <h3>Past Hands History</h3>
+          <button id="closeHistoryBtn" class="btn">Close</button>
+        </div>
+        <div class="modal__info">Record of all scored hands with chips, multiplier, and total points.</div>
+        <div id="historyList" class="history__list"></div>
+      </div>
+    </div>
+
+    <!-- Win Modal -->
     <div id="winModal" class="modal" hidden>
       <div class="modal__dialog">
         <div class="modal__header">
           <h3>Round Cleared!</h3>
-          <button id="closeWinBtn" class="btn">Aww!</button>
+          <button id="closeWinBtn" class="btn">Awesome!</button>
         </div>
         <div class="win__content">
-          <img id="winCatImg" class="   " alt="A celebratory cat" />
+          <img id="winCatImg" class="win__img" alt="A celebratory cat" />
         </div>
       </div>
     </div>
 
     <script src="./main.js"></script>
+    <script>
+      // "Play Round" button triggers "Roll Dice"
+      const headerPlayBtn = document.getElementById('headerPlayBtn');
+      const rollBtn = document.getElementById('rollBtn');
+      if (headerPlayBtn && rollBtn) {
+        headerPlayBtn.addEventListener('click', () => {
+          if (!rollBtn.disabled) {
+            rollBtn.click();
+          } else {
+            rollBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        });
+      }
+    </script>
   </body>
-  </html>
-
+</html>
