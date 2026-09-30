@@ -17,7 +17,7 @@ const state = {
   discards: START_DISCARDS,
   hands: START_HANDS,
   numDice: 5,
-  dice: Array.from({ length: 2 }, () => ({ value: 1, held: false })),
+  dice: Array.from({ length: 5 }, () => ({ value: 1, held: false })),
   jokers: [], // { id, name, type, amount, desc, cost }
   handHistory: [], // array of { id, round, label, chips, mult, total, dice }
   handFinished: false,
@@ -279,7 +279,7 @@ function buildScoringSteps() {
     }
   }
   return steps;
-}}
+}
 
 function tweenNumber(from, to, durationMs, onUpdate) {
   return new Promise((resolve) => {
