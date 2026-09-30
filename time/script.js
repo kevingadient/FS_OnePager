@@ -1,440 +1,523 @@
-class TimerApp {
+class FocusTimerApp {
     constructor() {
-        this.totalTime = 120; // Default 2 minutes in seconds
+        // Timer State
+        this.totalTime = 120; // Default 2 min
         this.timeLeft = this.totalTime;
         this.isRunning = false;
-        this.isPaused = false;
         this.intervalId = null;
-        this.spotifyWasPlaying = false;
-        
-        // Audio context for generating sounds
-        this.audioContext = null;
-        this.volume = 0.7; // Default volume
-        
-        this.initializeElements();
-        this.setupEventListeners();
-        this.initializeAudio();
-        this.updateDisplay();
+
+        // Audio State
+        this.audioCtx = null;
+        this.alertVolume = 0.7;
+        this.alertRepeat = 2;
+        this.currentSound = 'chime';
+
+        // Music & Ambient State
+        this.activeTab = 'ambient';
+        this.activeAmbientSound = 'rain';
+        this.ambientGainNode = null;
+        this.ambientSourceNode = null;
+        this.isPlayingMusic = false;
+
+        this.trackIndex = 0;
+        this.tracks = [
+            { name: "Ambient Study Focus", artist: "Royalty Free Audio", src: "https://www.soundjay.com/free-music/sounds/iron-man-01.mp3" },
+            { name: "Peaceful Mind Waves", artist: "Relaxation Waves", src: "https://www.soundjay.com/free-music/sounds/heart-of-the-sea-01.mp3" }
+        ];
+
+        this.initElements();
+        this.bindEvents();
+        this.updateTimerDisplay();
+        this.updateProgressRing();
     }
-    
-    initializeElements() {
+
+    initElements() {
+        // Timer Elements
         this.timerDisplay = document.getElementById('timerDisplay');
         this.timerStatus = document.getElementById('timerStatus');
+        this.ringProgress = document.getElementById('ringProgress');
         this.startBtn = document.getElementById('startBtn');
         this.pauseBtn = document.getElementById('pauseBtn');
         this.resetBtn = document.getElementById('resetBtn');
-        this.volumeSlider = document.getElementById('volumeSlider');
-        this.volumeValue = document.getElementById('volumeValue');
-        this.soundSelect = document.getElementById('soundSelect');
-        this.spotifyAudio = document.getElementById('spotifyAudio');
-        this.playPauseBtn = document.getElementById('playPause');
-        this.prevTrackBtn = document.getElementById('prevTrack');
-        this.nextTrackBtn = document.getElementById('nextTrack');
-        this.progressBar = document.getElementById('progressBar');
-        this.progressFill = document.getElementById('progressFill');
-        this.currentTimeSpan = document.getElementById('currentTime');
-        this.totalTimeSpan = document.getElementById('totalTime');
-        this.musicVolumeSlider = document.getElementById('musicVolume');
-        this.musicVolumeValue = document.getElementById('musicVolumeValue');
-        this.trackTitle = document.getElementById('trackTitle');
-        this.trackArtist = document.getElementById('trackArtist');
-        this.notifications = document.getElementById('notifications');
-        
-        // Time input elements
+
+        // Custom Time
         this.minutesInput = document.getElementById('minutesInput');
         this.secondsInput = document.getElementById('secondsInput');
         this.setTimeBtn = document.getElementById('setTimeBtn');
-        
-        this.isPlaying = false;
-        this.currentTrackIndex = 0;
-        this.tracks = [
-            { title: "Ambient Focus", artist: "Study Music", src: "https://www.soundjay.com/free-music/sounds/iron-man-01.mp3" },
-            { title: "Peaceful Sounds", artist: "Relaxation", src: "https://www.soundjay.com/free-music/sounds/heart-of-the-sea-01.mp3" }
-        ];
-        
-        this.setupAudioEvents();
+
+        // Mode Nav
+        this.modeBtns = document.querySelectorAll('.mode-btn');
+
+        // Alert Controls
+        this.soundSelect = document.getElementById('soundSelect');
+        this.alertVolumeSlider = document.getElementById('alertVolume');
+        this.alertVolVal = document.getElementById('alertVolVal');
+        this.repeatSelect = document.getElementById('repeatSelect');
+        this.testAlertBtn = document.getElementById('testAlertBtn');
+        this.desktopNotifyToggle = document.getElementById('desktopNotifyToggle');
+
+        // Audio Player Elements
+        this.musicAudio = document.getElementById('musicAudio');
+        this.playPauseBtn = document.getElementById('playPause');
+        this.playIcon = document.getElementById('playIcon');
+        this.prevTrackBtn = document.getElementById('prevTrack');
+        this.nextTrackBtn = document.getElementById('nextTrack');
+        this.musicVolumeSlider = document.getElementById('musicVolume');
+        this.musicVolVal = document.getElementById('musicVolVal');
+
+        this.radioSelect = document.getElementById('radioSelect');
+        this.trackName = document.getElementById('trackName');
+        this.trackArtist = document.getElementById('trackArtist');
+
+        // Tabs & Cards
+        this.tabBtns = document.querySelectorAll('.tab-btn');
+        this.tabPanes = document.querySelectorAll('.tab-pane');
+        this.ambientCards = document.querySelectorAll('.ambient-card');
+        this.notifications = document.getElementById('notifications');
     }
-    
-    setupEventListeners() {
+
+    bindEvents() {
+        // Timer Button Listeners
         this.startBtn.addEventListener('click', () => this.startTimer());
         this.pauseBtn.addEventListener('click', () => this.pauseTimer());
         this.resetBtn.addEventListener('click', () => this.resetTimer());
-        this.volumeSlider.addEventListener('input', (e) => this.updateVolume(e.target.value));
-        this.soundSelect.addEventListener('change', () => this.updateSound());
-        this.playPauseBtn.addEventListener('click', () => this.togglePlayPause());
+        this.setTimeBtn.addEventListener('click', () => this.setCustomTime());
+
+        // Mode Switcher
+        this.modeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.modeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const mins = parseInt(btn.dataset.mins) || 0;
+                const secs = parseInt(btn.dataset.secs) || 0;
+                this.minutesInput.value = mins;
+                this.secondsInput.value = secs;
+                this.setCustomTime();
+            });
+        });
+
+        // Alert Settings
+        this.soundSelect.addEventListener('change', (e) => {
+            this.currentSound = e.target.value;
+        });
+
+        this.alertVolumeSlider.addEventListener('input', (e) => {
+            this.alertVolume = parseInt(e.target.value) / 100;
+            this.alertVolVal.textContent = `${e.target.value}%`;
+        });
+
+        this.repeatSelect.addEventListener('change', (e) => {
+            this.alertRepeat = parseInt(e.target.value);
+        });
+
+        this.testAlertBtn.addEventListener('click', () => this.playAlertSound());
+
+        // Player Controls
+        this.playPauseBtn.addEventListener('click', () => this.toggleMusic());
         this.prevTrackBtn.addEventListener('click', () => this.prevTrack());
         this.nextTrackBtn.addEventListener('click', () => this.nextTrack());
-        this.musicVolumeSlider.addEventListener('input', (e) => this.updateMusicVolume(e.target.value));
-        this.progressBar.addEventListener('click', (e) => this.seekTo(e));
-        this.setTimeBtn.addEventListener('click', () => this.setCustomTime());
-        
-        // Time input validation
-        this.minutesInput.addEventListener('input', () => this.validateTimeInput());
-        this.secondsInput.addEventListener('input', () => this.validateTimeInput());
-        
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' && !e.target.matches('input, select, iframe')) {
-                e.preventDefault();
-                if (this.isRunning) {
-                    this.pauseTimer();
-                } else {
-                    this.startTimer();
+
+        this.musicVolumeSlider.addEventListener('input', (e) => {
+            const v = parseInt(e.target.value) / 100;
+            this.musicVolVal.textContent = `${e.target.value}%`;
+            if (this.musicAudio) this.musicAudio.volume = v;
+            if (this.ambientGainNode) this.ambientGainNode.gain.value = v * 0.4;
+        });
+
+        // Tabs
+        this.tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.tabBtns.forEach(b => b.classList.remove('active'));
+                this.tabPanes.forEach(p => p.classList.remove('active'));
+
+                btn.classList.add('active');
+                const targetTab = btn.dataset.tab;
+                document.getElementById(`pane-${targetTab}`).classList.add('active');
+                this.activeTab = targetTab;
+            });
+        });
+
+        // Ambient Selector
+        this.ambientCards.forEach(card => {
+            card.addEventListener('click', () => {
+                this.ambientCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                this.activeAmbientSound = card.dataset.sound;
+
+                if (this.isPlayingMusic && this.activeTab === 'ambient') {
+                    this.playAmbient(this.activeAmbientSound);
                 }
-            } else if (e.code === 'KeyR') {
+            });
+        });
+
+        // Radio Select
+        this.radioSelect.addEventListener('change', () => {
+            if (this.isPlayingMusic && this.activeTab === 'radio') {
+                this.playRadio();
+            }
+        });
+
+        // Desktop Notification Toggle
+        this.desktopNotifyToggle.addEventListener('change', (e) => {
+            if (e.target.checked && Notification.permission !== 'granted') {
+                Notification.requestPermission().then(p => {
+                    if (p !== 'granted') {
+                        e.target.checked = false;
+                        this.showNotification('Desktop notifications not granted', 'error');
+                    } else {
+                        this.showNotification('Desktop notifications enabled!', 'success');
+                    }
+                });
+            }
+        });
+
+        // Keyboard Shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !e.target.matches('input, select, button')) {
                 e.preventDefault();
-                this.resetTimer();
+                if (this.isRunning) this.pauseTimer();
+                else this.startTimer();
             }
         });
     }
-    
-    initializeAudio() {
-        try {
-            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        } catch (error) {
-            console.warn('Audio context not supported:', error);
-            this.showNotification('Audio alerts may not work in this browser', 'warning');
+
+    ensureAudioContext() {
+        if (!this.audioCtx) {
+            window.AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.audioCtx = new AudioContext();
+        }
+        if (this.audioCtx.state === 'suspended') {
+            this.audioCtx.resume();
         }
     }
-    
+
+    // Timer Methods
     startTimer() {
         if (!this.isRunning) {
+            this.ensureAudioContext();
             this.isRunning = true;
-            this.isPaused = false;
             this.startBtn.disabled = true;
             this.pauseBtn.disabled = false;
-            this.timerStatus.textContent = 'Timer running...';
-            this.timerDisplay.classList.add('countdown');
-            
-            // Start music automatically
-            this.playSpotify();
-            
+            this.timerStatus.textContent = 'Focusing...';
+
             this.intervalId = setInterval(() => {
                 this.timeLeft--;
-                this.updateDisplay();
-                
+                this.updateTimerDisplay();
+                this.updateProgressRing();
+
                 if (this.timeLeft <= 0) {
                     this.timerFinished();
                 }
             }, 1000);
-            
-            this.showNotification('Timer started! Music will play automatically.', 'success');
+
+            this.showNotification('Timer started', 'success');
         }
     }
-    
+
     pauseTimer() {
         if (this.isRunning) {
             this.isRunning = false;
-            this.isPaused = true;
             this.startBtn.disabled = false;
             this.pauseBtn.disabled = true;
-            this.timerStatus.textContent = 'Timer paused';
-            this.timerDisplay.classList.remove('countdown');
-            
+            this.timerStatus.textContent = 'Paused';
             clearInterval(this.intervalId);
             this.showNotification('Timer paused', 'warning');
         }
     }
-    
+
     resetTimer() {
         this.isRunning = false;
-        this.isPaused = false;
-        this.timeLeft = this.totalTime;
         this.startBtn.disabled = false;
         this.pauseBtn.disabled = true;
-        this.timerStatus.textContent = 'Ready to start';
-        this.timerDisplay.classList.remove('countdown', 'finished');
-        
+        this.timerStatus.textContent = 'Ready to focus';
         clearInterval(this.intervalId);
-        this.updateDisplay();
-        this.showNotification('Timer reset', 'success');
+
+        this.timeLeft = this.totalTime;
+        this.updateTimerDisplay();
+        this.updateProgressRing();
+        this.showNotification('Timer reset', 'info');
     }
-    
+
     timerFinished() {
         this.isRunning = false;
-        this.isPaused = false;
         this.startBtn.disabled = false;
         this.pauseBtn.disabled = true;
-        this.timerStatus.textContent = 'Time\'s up!';
-        this.timerDisplay.classList.remove('countdown');
-        this.timerDisplay.classList.add('finished');
-        
+        this.timerStatus.textContent = "Time's Up!";
         clearInterval(this.intervalId);
-        
-        // Stop music when timer finishes
-        this.pauseSpotify();
-        
+
         this.playAlertSound();
-        this.showNotification('Time\'s up! Music paused and audio alert played.', 'success');
-        
-        // Flash the timer display
-        setTimeout(() => {
-            this.timerDisplay.classList.remove('finished');
-        }, 3000);
-    }
-    
-    updateDisplay() {
-        const minutes = Math.floor(this.timeLeft / 60);
-        const seconds = this.timeLeft % 60;
-        this.timerDisplay.textContent = 
-            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    }
-    
-    updateVolume(value) {
-        this.volume = parseInt(value) / 100;
-        this.volumeValue.textContent = `${value}%`;
-    }
-    
-    updateSound() {
-        // Sound selection is handled in playAlertSound method
-        this.showNotification(`Alert sound changed to: ${this.soundSelect.value}`, 'success');
-    }
-    
-    playAlertSound() {
-        if (!this.audioContext) {
-            // Fallback: try to use Web Audio API
-            try {
-                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            } catch (error) {
-                console.warn('Cannot create audio context:', error);
-                this.showNotification('Cannot play audio alert', 'error');
-                return;
-            }
+        if (this.desktopNotifyToggle.checked && Notification.permission === 'granted') {
+            new Notification('⏱️ Focus Time Complete!', { body: 'Great job completing your timer!' });
         }
-        
-        const soundType = this.soundSelect.value;
-        const duration = 2; // 2 seconds
-        const frequency = this.getFrequencyForSound(soundType);
-        
-        try {
-            this.generateTone(frequency, duration, this.volume);
-        } catch (error) {
-            console.error('Error playing alert sound:', error);
-            this.showNotification('Error playing audio alert', 'error');
-        }
+
+        this.showNotification("Time's up!", 'success');
     }
-    
-    getFrequencyForSound(soundType) {
-        const frequencies = {
-            'beep': 800,
-            'chime': 523.25, // C5
-            'bell': 659.25, // E5
-            'notification': 440 // A4
-        };
-        return frequencies[soundType] || 800;
+
+    updateTimerDisplay() {
+        const mins = Math.floor(Math.max(0, this.timeLeft) / 60);
+        const secs = Math.max(0, this.timeLeft) % 60;
+        const str = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        this.timerDisplay.textContent = str;
+        document.title = `(${str}) Focus Time`;
     }
-    
-    generateTone(frequency, duration, volume) {
-        const oscillator = this.audioContext.createOscillator();
-        const gainNode = this.audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(this.audioContext.destination);
-        
-        oscillator.frequency.value = frequency;
-        oscillator.type = 'sine';
-        
-        gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
-        gainNode.gain.linearRampToValueAtTime(volume * 0.3, this.audioContext.currentTime + 0.01);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + duration);
-        
-        oscillator.start(this.audioContext.currentTime);
-        oscillator.stop(this.audioContext.currentTime + duration);
-        
-        // For notification sound, add a second tone
-        if (this.soundSelect.value === 'notification') {
-            setTimeout(() => {
-                const oscillator2 = this.audioContext.createOscillator();
-                const gainNode2 = this.audioContext.createGain();
-                
-                oscillator2.connect(gainNode2);
-                gainNode2.connect(this.audioContext.destination);
-                
-                oscillator2.frequency.value = frequency * 1.5; // Higher pitch
-                oscillator2.type = 'sine';
-                
-                gainNode2.gain.setValueAtTime(0, this.audioContext.currentTime);
-                gainNode2.gain.linearRampToValueAtTime(volume * 0.3, this.audioContext.currentTime + 0.01);
-                gainNode2.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 1);
-                
-                oscillator2.start(this.audioContext.currentTime);
-                oscillator2.stop(this.audioContext.currentTime + 1);
-            }, 500);
-        }
+
+    updateProgressRing() {
+        if (!this.ringProgress) return;
+        const total = this.totalTime || 1;
+        const ratio = Math.max(0, this.timeLeft) / total;
+        // Total circumference r=105 is ~660
+        const offset = 660 - (ratio * 660);
+        this.ringProgress.style.strokeDashoffset = offset;
     }
-    
-    setupAudioEvents() {
-        this.spotifyAudio.addEventListener('timeupdate', () => this.updateProgress());
-        this.spotifyAudio.addEventListener('loadedmetadata', () => this.updateTotalTime());
-        this.spotifyAudio.addEventListener('ended', () => this.nextTrack());
-        
-        // Set initial volume
-        this.spotifyAudio.volume = this.musicVolumeSlider.value / 100;
-        this.loadTrack(this.currentTrackIndex);
-    }
-    
-    togglePlayPause() {
-        if (this.isPlaying) {
-            this.pauseSpotify();
-        } else {
-            this.playSpotify();
-        }
-    }
-    
-    playSpotify() {
-        try {
-            this.spotifyAudio.play().then(() => {
-                this.isPlaying = true;
-                this.playPauseBtn.textContent = '⏸';
-                this.showNotification('Music started playing', 'success');
-            }).catch((error) => {
-                console.log('Auto-play prevented:', error);
-                this.showNotification('Click play button to start music', 'info');
-            });
-        } catch (error) {
-            console.error('Error playing audio:', error);
-            this.showNotification('Click play button to start music', 'info');
-        }
-    }
-    
-    pauseSpotify() {
-        try {
-            this.spotifyAudio.pause();
-            this.isPlaying = false;
-            this.playPauseBtn.textContent = '▶';
-            this.showNotification('Music paused', 'success');
-        } catch (error) {
-            console.error('Error pausing audio:', error);
-            this.showNotification('Music paused', 'info');
-        }
-    }
-    
-    prevTrack() {
-        this.currentTrackIndex = (this.currentTrackIndex - 1 + this.tracks.length) % this.tracks.length;
-        this.loadTrack(this.currentTrackIndex);
-    }
-    
-    nextTrack() {
-        this.currentTrackIndex = (this.currentTrackIndex + 1) % this.tracks.length;
-        this.loadTrack(this.currentTrackIndex);
-    }
-    
-    loadTrack(index) {
-        const track = this.tracks[index];
-        this.spotifyAudio.src = track.src;
-        this.trackTitle.textContent = track.title;
-        this.trackArtist.textContent = track.artist;
-        
-        if (this.isPlaying) {
-            this.spotifyAudio.play();
-        }
-    }
-    
-    updateProgress() {
-        if (this.spotifyAudio.duration) {
-            const progress = (this.spotifyAudio.currentTime / this.spotifyAudio.duration) * 100;
-            this.progressFill.style.width = progress + '%';
-            this.currentTimeSpan.textContent = this.formatTime(this.spotifyAudio.currentTime);
-        }
-    }
-    
-    updateTotalTime() {
-        if (this.spotifyAudio.duration) {
-            this.totalTimeSpan.textContent = this.formatTime(this.spotifyAudio.duration);
-        }
-    }
-    
-    seekTo(event) {
-        const rect = this.progressBar.getBoundingClientRect();
-        const pos = (event.clientX - rect.left) / rect.width;
-        this.spotifyAudio.currentTime = pos * this.spotifyAudio.duration;
-    }
-    
-    updateMusicVolume(value) {
-        this.spotifyAudio.volume = value / 100;
-        this.musicVolumeValue.textContent = value + '%';
-    }
-    
-    formatTime(seconds) {
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return mins + ':' + (secs < 10 ? '0' : '') + secs;
-    }
-    
+
     setCustomTime() {
-        const minutes = parseInt(this.minutesInput.value) || 0;
-        const seconds = parseInt(this.secondsInput.value) || 0;
-        const totalSeconds = minutes * 60 + seconds;
-        
-        if (totalSeconds <= 0) {
-            this.showNotification('Please enter a valid time (at least 1 second)', 'error');
+        const mins = parseInt(this.minutesInput.value) || 0;
+        const secs = parseInt(this.secondsInput.value) || 0;
+        const total = mins * 60 + secs;
+
+        if (total <= 0) {
+            this.showNotification('Set at least 1 second', 'error');
             return;
         }
-        
-        if (totalSeconds > 3600) { // 1 hour limit
-            this.showNotification('Maximum time is 60 minutes', 'error');
-            return;
-        }
-        
-        this.totalTime = totalSeconds;
-        this.timeLeft = totalSeconds;
-        this.updateDisplay();
-        this.showNotification(`Timer set to ${minutes}:${seconds.toString().padStart(2, '0')}`, 'success');
+
+        this.totalTime = total;
+        this.timeLeft = total;
+        this.updateTimerDisplay();
+        this.updateProgressRing();
+        this.showNotification(`Timer set to ${mins}m ${secs}s`, 'success');
     }
-    
-    validateTimeInput() {
-        // Ensure minutes is between 0-59
-        if (this.minutesInput.value > 59) {
-            this.minutesInput.value = 59;
-        }
-        if (this.minutesInput.value < 0) {
-            this.minutesInput.value = 0;
-        }
-        
-        // Ensure seconds is between 0-59
-        if (this.secondsInput.value > 59) {
-            this.secondsInput.value = 59;
-        }
-        if (this.secondsInput.value < 0) {
-            this.secondsInput.value = 0;
+
+    // Alert Synthesizer
+    playAlertSound() {
+        this.ensureAudioContext();
+        if (this.currentSound === 'silent') return;
+
+        const repeats = this.alertRepeat;
+        for (let i = 0; i < repeats; i++) {
+            setTimeout(() => {
+                this.synthesizeTone(this.currentSound, this.alertVolume);
+            }, i * 900);
         }
     }
-    
-    showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.textContent = message;
+
+    synthesizeTone(type, volume) {
+        if (!this.audioCtx) return;
+        const now = this.audioCtx.currentTime;
+
+        if (type === 'chime') {
+            const osc = this.audioCtx.createOscillator();
+            const gain = this.audioCtx.createGain();
+            osc.frequency.setValueAtTime(523.25, now);
+            gain.gain.setValueAtTime(0, now);
+            gain.gain.linearRampToValueAtTime(volume * 0.5, now + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+            osc.connect(gain);
+            gain.connect(this.audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 1.2);
+        } else if (type === 'gong') {
+            [120, 240].forEach((f, idx) => {
+                const osc = this.audioCtx.createOscillator();
+                const gain = this.audioCtx.createGain();
+                osc.frequency.setValueAtTime(f, now);
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime((volume * 0.4) / (idx + 1), now + 0.04);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
+                osc.connect(gain);
+                gain.connect(this.audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 2.0);
+            });
+        } else if (type === 'marimba') {
+            [523.25, 659.25, 783.99].forEach((f, idx) => {
+                const t = now + (idx * 0.12);
+                const osc = this.audioCtx.createOscillator();
+                const gain = this.audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(f, t);
+                gain.gain.setValueAtTime(volume * 0.4, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+                osc.connect(gain);
+                gain.connect(this.audioCtx.destination);
+                osc.start(t);
+                osc.stop(t + 0.5);
+            });
+        } else if (type === 'radar') {
+            const osc = this.audioCtx.createOscillator();
+            const gain = this.audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(300, now);
+            osc.frequency.exponentialRampToValueAtTime(1200, now + 0.35);
+            gain.gain.setValueAtTime(volume * 0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+            osc.connect(gain);
+            gain.connect(this.audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.4);
+        } else if (type === 'nature') {
+            const osc = this.audioCtx.createOscillator();
+            const gain = this.audioCtx.createGain();
+            osc.frequency.setValueAtTime(1760, now);
+            osc.frequency.linearRampToValueAtTime(2200, now + 0.1);
+            gain.gain.setValueAtTime(volume * 0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+            osc.connect(gain);
+            gain.connect(this.audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.4);
+        } else if (type === 'digital') {
+            const osc = this.audioCtx.createOscillator();
+            const gain = this.audioCtx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(880, now);
+            gain.gain.setValueAtTime(volume * 0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+            osc.connect(gain);
+            gain.connect(this.audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.15);
+        }
+    }
+
+    // Music & Free Sound Player Logic
+    toggleMusic() {
+        if (this.isPlayingMusic) {
+            this.stopMusic();
+        } else {
+            this.playMusic();
+        }
+    }
+
+    playMusic() {
+        this.ensureAudioContext();
+        this.stopAmbient();
+
+        if (this.activeTab === 'ambient') {
+            this.playAmbient(this.activeAmbientSound);
+        } else if (this.activeTab === 'radio') {
+            this.playRadio();
+        } else {
+            this.playTrack(this.trackIndex);
+        }
+    }
+
+    stopMusic() {
+        this.musicAudio.pause();
+        this.stopAmbient();
+        this.isPlayingMusic = false;
+        this.playIcon.textContent = '▶';
+        this.showNotification('Music stopped', 'info');
+    }
+
+    playAmbient(type) {
+        this.stopAmbient();
+        this.ensureAudioContext();
+
+        const bufferSize = 2 * this.audioCtx.sampleRate;
+        const buffer = this.audioCtx.createBuffer(1, bufferSize, this.audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0;
+
+        for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            b0 = 0.99886 * b0 + white * 0.0555179;
+            b1 = 0.99332 * b1 + white * 0.0750759;
+            b2 = 0.96900 * b2 + white * 0.1538520;
+            b3 = 0.86650 * b3 + white * 0.3104856;
+            b4 = 0.55000 * b4 + white * 0.5329522;
+            b5 = -0.7616 * b5 - white * 0.0168980;
+            data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + white * 0.5362) * 0.1;
+        }
+
+        const source = this.audioCtx.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+
+        const filter = this.audioCtx.createBiquadFilter();
+        filter.type = type === 'rain' ? 'lowpass' : 'bandpass';
+        filter.frequency.value = type === 'rain' ? 700 : 350;
+
+        const gain = this.audioCtx.createGain();
+        gain.gain.value = (parseInt(this.musicVolumeSlider.value) / 100) * 0.4;
+
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.audioCtx.destination);
+
+        source.start();
+        this.ambientSourceNode = source;
+        this.ambientGainNode = gain;
+
+        this.isPlayingMusic = true;
+        this.playIcon.textContent = '⏸';
+        this.showNotification(`Free Ambient Active: ${type}`, 'success');
+    }
+
+    stopAmbient() {
+        if (this.ambientSourceNode) {
+            try { this.ambientSourceNode.stop(); } catch(e){}
+            this.ambientSourceNode = null;
+        }
+    }
+
+    playRadio() {
+        const url = this.radioSelect.value;
+        this.musicAudio.src = url;
+        this.musicAudio.volume = parseInt(this.musicVolumeSlider.value) / 100;
         
-        this.notifications.appendChild(notification);
-        
-        // Auto-remove after 3 seconds
+        this.showNotification('Connecting to Free Radio stream...', 'info');
+
+        this.musicAudio.play().then(() => {
+            this.isPlayingMusic = true;
+            this.playIcon.textContent = '⏸';
+            this.showNotification('Free Radio playing!', 'success');
+        }).catch(err => {
+            console.warn('Radio stream failed:', err);
+            this.showNotification('Stream busy. Falling back to ambient sound.', 'warning');
+            this.playAmbient('rain');
+        });
+    }
+
+    playTrack(index) {
+        const track = this.tracks[index];
+        this.musicAudio.src = track.src;
+        this.musicAudio.volume = parseInt(this.musicVolumeSlider.value) / 100;
+        this.trackName.textContent = track.name;
+        this.trackArtist.textContent = track.artist;
+
+        this.musicAudio.play().then(() => {
+            this.isPlayingMusic = true;
+            this.playIcon.textContent = '⏸';
+            this.showNotification(`Playing track: ${track.name}`, 'success');
+        }).catch(() => {
+            this.showNotification('Click play to allow audio', 'info');
+        });
+    }
+
+    prevTrack() {
+        this.trackIndex = (this.trackIndex - 1 + this.tracks.length) % this.tracks.length;
+        if (this.activeTab === 'tracks') this.playTrack(this.trackIndex);
+    }
+
+    nextTrack() {
+        this.trackIndex = (this.trackIndex + 1) % this.tracks.length;
+        if (this.activeTab === 'tracks') this.playTrack(this.trackIndex);
+    }
+
+    showNotification(msg, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `notification ${type}`;
+        toast.textContent = msg;
+
+        this.notifications.appendChild(toast);
+
         setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
         }, 3000);
     }
 }
 
-// Initialize the app when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    const app = new TimerApp();
-    
-    // Show initial instructions
-    setTimeout(() => {
-        app.showNotification('Press SPACE to start/pause, R to reset', 'info');
-    }, 1000);
+    window.app = new FocusTimerApp();
 });
-
-// Service Worker registration for offline functionality (optional)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then((registration) => {
-                console.log('SW registered: ', registration);
-            })
-            .catch((registrationError) => {
-                console.log('SW registration failed: ', registrationError);
-            });
-    });
-}

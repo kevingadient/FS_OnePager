@@ -3,97 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2-Minute Timer with Spotify</title>
+    <title>Focus Time // Clean Timer & Music</title>
+    <!-- Modern Clean Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="app-body">
+    <!-- Soft Gradient Ambient Background -->
+    <div class="ambient-bg">
+        <div class="bg-glow glow-1"></div>
+        <div class="bg-glow glow-2"></div>
+    </div>
+
     <div class="container">
-        <header>
-            <h1>2-Minute Timer</h1>
-            <p>Listen to Spotify while you wait for the audio alert</p>
+        <!-- Minimal Top Header -->
+        <header class="app-header">
+            <div class="brand">
+                <span class="brand-logo">⏱️</span>
+                <span class="brand-title">Focus Time</span>
+            </div>
+
+            <!-- Mode Selector Pills -->
+            <nav class="mode-nav">
+                <button class="mode-btn active" data-mins="2" data-secs="0">2m Quick</button>
+                <button class="mode-btn" data-mins="25" data-secs="0">25m Focus</button>
+                <button class="mode-btn" data-mins="5" data-secs="0">5m Break</button>
+                <button class="mode-btn" data-mins="15" data-secs="0">15m Long Break</button>
+            </nav>
         </header>
 
-        <div class="timer-section">
-            <div class="time-settings">
-                <h3>Set Timer Duration</h3>
-                <div class="time-inputs">
-                    <div class="time-input-group">
-                        <label for="minutesInput">Minutes:</label>
-                        <input type="number" id="minutesInput" min="0" max="59" value="2" class="time-input">
-                    </div>
-                    <div class="time-input-group">
-                        <label for="secondsInput">Seconds:</label>
-                        <input type="number" id="secondsInput" min="0" max="59" value="0" class="time-input">
-                    </div>
-                    <button id="setTimeBtn" class="btn btn-secondary">Set Time</button>
-                </div>
-            </div>
-            
-            <div class="timer-display" id="timerDisplay">02:00</div>
-            <div class="timer-controls">
-                <button id="startBtn" class="btn btn-primary">Start Timer</button>
-                <button id="pauseBtn" class="btn btn-secondary" disabled>Pause</button>
-                <button id="resetBtn" class="btn btn-secondary">Reset</button>
-            </div>
-            <div class="timer-status" id="timerStatus">Ready to start</div>
-        </div>
+        <!-- Main Timer Card -->
+        <main class="main-layout">
+            <!-- Left Panel: Timer Display & Controls -->
+            <section class="timer-panel">
+                <div class="circle-container">
+                    <svg class="progress-ring" viewBox="0 0 240 240">
+                        <defs>
+                            <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#ecb775" />
+                                <stop offset="50%" stop-color="#f6e8aa" />
+                                <stop offset="100%" stop-color="#8fcfd8" />
+                            </linearGradient>
+                        </defs>
+                        <circle class="ring-bg" cx="120" cy="120" r="105"></circle>
+                        <circle class="ring-progress" id="ringProgress" cx="120" cy="120" r="105" stroke-dasharray="660" stroke-dashoffset="0"></circle>
+                    </svg>
 
-        <div class="spotify-section">
-            <h2>Listen to Music</h2>
-            <div class="music-player">
-                <div class="track-info">
-                    <div class="track-artwork" id="trackArtwork">🎵</div>
-                    <div class="track-details">
-                        <div class="track-title" id="trackTitle">Background Music</div>
-                        <div class="track-artist" id="trackArtist">Ambient Sounds</div>
+                    <div class="timer-text-group">
+                        <div class="timer-display" id="timerDisplay">02:00</div>
+                        <div class="timer-status" id="timerStatus">Ready to focus</div>
                     </div>
                 </div>
-                <div class="music-controls">
-                    <button id="prevTrack" class="btn btn-music">⏮</button>
-                    <button id="playPause" class="btn btn-music btn-large">▶</button>
-                    <button id="nextTrack" class="btn btn-music">⏭</button>
-                </div>
-                <div class="progress-container">
-                    <div class="progress-bar" id="progressBar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    <div class="time-display">
-                        <span id="currentTime">0:00</span>
-                        <span id="totalTime">0:00</span>
-                    </div>
-                </div>
-                <div class="volume-control">
-                    <span>🔊</span>
-                    <input type="range" id="musicVolume" min="0" max="100" value="70" class="slider">
-                    <span id="musicVolumeValue">70%</span>
-                </div>
-                <audio id="spotifyAudio" preload="metadata">
-                    <source src="https://www.soundjay.com/free-music/sounds/iron-man-01.mp3" type="audio/wav">
-                    <source src="https://www.soundjay.com/free-music/sounds/heart-of-the-sea-01.mp3" type="audio/wav">
-                </audio>
-            </div>
-        </div>
 
-        <div class="audio-section">
-            <h3>Audio Alert Settings</h3>
-            <div class="audio-controls">
-                <label for="volumeSlider">Alert Volume:</label>
-                <input type="range" id="volumeSlider" min="0" max="100" value="70" class="slider">
-                <span id="volumeValue">70%</span>
-            </div>
-            <div class="audio-controls">
-                <label for="soundSelect">Alert Sound:</label>
-                <select id="soundSelect" class="select">
-                    <option value="beep">Beep</option>
-                    <option value="chime">Chime</option>
-                    <option value="bell">Bell</option>
-                    <option value="notification">Notification</option>
-                </select>
-            </div>
-        </div>
+                <!-- Primary Action Buttons -->
+                <div class="timer-actions">
+                    <button id="startBtn" class="btn btn-primary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        <span>Start</span>
+                    </button>
+                    <button id="pauseBtn" class="btn btn-secondary" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                        <span>Pause</span>
+                    </button>
+                    <button id="resetBtn" class="btn btn-secondary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                        <span>Reset</span>
+                    </button>
+                </div>
 
-        <div class="notifications" id="notifications"></div>
+                <!-- Custom Time Adjuster -->
+                <div class="custom-time-row">
+                    <span class="row-label">Custom time:</span>
+                    <div class="input-inline">
+                        <input type="number" id="minutesInput" min="0" max="59" value="2" class="num-input">
+                        <span>m</span>
+                        <input type="number" id="secondsInput" min="0" max="59" value="0" class="num-input">
+                        <span>s</span>
+                    </div>
+                    <button id="setTimeBtn" class="btn-sm">Set</button>
+                </div>
+            </section>
+
+            <!-- Right Panel: Audio Hub & Alert Settings -->
+            <section class="side-panel">
+                <!-- Music & Ambient Sound Hub -->
+                <div class="card audio-card">
+                    <div class="card-title-row">
+                        <h3>🎵 Listen While You Focus</h3>
+                        <div class="audio-tabs" id="audioTabs">
+                            <button class="tab-btn active" data-tab="ambient">🌧️ Free Ambient</button>
+                            <button class="tab-btn" data-tab="radio">📻 Free Radios</button>
+                            <button class="tab-btn" data-tab="tracks">🎶 Free Tracks</button>
+                            <button class="tab-btn" data-tab="spotify">🟢 Spotify</button>
+                        </div>
+                    </div>
+
+                    <!-- Ambient Sounds Panel -->
+                    <div class="tab-pane active" id="pane-ambient">
+                        <p class="pane-hint">100% Free Ambient Generators (Instant playback, no loading):</p>
+                        <div class="ambient-grid">
+                            <button class="ambient-card active" data-sound="rain">
+                                <span class="amb-icon">🌧️</span>
+                                <span class="amb-title">Rain & Thunder</span>
+                            </button>
+                            <button class="ambient-card" data-sound="waves">
+                                <span class="amb-icon">🌊</span>
+                                <span class="amb-title">Ocean Waves</span>
+                            </button>
+                            <button class="ambient-card" data-sound="cafe">
+                                <span class="amb-icon">☕</span>
+                                <span class="amb-title">Cozy Cafe</span>
+                            </button>
+                            <button class="ambient-card" data-sound="pink">
+                                <span class="amb-icon">🌌</span>
+                                <span class="amb-title">Deep Noise</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Free Radio Panel -->
+                    <div class="tab-pane" id="pane-radio">
+                        <p class="pane-hint">Select a free live streaming radio station:</p>
+                        <select id="radioSelect" class="select-input">
+                            <option value="https://ice2.somafm.com/groovesalad-128-mp3">🧘 SomaFM Groove Salad (Ambient Chill)</option>
+                            <option value="https://ice4.somafm.com/deepspaceone-128-mp3">🌌 Deep Space One (Experimental)</option>
+                            <option value="https://ice1.somafm.com/defcon-128-mp3">⚡ DEF CON Radio (Chill Synthwave)</option>
+                            <option value="https://ice1.somafm.com/dronezone-128-mp3">🍃 Drone Zone (Atmospheric)</option>
+                        </select>
+                    </div>
+
+                    <!-- Free Tracks Panel -->
+                    <div class="tab-pane" id="pane-tracks">
+                        <div class="track-card">
+                            <span class="track-disc">🎵</span>
+                            <div class="track-meta">
+                                <div class="track-name" id="trackName">Ambient Study Focus</div>
+                                <div class="track-artist" id="trackArtist">Royalty Free Audio</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Spotify Panel -->
+                    <div class="tab-pane" id="pane-spotify">
+                        <div class="spotify-box">
+                            <span>Open Spotify in a browser tab or desktop app to listen along:</span>
+                            <a href="https://open.spotify.com" target="_blank" rel="noopener" class="spotify-link">Launch Spotify ↗</a>
+                        </div>
+                    </div>
+
+                    <!-- Audio Player Controls -->
+                    <div class="player-controls">
+                        <button id="prevTrack" class="ctrl-btn" title="Previous">⏮</button>
+                        <button id="playPause" class="ctrl-btn play-main" title="Play/Pause">
+                            <span id="playIcon">▶</span>
+                        </button>
+                        <button id="nextTrack" class="ctrl-btn" title="Next">⏭</button>
+
+                        <div class="volume-bar">
+                            <span>🔊</span>
+                            <input type="range" id="musicVolume" min="0" max="100" value="70" class="range-slider">
+                            <span id="musicVolVal" class="vol-text">70%</span>
+                        </div>
+                    </div>
+
+                    <audio id="musicAudio" preload="none"></audio>
+                </div>
+
+                <!-- Alert Sound Options Card -->
+                <div class="card alert-card">
+                    <div class="card-title-row">
+                        <h3>🔔 Audio Alert Settings</h3>
+                        <button id="testAlertBtn" class="btn-sm btn-accent">Test Sound</button>
+                    </div>
+
+                    <div class="alert-grid">
+                        <div class="field-group">
+                            <label for="soundSelect">Alert Tone:</label>
+                            <select id="soundSelect" class="select-input">
+                                <option value="chime">🔔 Harmonic Chime (C5 Warm Tone)</option>
+                                <option value="gong">🧘 Zen Gong (Deep Bowl Resonance)</option>
+                                <option value="marimba">🎹 Soft Marimba Triad</option>
+                                <option value="radar">📡 Radar Pulse Chirp</option>
+                                <option value="nature">🌲 Forest Bird Bell</option>
+                                <option value="digital">⚡ Digital Beep</option>
+                                <option value="silent">🔇 Silent (Visual Only)</option>
+                            </select>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="alertVolume">Volume: <span id="alertVolVal" class="highlight">70%</span></label>
+                            <input type="range" id="alertVolume" min="0" max="100" value="70" class="range-slider">
+                        </div>
+
+                        <div class="field-group">
+                            <label for="repeatSelect">Pattern Repeat:</label>
+                            <select id="repeatSelect" class="select-input">
+                                <option value="1">1 Time</option>
+                                <option value="2" selected>2 Times (Recommended)</option>
+                                <option value="3">3 Times</option>
+                            </select>
+                        </div>
+
+                        <div class="field-group checkbox-group">
+                            <label class="checkbox-lbl">
+                                <input type="checkbox" id="desktopNotifyToggle">
+                                <span>Browser Push Notification</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
+
+    <!-- Notifications Container -->
+    <div id="notifications" class="notifications"></div>
 
     <script src="script.js"></script>
 </body>
