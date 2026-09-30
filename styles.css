@@ -61,7 +61,7 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Ambient Slow Floating Royal Blue Background Orbs (Strictly Behind All Content) */
+/* Ambient Slow Floating Editorial Gold Background Orbs (Strictly Behind All Content) */
 .ambient-background {
     position: fixed;
     inset: 0;
@@ -74,7 +74,7 @@ body {
     position: absolute;
     border-radius: 50%;
     filter: blur(85px);
-    opacity: 0.3;
+    opacity: 0.35;
     will-change: transform;
 }
 
@@ -83,7 +83,7 @@ body {
     height: 650px;
     top: -120px;
     right: -80px;
-    background: radial-gradient(circle, #2563EB 0%, #1D4ED8 55%, transparent 80%);
+    background: radial-gradient(circle, #C59B27 0%, #D4AF37 55%, transparent 80%);
     animation: floatOrb1 16s ease-in-out infinite alternate;
 }
 
@@ -92,7 +92,7 @@ body {
     height: 750px;
     top: 32%;
     left: -180px;
-    background: radial-gradient(circle, #1E40AF 0%, #2563EB 55%, transparent 80%);
+    background: radial-gradient(circle, #E5C158 0%, #B8860B 55%, transparent 80%);
     animation: floatOrb2 22s ease-in-out infinite alternate;
 }
 
@@ -101,7 +101,7 @@ body {
     height: 600px;
     bottom: -80px;
     right: 8%;
-    background: radial-gradient(circle, #2563EB 0%, #1E3A8A 65%, transparent 80%);
+    background: radial-gradient(circle, #D4AF37 0%, #C59B27 65%, transparent 80%);
     opacity: 0.32;
     animation: floatOrb3 19s ease-in-out infinite alternate;
 }
