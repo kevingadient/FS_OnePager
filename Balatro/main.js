@@ -619,14 +619,7 @@ function init() {
   if (el.historyBtn) el.historyBtn.addEventListener('click', openHistoryModal);
   if (el.closeHistoryBtn) el.closeHistoryBtn.addEventListener('click', closeHistoryModal);
   el.nextRoundBtn.addEventListener('click', () => {
-    // open shop first; after closing, advance round
-    openShop();
-    const onClose = () => {
-      el.closeShopBtn.removeEventListener('click', onClose);
-      // if user closes without purchase, still advance
-      showWinThenNextRound();
-    };
-    el.closeShopBtn.addEventListener('click', onClose);
+    openCatModal();
   });
   el.nextHandBtn.addEventListener('click', nextHand);
   if (el.soundToggle) {
@@ -686,6 +679,7 @@ function openCatModal(onClose) {
   const handler = () => {
     el.closeWinBtn.removeEventListener('click', handler);
     el.winModal.hidden = true;
+    openShop();
     if (typeof onClose === 'function') onClose();
   };
   el.closeWinBtn.addEventListener('click', handler);
