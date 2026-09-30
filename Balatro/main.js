@@ -58,6 +58,7 @@ const el = {
   historyModal: document.getElementById('historyModal'),
   closeHistoryBtn: document.getElementById('closeHistoryBtn'),
   historyList: document.getElementById('historyList'),
+  toggleScoringBtn: document.getElementById('toggleScoringBtn'),
 };
 
 // Sound Effects Engine
@@ -140,34 +141,36 @@ function computeCounts(values) {
   for (const v of values) counts.set(v, (counts.get(v) || 0) + 1);
   return counts;
 }
-
 function evaluateHand(values) {
   // Yahtzee-esque categories; return { name, chips, mult }
   const sorted = [...values].sort((a, b) => a - b);
   const counts = computeCounts(values);
   const countArr = [...counts.values()].sort((a, b) => b - a);
   const isStraight = (arr) => arr.every((v, i) => i === 0 || v - arr[i - 1] === 1);
+  const uniq = [...new Set(sorted)];
 
-  // Base chips by sum; mult 1 default
   let best = { name: 'High Sum', chips: sorted.reduce((a, b) => a + b, 0), mult: 1 };
 
-  if (countArr[0] === 5) {
+  if (countArr[0] >= 6) {
+    best = { name: '6 of a Kind', chips: 140, mult: 9 };
+  } else if (uniq.length >= 6 && isStraight(uniq.slice(0, 6))) {
+    best = { name: 'Super Straight', chips: 120, mult: 7 };
+  } else if (countArr[0] === 5) {
     best = { name: 'Yahtzee', chips: 50, mult: 5 };
   } else if (countArr[0] === 4) {
     best = { name: 'Four of a Kind', chips: 30, mult: 3 };
-  } else if (countArr[0] === 3 && countArr[1] === 2) {
+  } else if (countArr[0] >= 3 && countArr[1] >= 2) {
     best = { name: 'Full House', chips: 25, mult: 2 };
-  } else if (isStraight(sorted) && new Set(sorted).size === 5) {
+  } else if (uniq.length >= 5 && (isStraight(uniq.slice(0, 5)) || isStraight(uniq.slice(1, 6)))) {
     best = { name: 'Large Straight', chips: 40, mult: 3 };
   } else {
     // small straight check: any 4-consecutive within
-    const uniq = [...new Set(sorted)];
     const consec = (arr) => arr.some((_, i) => i <= arr.length - 4 && arr[i + 3] - arr[i] === 3 && arr.slice(i, i + 4).every((v, k) => k === 0 || v - arr[i + k - 1] === 1));
     if (uniq.length >= 4 && consec(uniq)) {
       best = { name: 'Small Straight', chips: 30, mult: 2 };
     } else if (countArr[0] === 3) {
       best = { name: 'Three of a Kind', chips: 20, mult: 2 };
-    } else if (countArr[0] === 2 && countArr[1] === 2) {
+    } else if (countArr[0] >= 2 && countArr[1] >= 2) {
       best = { name: 'Two Pair', chips: 15, mult: 1.5 };
     } else if (countArr[0] === 2) {
       best = { name: 'One Pair', chips: 10, mult: 1.2 };
@@ -178,6 +181,8 @@ function evaluateHand(values) {
 }
 
 const SCORING_TABLE = [
+  { name: '6 of a Kind', chips: 140, mult: 9 },
+  { name: 'Super Straight', chips: 120, mult: 7 },
   { name: 'Yahtzee', chips: 50, mult: 5 },
   { name: 'Four of a Kind', chips: 30, mult: 3 },
   { name: 'Full House', chips: 25, mult: 2 },
@@ -193,6 +198,8 @@ function applyJokers(base) {
   let chips = base.chips;
   let mult = base.mult;
   const values = state.dice.map((d) => d.value);
+  const diceCount = state.dice.length;
+
   for (const j of state.jokers) {
     if (j.type === 'flatChips') chips += j.amount;
     if (j.type === 'flatMult') mult += j.amount;
@@ -207,7 +214,22 @@ function applyJokers(base) {
         mult *= j.factor;
       }
     }
-    // addDie affects hand setup, not scoring; handled on purchase
+    // >5 dice Jokers
+    if (j.type === 'overdrive' && diceCount > 5) {
+      chips += diceCount * j.perDie;
+    }
+    if (j.type === 'hexaMaster' && diceCount >= 6) {
+      chips += j.chips;
+      mult *= j.factor;
+    }
+    if (j.type === 'sevenChaos' && diceCount >= 7) {
+      mult *= j.factor;
+    }
+    // Category booster Jokers
+    if (j.type === 'categoryBoost' && j.category && j.category.includes(base.name)) {
+      if (j.chips) chips += j.chips;
+      if (j.mult) mult += j.mult;
+    }
   }
   return { chips, mult };
 }
@@ -223,6 +245,7 @@ function previewScore() {
 // Build scoring steps for animation
 function buildScoringSteps() {
   const values = state.dice.map((d) => d.value);
+  const diceCount = state.dice.length;
   const base = evaluateHand(values);
   const steps = [];
   // base chips first
@@ -243,10 +266,20 @@ function buildScoringSteps() {
     } else if (j.type === 'perFaceMult') {
       const count = values.filter(v => v === j.face).length;
       if (count > 0) steps.push({ kind: 'multMul', label: `${j.name}`, factor: Math.pow(j.factor, count) });
+    } else if (j.type === 'overdrive' && diceCount > 5) {
+      steps.push({ kind: 'chips', label: `${j.name} (+${diceCount * j.perDie})`, delta: diceCount * j.perDie });
+    } else if (j.type === 'hexaMaster' && diceCount >= 6) {
+      steps.push({ kind: 'chips', label: j.name, delta: j.chips });
+      steps.push({ kind: 'multMul', label: j.name, factor: j.factor });
+    } else if (j.type === 'sevenChaos' && diceCount >= 7) {
+      steps.push({ kind: 'multMul', label: j.name, factor: j.factor });
+    } else if (j.type === 'categoryBoost' && j.category && j.category.includes(base.name)) {
+      if (j.chips) steps.push({ kind: 'chips', label: `${j.name} (${base.name})`, delta: j.chips });
+      if (j.mult) steps.push({ kind: 'multAdd', label: `${j.name} (${base.name})`, delta: j.mult });
     }
   }
   return steps;
-}
+}}
 
 function tweenNumber(from, to, durationMs, onUpdate) {
   return new Promise((resolve) => {
@@ -441,6 +474,18 @@ function render() {
   renderJokers();
 }
 
+function getCategoryBoostFor(categoryName) {
+  let addChips = 0;
+  let addMult = 0;
+  for (const j of state.jokers) {
+    if (j.type === 'categoryBoost' && j.category && j.category.includes(categoryName)) {
+      if (j.chips) addChips += j.chips;
+      if (j.mult) addMult += j.mult;
+    }
+  }
+  return { addChips, addMult };
+}
+
 function renderScoringGuide() {
   if (!el.scoringList) return;
   el.scoringList.innerHTML = '';
@@ -448,15 +493,23 @@ function renderScoringGuide() {
   for (const row of SCORING_TABLE) {
     const div = document.createElement('div');
     div.className = 'scoring__row';
+    const boost = getCategoryBoostFor(row.name);
+    const isBoosted = boost.addChips > 0 || boost.addMult > 0;
+
     const name = document.createElement('div');
     name.className = 'name';
-    name.textContent = row.name;
+    name.innerHTML = `${row.name}${isBoosted ? ' <span class="boost-badge">⚡ Boosted</span>' : ''}`;
+
     const chips = document.createElement('div');
     chips.className = 'chips';
-    chips.innerHTML = typeof row.chips === 'string' ? row.chips : `Chips ${formatNumber(row.chips)}`;
+    const baseChipsVal = typeof row.chips === 'number' ? row.chips + boost.addChips : row.chips;
+    chips.innerHTML = typeof baseChipsVal === 'string' ? baseChipsVal : `Chips ${formatNumber(baseChipsVal)}`;
+
     const mult = document.createElement('div');
     mult.className = 'mult';
-    mult.innerHTML = `Mult ${formatNumber(row.mult)}`;
+    const effectiveMult = row.mult + boost.addMult;
+    mult.innerHTML = `Mult ${formatNumber(effectiveMult)}`;
+
     div.appendChild(name);
     div.appendChild(chips);
     div.appendChild(mult);
@@ -493,13 +546,21 @@ function nextHand() {
 
 // Jokers & Shop
 const ALL_JOKERS = [
-  { id: 'j7', emoji: '💎', name: 'Chip Booster', type: 'flatChips', amount: 10, desc: '+10 chips to hand result', cost: 4 },
+  { id: 'j1', emoji: '🎲', name: 'Extra Die', type: 'addDie', amount: 1, desc: 'Add +1 die (max 10)', cost: 6 },
   { id: 'j2', emoji: '✖️', name: 'Multiplier', type: 'flatMult', amount: 1, desc: '+1 mult to hand result', cost: 6 },
   { id: 'j3', emoji: '🍀', name: 'Lucky Ticket', type: 'percentChips', amount: 0.25, desc: '+25% chips to hand result', cost: 7 },
   { id: 'j4', emoji: '🎲', name: 'Snake Eyes', type: 'perFaceMult', face: 1, factor: 3, desc: 'Each 1 multiplies mult by 3', cost: 8 },
   { id: 'j5', emoji: '🔥', name: 'Six Appeal', type: 'perFaceChips', face: 6, amount: 20, desc: '+20 chips per 6', cost: 5 },
   { id: 'j6', emoji: '🌟', name: 'Flat Flair', type: 'flatChips', amount: 25, desc: '+25 chips to hand result', cost: 7 },
-  { id: 'j1', emoji: '➕', name: 'Extra Die', type: 'addDie', amount: 1, desc: 'Add +1 die (max 5)', cost: 6 },
+  { id: 'j7', emoji: '💎', name: 'Chip Booster', type: 'flatChips', amount: 10, desc: '+10 chips to hand result', cost: 4 },
+  { id: 'j8', emoji: '⚡', name: 'Overdrive Arsenal', type: 'overdrive', perDie: 15, desc: '+15 chips per die when playing >5 dice', cost: 9 },
+  { id: 'j9', emoji: '👑', name: 'Hexa-Master', type: 'hexaMaster', chips: 80, factor: 2, desc: '+80 chips & x2 mult when using 6+ dice', cost: 11 },
+  { id: 'j10', emoji: '🌀', name: '7-Dice Chaos', type: 'sevenChaos', factor: 3.5, desc: 'x3.5 mult when using 7+ dice', cost: 14 },
+  { id: 'j11', emoji: '🏆', name: 'Yahtzee Master', type: 'categoryBoost', category: ['Yahtzee'], chips: 50, mult: 5, desc: '+50 chips & +5 mult for Yahtzee', cost: 10 },
+  { id: 'j12', emoji: '🏹', name: 'Straight Shooter', type: 'categoryBoost', category: ['Small Straight', 'Large Straight', 'Super Straight'], chips: 35, mult: 3, desc: '+35 chips & +3 mult for Straights', cost: 9 },
+  { id: 'j13', emoji: '👯', name: 'Pair Perfection', type: 'categoryBoost', category: ['One Pair', 'Two Pair'], chips: 20, mult: 2, desc: '+20 chips & +2 mult for Pair hands', cost: 7 },
+  { id: 'j14', emoji: '🏠', name: 'Full House Suite', type: 'categoryBoost', category: ['Full House'], chips: 30, mult: 2.5, desc: '+30 chips & +2.5 mult for Full House', cost: 8 },
+  { id: 'j15', emoji: '💥', name: 'Kindness Overload', type: 'categoryBoost', category: ['Three of a Kind', 'Four of a Kind', '6 of a Kind'], chips: 40, mult: 4, desc: '+40 chips & +4 mult for X of a Kind hands', cost: 10 },
 ];
 
 function renderJokers() {
@@ -576,6 +637,9 @@ function buyJoker(j) {
   state.jokers.push({ ...j });
   if (j.type === 'addDie') {
     state.numDice = Math.min(MAX_DICE, state.numDice + (j.amount || 1));
+    while (state.dice.length < state.numDice) {
+      state.dice.push({ value: randDie(), held: false });
+    }
   }
   render();
   closeShop();
@@ -631,6 +695,13 @@ function init() {
   el.closeShopBtn.addEventListener('click', closeShop);
   if (el.historyBtn) el.historyBtn.addEventListener('click', openHistoryModal);
   if (el.closeHistoryBtn) el.closeHistoryBtn.addEventListener('click', closeHistoryModal);
+  if (el.toggleScoringBtn && el.scoringList) {
+    el.toggleScoringBtn.addEventListener('click', () => {
+      const isCollapsed = el.scoringList.classList.toggle('collapsed');
+      el.toggleScoringBtn.textContent = isCollapsed ? 'Expand ▼' : 'Collapse ▲';
+      playClick();
+    });
+  }
   el.nextRoundBtn.addEventListener('click', () => {
     openCatModal();
   });

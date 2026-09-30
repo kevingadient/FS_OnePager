@@ -477,6 +477,29 @@ body {
   gap: 6px;
   max-height: 480px;
   overflow-y: auto;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 1;
+}
+
+.scoring-table-visual.collapsed {
+  max-height: 0;
+  opacity: 0;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.boost-badge {
+  background: rgba(250, 204, 21, 0.15);
+  border: 1px solid rgba(250, 204, 21, 0.4);
+  color: var(--accent-yellow);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+  margin-left: 6px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .scoring__row {
@@ -495,6 +518,8 @@ body {
 .scoring__row .name {
   color: #fff;
   font-weight: 600;
+  display: flex;
+  align-items: center;
 }
 
 .scoring__row--active {
