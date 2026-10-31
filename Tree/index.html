@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Santa's Workshop Clicker 🎄</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <!-- Canvas Snowfall & Particle Overlay -->
+  <canvas id="snowCanvas"></canvas>
+  <div id="particleContainer"></div>
+
+  <!-- Audio Toggle / Header -->
+  <header class="game-header">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-icon">🎄</span>
+        <div class="brand-text">
+          <h1 class="brand-title">Santa's Workshop</h1>
+          <span class="brand-subtitle">North Pole Holiday Clicker</span>
+        </div>
+      </div>
+
+      <!-- Live News Ticker -->
+      <div class="news-ticker">
+        <span class="ticker-label">NEWS:</span>
+        <span id="tickerText" class="ticker-content">The elves are tuning up the sleigh bells...</span>
+      </div>
+
+      <div class="header-controls">
+        <button id="ascendBtn" class="ctrl-btn ctrl-btn--ascend hidden" title="Embark on Santa's Sleigh Journey (Prestige)">
+          <span>🛷</span>
+          <span id="ascendLabel">Ascend (0 🦯)</span>
+        </button>
+        <button id="extremeShopBtn" class="ctrl-btn ctrl-btn--extreme hidden" title="Spend Golden Candy Canes on Extreme Upgrades">
+          <span>🦯</span>
+          <span id="extremeShopLabel">Golden Relics (0 🦯)</span>
+        </button>
+        <button id="soundToggle" class="ctrl-btn" title="Toggle Sound">
+          <span id="soundIcon">🔊</span>
+          <span id="soundLabel">Sound: On</span>
+        </button>
+        <button id="statsModalBtn" class="ctrl-btn" title="View Statistics">📊 Stats</button>
+        <button id="saveBtn" class="ctrl-btn" title="Save game">💾 Save</button>
+        <button id="resetBtn" class="ctrl-btn ctrl-btn--danger" title="Reset game">🔄 Reset</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Golden Rudolph Flying Event -->
+  <div id="goldenRudolph" class="golden-rudolph hidden" title="Click Rudolph for a Christmas Miracle!">
+    <div class="sleigh-group">
+      <span class="rudolph-sprite">🦌🔴</span>
+      <span class="sleigh-sprite">🛷🎅</span>
+      <span class="sparkle-trail">✨✨</span>
+    </div>
+  </div>
+
+  <!-- Buff Banner Overlay -->
+  <div id="buffBanner" class="buff-banner hidden">
+    <span id="buffIcon" class="buff-banner__icon">✨</span>
+    <div class="buff-banner__info">
+      <div id="buffTitle" class="buff-banner__title">Red-Nose Frenzy!</div>
+      <div id="buffDesc" class="buff-banner__desc">7x Production for 30s!</div>
+    </div>
+    <div class="buff-timer-bar">
+      <div id="buffProgress" class="buff-timer-progress"></div>
+    </div>
+  </div>
+
+  <!-- Main Game Layout (3 Columns: Left = Workshop Floor, Center = The Christmas Tree!, Right = Shop) -->
+  <main class="game-layout">
+
+    <!-- Column 1 (Left): North Pole Workshop Center (Helpers Overview & Achievements) -->
+    <section class="workshop-col">
+      <!-- Active Workshop Scene / Elf Quarters -->
+      <div class="workshop-card">
+        <h2 class="card-heading">
+          <span>🎅 North Pole Workshop Floor</span>
+          <span id="totalHelpersBadge" class="helpers-badge">0 Helpers Active</span>
+        </h2>
+
+        <!-- Helper Milestone Synergy Card (100, 1000, 10000 helpers bonus) -->
+        <div class="helper-milestone-box">
+          <div class="helper-milestone-header">
+            <span class="helper-milestone-title">Helper Synergy Milestones</span>
+            <span id="helperSynergyBonusBadge" class="milestone-bonus-pill">+0% Global Bonus</span>
+          </div>
+          <div class="helper-milestone-progress">
+            <div id="helperMilestoneBar" class="helper-milestone-fill" style="width: 0%;"></div>
+          </div>
+          <div class="helper-milestone-label">
+            <span>Next: <strong id="nextHelperMilestoneGoal">100 Helpers</strong></span>
+            <span id="nextHelperMilestoneBonus" class="milestone-next-bonus">+25% Production</span>
+          </div>
+        </div>
+
+        <div id="workshopShowcase" class="workshop-showcase">
+          <div class="empty-workshop" id="emptyWorkshopMsg">
+            Your workshop is quiet. Hire elves and reindeer from Santa's Shop to get production rolling!
+          </div>
+        </div>
+      </div>
+
+      <!-- Festive Achievements Panel -->
+      <div class="achievements-card">
+        <div class="card-header-row">
+          <h2 class="card-heading">🏆 Holiday Trophies</h2>
+          <span id="achievementsCount" class="badge-pill">0 / 20</span>
+        </div>
+        <div id="achievementsGrid" class="achievements-grid"></div>
+      </div>
+    </section>
+
+    <!-- Column 2 (Center): The Grand Christmas Tree Stage -->
+    <section class="stage-col">
+      <div class="stage-card">
+        <!-- Present Counter & Rates -->
+        <div class="counter-box">
+          <div class="present-display">
+            <span class="gift-icon">🎁</span>
+            <span id="presentCount" class="present-number">0</span>
+          </div>
+          <div class="present-label">Presents Wrapped</div>
+          <div class="rates-display">
+            <span class="rate-badge">
+              <span class="rate-label">Per Sec:</span>
+              <strong id="ppsDisplay">0.0</strong>
+            </span>
+            <span class="rate-badge">
+              <span class="rate-label">Per Click:</span>
+              <strong id="ppcDisplay">1</strong>
+            </span>
+          </div>
+          <!-- Active Ascension Blessing Pill -->
+          <div id="activeBlessingBar" class="active-blessing-bar hidden">
+            <span class="blessing-icon" id="activeBlessingIcon">✨</span>
+            <span class="blessing-name" id="activeBlessingName">Blessing Active</span>
+            <span class="gcc-count" id="gccBadge">0 🦯</span>
+          </div>
+        </div>
+
+        <!-- Centerpiece Click Area (Interactive Christmas Tree + Rudolph) -->
+        <div class="tree-stage">
+          <div id="treeClicker" class="tree-wrapper" role="button" tabindex="0" aria-label="Click to wrap presents!">
+            <!-- Interactive SVG Christmas Tree -->
+            <svg id="treeSvg" viewBox="0 0 320 360" class="tree-graphic">
+              <defs>
+                <radialGradient id="starGlow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#fffb91" stop-opacity="1"/>
+                  <stop offset="70%" stop-color="#fbbf24" stop-opacity="0.8"/>
+                  <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+                </radialGradient>
+                <linearGradient id="treeGrad1" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#059669"/>
+                  <stop offset="100%" stop-color="#064e3b"/>
+                </linearGradient>
+                <linearGradient id="treeGrad2" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#10b981"/>
+                  <stop offset="100%" stop-color="#047857"/>
+                </linearGradient>
+                <linearGradient id="trunkGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#5a2d0c"/>
+                  <stop offset="50%" stop-color="#78350f"/>
+                  <stop offset="100%" stop-color="#451a03"/>
+                </linearGradient>
+                <radialGradient id="rudolphNoseGlow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#ff7b72" stop-opacity="1"/>
+                  <stop offset="40%" stop-color="#ef4444" stop-opacity="0.9"/>
+                  <stop offset="100%" stop-color="#dc2626" stop-opacity="0"/>
+                </radialGradient>
+                <radialGradient id="cosmicAuraGlow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#fef08a" stop-opacity="0.8"/>
+                  <stop offset="45%" stop-color="#38bdf8" stop-opacity="0.5"/>
+                  <stop offset="80%" stop-color="#c084fc" stop-opacity="0.3"/>
+                  <stop offset="100%" stop-color="#c084fc" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+
+              <!-- Cosmic Miracle Starlight Aura (Tier 12: Ultimate Transcendence) -->
+              <g id="decorStarlightAura" class="tree-decor decor-hidden">
+                <circle cx="160" cy="180" r="165" fill="url(#cosmicAuraGlow)" class="cosmic-aura-pulse"/>
+                <text x="30" y="80" font-size="22" class="cosmic-sparkle">✨</text>
+                <text x="265" y="80" font-size="22" class="cosmic-sparkle">✨</text>
+                <text x="20" y="240" font-size="20" class="cosmic-sparkle">⭐</text>
+                <text x="275" y="240" font-size="20" class="cosmic-sparkle">⭐</text>
+              </g>
+
+              <!-- Trunk -->
+              <rect x="144" y="295" width="32" height="48" rx="4" fill="url(#trunkGrad)" />
+              
+              <!-- Present Boxes under tree base (Base starter) -->
+              <g id="baseGifts" class="tree-decor decor-tier-base">
+                <rect x="115" y="322" width="22" height="20" rx="2" fill="#dc2626" />
+                <rect x="124" y="322" width="4" height="20" fill="#fbbf24" />
+                <rect x="115" y="330" width="22" height="4" fill="#fbbf24" />
+
+                <rect x="182" y="325" width="24" height="17" rx="2" fill="#2563eb" />
+                <rect x="192" y="325" width="4" height="17" fill="#f87171" />
+              </g>
+
+              <!-- Aurora Borealis Radiance (Tier 11: Celestial Crown) -->
+              <g id="decorAurora" class="tree-decor decor-hidden">
+                <ellipse cx="160" cy="160" rx="145" ry="155" fill="none" stroke="url(#starGlow)" stroke-width="8" opacity="0.3" class="aurora-ring-1"/>
+                <ellipse cx="160" cy="160" rx="135" ry="145" fill="none" stroke="#10b981" stroke-width="12" opacity="0.25" class="aurora-ring-2"/>
+                <ellipse cx="160" cy="160" rx="125" ry="135" fill="none" stroke="#8b5cf6" stroke-width="10" opacity="0.25" class="aurora-ring-3"/>
+              </g>
+
+              <!-- Tree Foliage Tier 3 (Bottom) -->
+              <polygon points="160,195 40,305 280,305" fill="url(#treeGrad1)" filter="drop-shadow(0 6px 12px rgba(0,0,0,0.3))"/>
+              <path d="M 40,305 Q 100,320 160,305 Q 220,320 280,305" fill="url(#treeGrad1)" />
+
+              <!-- Tree Foliage Tier 2 (Middle) -->
+              <polygon points="160,125 70,225 250,225" fill="url(#treeGrad2)" filter="drop-shadow(0 5px 10px rgba(0,0,0,0.25))"/>
+              <path d="M 70,225 Q 115,240 160,225 Q 205,240 250,225" fill="url(#treeGrad2)" />
+
+              <!-- Tree Foliage Tier 1 (Top) -->
+              <polygon points="160,50 100,145 220,145" fill="url(#treeGrad1)" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.2))"/>
+              <path d="M 100,145 Q 130,158 160,145 Q 190,158 220,145" fill="url(#treeGrad1)" />
+
+              <!-- Tier 1: Snowy Needle Caps -->
+              <g id="decorSnowCaps" class="tree-decor decor-hidden">
+                <path d="M 100,143 Q 115,150 130,145 Q 145,152 160,145 Q 175,152 190,145 Q 205,150 220,143 Q 210,138 160,138 Q 110,138 100,143 Z" fill="#e0f2fe" opacity="0.95"/>
+                <path d="M 70,223 Q 95,232 115,225 Q 140,234 160,225 Q 180,234 205,225 Q 225,232 250,223 Q 235,217 160,217 Q 85,217 70,223 Z" fill="#e0f2fe" opacity="0.95"/>
+                <path d="M 40,303 Q 75,314 105,305 Q 135,315 160,305 Q 185,315 215,305 Q 245,314 280,303 Q 260,296 160,296 Q 60,296 40,303 Z" fill="#e0f2fe" opacity="0.95"/>
+              </g>
+
+              <!-- Tier 2: Twinkling Fairy Lights -->
+              <g id="decorLights" class="tree-decor decor-hidden">
+                <circle cx="160" cy="115" r="4.5" fill="#fef08a" class="fairy-light"/>
+                <circle cx="130" cy="140" r="4" fill="#fde047" class="fairy-light"/>
+                <circle cx="190" cy="140" r="4" fill="#fef08a" class="fairy-light"/>
+                <circle cx="115" cy="190" r="4.5" fill="#fde047" class="fairy-light"/>
+                <circle cx="160" cy="180" r="5" fill="#fef08a" class="fairy-light"/>
+                <circle cx="205" cy="190" r="4.5" fill="#fde047" class="fairy-light"/>
+                <circle cx="85" cy="270" r="5" fill="#fef08a" class="fairy-light"/>
+                <circle cx="135" cy="265" r="5" fill="#fde047" class="fairy-light"/>
+                <circle cx="185" cy="265" r="5" fill="#fef08a" class="fairy-light"/>
+                <circle cx="235" cy="270" r="5" fill="#fde047" class="fairy-light"/>
+              </g>
+
+              <!-- Tier 3: Red, Blue, Gold Baubles -->
+              <g id="decorBaubles" class="tree-decor decor-hidden">
+                <circle cx="150" cy="95" r="7" fill="#ef4444" stroke="#fbbf24" stroke-width="1.5"/>
+                <circle cx="120" cy="175" r="8" fill="#3b82f6" stroke="#e0e7ff" stroke-width="1.5"/>
+                <circle cx="180" cy="165" r="8" fill="#f59e0b" stroke="#fef3c7" stroke-width="1.5"/>
+                <circle cx="95" cy="245" r="9" fill="#ec4899" stroke="#fdf2f8" stroke-width="1.5"/>
+                <circle cx="160" cy="240" r="9" fill="#ef4444" stroke="#fef08a" stroke-width="1.5"/>
+                <circle cx="225" cy="245" r="9" fill="#10b981" stroke="#a7f3d0" stroke-width="1.5"/>
+                <circle cx="140" cy="290" r="7.5" fill="#8b5cf6" stroke="#ede9fe" stroke-width="1.5"/>
+                <circle cx="200" cy="290" r="7.5" fill="#f59e0b" stroke="#fef3c7" stroke-width="1.5"/>
+              </g>
+
+              <!-- Tier 4: Candy Canes & Holiday Treats -->
+              <g id="decorCanes" class="tree-decor decor-hidden">
+                <text x="126" y="198" font-size="20">🦯</text>
+                <text x="178" y="278" font-size="22">🦯</text>
+                <text x="145" y="152" font-size="16">🍪</text>
+                <text x="108" y="278" font-size="18">🍪</text>
+              </g>
+
+              <!-- Tier 5: Golden Garlands & Festive Tinsel -->
+              <g id="decorTinsel" class="tree-decor decor-hidden">
+                <path d="M 120,130 Q 160,158 200,130" fill="none" stroke="#fbbf24" stroke-width="3.5" stroke-dasharray="8,4" class="tinsel-strand"/>
+                <path d="M 90,205 Q 160,240 230,205" fill="none" stroke="#fef08a" stroke-width="4.5" stroke-dasharray="10,5" class="tinsel-strand"/>
+                <path d="M 60,280 Q 160,320 260,280" fill="none" stroke="#fbbf24" stroke-width="5" stroke-dasharray="12,6" class="tinsel-strand"/>
+              </g>
+
+              <!-- Tier 6: Bethlehem Star Topper -->
+              <g id="decorStar" class="tree-decor decor-hidden">
+                <circle cx="160" cy="46" r="32" fill="url(#starGlow)" class="star-halo"/>
+                <polygon points="160,20 167,36 184,38 171,50 175,67 160,57 145,67 149,50 136,38 153,36" fill="#fef08a" stroke="#d97706" stroke-width="1.5" class="star-poly"/>
+              </g>
+
+              <!-- Tier 7: Mountain of Gifts -->
+              <g id="decorGiftPile" class="tree-decor decor-hidden">
+                <rect x="75" y="312" width="34" height="30" rx="3" fill="#10b981" stroke="#047857" stroke-width="1"/>
+                <rect x="90" y="312" width="5" height="30" fill="#fbbf24"/>
+                <rect x="75" y="325" width="34" height="5" fill="#fbbf24"/>
+                <text x="82" y="312" font-size="14">🎀</text>
+
+                <rect x="210" y="314" width="36" height="28" rx="3" fill="#f59e0b" stroke="#b45309" stroke-width="1"/>
+                <rect x="226" y="314" width="5" height="28" fill="#ef4444"/>
+                <rect x="210" y="326" width="36" height="5" fill="#ef4444"/>
+                <text x="218" y="314" font-size="14">🎀</text>
+
+                <rect x="140" y="326" width="40" height="20" rx="3" fill="#8b5cf6" stroke="#6d28d9" stroke-width="1"/>
+                <rect x="158" y="326" width="4" height="20" fill="#fde047"/>
+                <text x="148" y="325" font-size="13">🧸</text>
+              </g>
+
+              <!-- Tier 8: Rudolph the Red-Nosed Reindeer -->
+              <g id="decorRudolph" class="tree-decor decor-hidden">
+                <g class="rudolph-avatar">
+                  <text x="255" y="325" font-size="44" class="side-friend">🦌</text>
+                  <!-- Rudolph Glowing Red Nose -->
+                  <circle id="rudolphNose" cx="295" cy="314" r="6" fill="#ef4444" class="rudolph-nose-glow" />
+                </g>
+              </g>
+
+              <!-- Tier 9: Jolly Santa Claus with Toy Bag -->
+              <g id="decorSanta" class="tree-decor decor-hidden">
+                <text x="10" y="325" font-size="44" class="side-friend">🎅</text>
+                <text x="-4" y="342" font-size="24">🎒</text>
+              </g>
+
+              <!-- Tier 10: Cheerful Workshop Elves -->
+              <g id="decorElves" class="tree-decor decor-hidden">
+                <text x="50" y="220" font-size="28" class="tree-elf">🧝</text>
+                <text x="235" y="220" font-size="28" class="tree-elf">🧝</text>
+              </g>
+
+              <!-- Tier 13: Jingle Bells Harmony -->
+              <g id="decorBells" class="tree-decor decor-hidden">
+                <text x="135" y="165" font-size="18" class="jingle-bell-pulse">🔔</text>
+                <text x="170" y="235" font-size="20" class="jingle-bell-pulse">🔔</text>
+                <text x="90" y="275" font-size="22" class="jingle-bell-pulse">🔔</text>
+                <text x="215" y="275" font-size="22" class="jingle-bell-pulse">🔔</text>
+              </g>
+
+              <!-- Tier 14: Radiant Polar Snowmen Guardians -->
+              <g id="decorSnowmen" class="tree-decor decor-hidden">
+                <text x="18" y="270" font-size="36" class="side-friend">⛄</text>
+                <text x="265" y="270" font-size="36" class="side-friend">⛄</text>
+              </g>
+
+              <!-- Tier 15: Gingerbread Castle Foundation -->
+              <g id="decorGingerCastle" class="tree-decor decor-hidden">
+                <text x="45" y="340" font-size="26">🏰</text>
+                <text x="245" y="340" font-size="26">🏰</text>
+                <text x="125" y="344" font-size="16">🍪</text>
+                <text x="180" y="344" font-size="16">🍪</text>
+              </g>
+
+              <!-- Tier 16: Golden Angel Apex Herald -->
+              <g id="decorAngel" class="tree-decor decor-hidden">
+                <circle cx="160" cy="18" r="24" fill="url(#starGlow)" class="angel-halo" opacity="0.8"/>
+                <text x="144" y="28" font-size="30" class="angel-herald">👼</text>
+              </g>
+
+              <!-- Tier 17: North Pole Clockwork Express Train -->
+              <g id="decorTrain" class="tree-decor decor-hidden">
+                <ellipse cx="160" cy="336" rx="140" ry="24" fill="none" stroke="#78350f" stroke-width="4" stroke-dasharray="10,6" opacity="0.8"/>
+                <ellipse cx="160" cy="336" rx="140" ry="24" fill="none" stroke="#fbbf24" stroke-width="1.5" opacity="0.9"/>
+                <text x="40" y="345" font-size="24" class="train-engine">🚂</text>
+                <text x="70" y="345" font-size="20">🚃</text>
+                <text x="96" y="345" font-size="20">🚃</text>
+              </g>
+
+              <!-- Tier 18: Nutcracker Royal Guard -->
+              <g id="decorNutcrackers" class="tree-decor decor-hidden">
+                <text x="42" y="315" font-size="32" class="nutcracker-guard">💂</text>
+                <text x="245" y="315" font-size="32" class="nutcracker-guard">💂</text>
+              </g>
+
+              <!-- Tier 19: Diamond Crystalline Prism Needles -->
+              <g id="decorDiamondPrisms" class="tree-decor decor-hidden">
+                <circle cx="160" cy="130" r="3" fill="#67e8f9" class="diamond-sparkle"/>
+                <circle cx="140" cy="200" r="3.5" fill="#67e8f9" class="diamond-sparkle"/>
+                <circle cx="180" cy="205" r="3.5" fill="#a5f3fc" class="diamond-sparkle"/>
+                <circle cx="110" cy="285" r="4" fill="#67e8f9" class="diamond-sparkle"/>
+                <circle cx="160" cy="275" r="4" fill="#a5f3fc" class="diamond-sparkle"/>
+                <circle cx="210" cy="285" r="4" fill="#67e8f9" class="diamond-sparkle"/>
+                <text x="150" y="110" font-size="16" class="diamond-sparkle">💎</text>
+                <text x="100" y="195" font-size="16" class="diamond-sparkle">💎</text>
+                <text x="200" y="195" font-size="16" class="diamond-sparkle">💎</text>
+              </g>
+
+              <!-- Tier 20: Rainbow Sugar Crystal Garland Orbit -->
+              <g id="decorRainbowGarland" class="tree-decor decor-hidden">
+                <path d="M 115,115 Q 160,140 205,115" fill="none" stroke="#f43f5e" stroke-width="3" stroke-dasharray="6,4" class="tinsel-strand"/>
+                <path d="M 85,185 Q 160,225 235,185" fill="none" stroke="#06b6d4" stroke-width="3.5" stroke-dasharray="8,5" class="tinsel-strand"/>
+                <path d="M 50,265 Q 160,305 270,265" fill="none" stroke="#a855f7" stroke-width="4" stroke-dasharray="10,6" class="tinsel-strand"/>
+              </g>
+
+              <!-- Tier 21: Supersonic Flying Reindeer Escort -->
+              <g id="decorReindeerEscort" class="tree-decor decor-hidden">
+                <text x="2" y="140" font-size="34" class="flying-escort-left">🦌</text>
+                <text x="275" y="140" font-size="34" class="flying-escort-right">🦌</text>
+              </g>
+
+              <!-- Tier 22: Constellation Star Map Canopy -->
+              <g id="decorConstellations" class="tree-decor decor-hidden">
+                <path d="M 40,60 L 80,45 L 120,70 L 160,30 L 200,65 L 240,40 L 280,65" fill="none" stroke="#fde047" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.75"/>
+                <circle cx="40" cy="60" r="3" fill="#fff"/>
+                <circle cx="80" cy="45" r="3.5" fill="#fde047"/>
+                <circle cx="120" cy="70" r="3" fill="#fff"/>
+                <circle cx="200" cy="65" r="3" fill="#fff"/>
+                <circle cx="240" cy="40" r="3.5" fill="#fde047"/>
+                <circle cx="280" cy="65" r="3" fill="#fff"/>
+                <text x="50" y="45" font-size="14">✨</text>
+                <text x="250" y="45" font-size="14">✨</text>
+              </g>
+
+              <!-- Tier 23: Santa's Time-Warp Chrono Warp Vortex -->
+              <g id="decorChronoVortex" class="tree-decor decor-hidden">
+                <ellipse cx="160" cy="180" rx="155" ry="165" fill="none" stroke="#38bdf8" stroke-width="4" stroke-dasharray="25,12" class="vortex-spin" opacity="0.6"/>
+                <ellipse cx="160" cy="180" rx="162" ry="172" fill="none" stroke="#818cf8" stroke-width="3" stroke-dasharray="18,10" class="vortex-spin-reverse" opacity="0.5"/>
+              </g>
+
+              <!-- Tier 24: Sovereign Christmas Singularity Supernova -->
+              <g id="decorSupernova" class="tree-decor decor-hidden">
+                <circle cx="160" cy="180" r="170" fill="none" stroke="#fbbf24" stroke-width="6" stroke-dasharray="14,8" class="supernova-pulse" opacity="0.75"/>
+                <text x="142" y="195" font-size="36" class="singularity-core">🪐</text>
+                <text x="10" y="195" font-size="28" class="supernova-particle">🌟</text>
+                <text x="280" y="195" font-size="28" class="supernova-particle">🌟</text>
+                <text x="145" y="360" font-size="26" class="supernova-particle">✨</text>
+              </g>
+            </svg>
+            <div class="click-prompt">CLICK TO WRAP! 🎁</div>
+          </div>
+        </div>
+
+        <!-- Dedicated Tree Decoration & Upgrades Station -->
+        <div class="tree-upgrade-box">
+          <div class="tree-upgrade-header">
+            <div class="tree-level-info">
+              <span class="tree-level-tag">Tree Level <span id="treeLevelBadge">0</span>/24</span>
+              <strong id="treeLevelName" class="tree-level-name">Bare Evergreen Pine</strong>
+            </div>
+            <span id="treeMultiplierBadge" class="tree-mult-badge">+0% Multiplier</span>
+          </div>
+
+          <div class="tree-next-card" id="treeNextCard">
+            <div class="tree-next-preview">
+              <span id="treeNextIcon" class="tree-next-icon">❄️</span>
+              <div class="tree-next-text">
+                <div class="tree-next-title-row">
+                  <strong id="treeNextName">Snowy Needle Caps</strong>
+                  <span id="treeNextBonus" class="tree-next-bonus">+15% PPC & PPS</span>
+                </div>
+                <p id="treeNextDesc" class="tree-next-desc">Dust the pine branches in pure crystalline arctic snow.</p>
+              </div>
+            </div>
+            <button id="buyTreeUpgradeBtn" class="btn-buy-tree-upgrade">
+              <span>Decorate Tree</span>
+              <span id="treeUpgradeCost" class="tree-cost-tag">500 🎁</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Column 3 (Right): Santa's Shop (Upgrades + Autoclickers) -->
+    <section class="shop-col">
+      <div class="shop-card">
+        <div class="shop-header">
+          <div class="shop-title-row">
+            <h2 class="shop-title">🎁 Santa's Workshop Store</h2>
+            <div class="buy-mult-toggle" role="group" aria-label="Purchase quantity">
+              <button class="mult-btn active" data-mult="1">1x</button>
+              <button class="mult-btn" data-mult="10">10x</button>
+              <button class="mult-btn" data-mult="max">Max</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Santa's Special Upgrades Tray -->
+        <div class="upgrades-section">
+          <div class="section-label">
+            <span>Special Upgrades</span>
+            <span id="availableUpgradesCount" class="badge-mini">0</span>
+          </div>
+          <div id="upgradesTray" class="upgrades-tray">
+            <!-- Dynamic upgrade icons inject here -->
+            <div class="no-upgrades" id="noUpgradesMsg">Earn more presents to unlock festive upgrades!</div>
+          </div>
+        </div>
+
+        <!-- Autoclicker Buildings List -->
+        <div class="buildings-section">
+          <div class="section-label">North Pole Production Facilities</div>
+          <div id="buildingsList" class="buildings-list">
+            <!-- Dynamic building cards injected here -->
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Statistics Modal -->
+  <div id="statsModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🎄 North Pole Records & Statistics</h3>
+        <button id="closeStatsBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="stat-row">
+          <span>Presents currently in stock:</span>
+          <strong id="statCurrentPresents">0</strong>
+        </div>
+        <div class="stat-row">
+          <span>Presents wrapped (all time):</span>
+          <strong id="statTotalPresents">0</strong>
+        </div>
+        <div class="stat-row">
+          <span>Tree manual clicks:</span>
+          <strong id="statTotalClicks">0</strong>
+        </div>
+        <div class="stat-row">
+          <span>Presents from clicks:</span>
+          <strong id="statPresentsFromClicks">0</strong>
+        </div>
+        <div class="stat-row">
+          <span>Golden Rudolphs caught:</span>
+          <strong id="statGoldenClicks">0</strong>
+        </div>
+        <div class="stat-row">
+          <span>Time spent playing:</span>
+          <strong id="statTimePlayed">0m 0s</strong>
+        </div>
+        <div class="stat-row">
+          <span>Workshop Upgrades purchased:</span>
+          <strong id="statUpgradesOwned">0</strong>
+        </div>
+        <div class="stat-row">
+          <span>Holiday Helpers employed:</span>
+          <strong id="statHelpersOwned">0</strong>
+        </div>
+        <div class="stat-row">
+          <span>Santa Sleigh Ascensions:</span>
+          <strong id="statAscensions">0</strong>
+        </div>
+        <div class="stat-row">
+          <span>Golden Candy Canes (🦯):</span>
+          <strong id="statGoldenCanes">0</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Santa's Sleigh Journey (Ascension / Prestige) Modal -->
+  <div id="ascendModal" class="modal-backdrop hidden">
+    <div class="modal-card modal-card--ascend">
+      <div class="modal-header">
+        <h3>🛷 Santa's Sleigh Journey (Ascension)</h3>
+        <button id="closeAscendBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="ascend-intro">
+          Ascend with Santa and deliver gifts across the entire globe! You will reset current presents, helpers, and upgrades, but permanently earn <strong>Golden Candy Canes (🦯)</strong> and lock in a <strong>Divine Holiday Blessing</strong> for your next run!
+        </p>
+
+        <div class="ascend-stats-card">
+          <div class="ascend-stat-box">
+            <span class="ascend-stat-box__label">All-Time Presents</span>
+            <strong id="ascendAllTimePresents" class="ascend-stat-box__val">0</strong>
+          </div>
+          <div class="ascend-stat-arrow">➔</div>
+          <div class="ascend-stat-box highlight-gold">
+            <span class="ascend-stat-box__label">Earn Golden Canes</span>
+            <strong id="ascendEarnedCanes" class="ascend-stat-box__val">+0 🦯</strong>
+          </div>
+        </div>
+
+        <div class="ascend-next-info">
+          Next Golden Candy Cane at: <strong id="ascendNextThreshold">10,000,000 presents</strong>
+        </div>
+
+        <div class="blessings-title">Choose 1 Active Blessing (Locked for the next run):</div>
+        <div id="blessingsList" class="blessings-grid">
+          <!-- Blessing Option 1: Auto Catcher -->
+          <div class="blessing-card active" data-blessing="auto_catcher">
+            <div class="blessing-card__header">
+              <span class="blessing-icon">🎯</span>
+              <strong class="blessing-name">Rudolph Auto-Catcher</strong>
+            </div>
+            <p class="blessing-desc">Automatically detects and clicks Flying Rudolph / Golden Sleigh events instantly!</p>
+          </div>
+
+          <!-- Blessing Option 2: Head Start -->
+          <div class="blessing-card" data-blessing="head_start">
+            <div class="blessing-card__header">
+              <span class="blessing-icon">🧝</span>
+              <strong class="blessing-name">Workshop Head Start</strong>
+            </div>
+            <p class="blessing-desc">Start every new rebirth with <strong>25 Cheerful Elves</strong> and <strong>10 Reindeer</strong> already hired!</p>
+          </div>
+
+          <!-- Blessing Option 3: Evergreen Boost -->
+          <div class="blessing-card" data-blessing="evergreen_boost">
+            <div class="blessing-card__header">
+              <span class="blessing-icon">🌲</span>
+              <strong class="blessing-name">Evergreen Multiplier</strong>
+            </div>
+            <p class="blessing-desc">Permanent <strong>+100% PPS boost</strong>, plus an extra <strong>+10% PPS per unspent Golden Candy Cane</strong>!</p>
+          </div>
+
+          <!-- Blessing Option 4: Offline Magic -->
+          <div class="blessing-card" data-blessing="offline_magic">
+            <div class="blessing-card__header">
+              <span class="blessing-icon">💤</span>
+              <strong class="blessing-name">North Pole Slumber</strong>
+            </div>
+            <p class="blessing-desc">Offline wrapping efficiency boosted to <strong>100%</strong>, and offline time limit extended to 48 hours!</p>
+          </div>
+
+          <!-- Blessing Option 5: Sugar Rush -->
+          <div class="blessing-card" data-blessing="sugar_rush">
+            <div class="blessing-card__header">
+              <span class="blessing-icon">⚡</span>
+              <strong class="blessing-name">Peppermint Sugar Rush</strong>
+            </div>
+            <p class="blessing-desc">Golden Rudolph appears <strong>35% more often</strong>, and Frenzy/Hyperclick buffs last <strong>double duration (60s)</strong>!</p>
+          </div>
+        </div>
+
+        <div class="ascend-action-area">
+          <button id="confirmAscendBtn" class="btn-ascend-action">
+            <span>🛷</span>
+            <span>Take Flight! (Ascend Now)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upgrade Detail Tooltip (Hover / Focus) -->
+  <div id="upgradeTooltip" class="upgrade-tooltip hidden">
+    <div id="tooltipIcon" class="tooltip-icon">✨</div>
+    <div class="tooltip-info">
+      <div id="tooltipName" class="tooltip-name">Upgrade Name</div>
+      <div id="tooltipCost" class="tooltip-cost">Cost: 100 🎁</div>
+      <div id="tooltipDesc" class="tooltip-desc">Description</div>
+    </div>
+  </div>
+
+  <!-- Extreme Golden Cane Relics & Upgrades Modal -->
+  <div id="extremeModal" class="modal-backdrop hidden">
+    <div class="modal-card modal-card--extreme">
+      <div class="modal-header">
+        <div class="extreme-modal-title">
+          <span class="extreme-title-icon">🦯</span>
+          <div>
+            <h3>Santa's Golden Relic Vault</h3>
+            <span class="extreme-subtitle">Trade Golden Candy Canes for permanent, god-tier extreme perks!</span>
+          </div>
+        </div>
+        <button id="closeExtremeBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="extreme-vault-banner">
+          <div class="cane-balance-display">
+            <span class="cane-balance-label">Available Golden Canes:</span>
+            <strong id="extremeModalCanes" class="cane-balance-value">0 🦯</strong>
+          </div>
+          <div class="extreme-vault-hint">
+            Relics purchased here are <strong>PERMANENT</strong> and persist across all future Sleigh Ascensions!
+          </div>
+        </div>
+
+        <div id="extremeUpgradesList" class="extreme-upgrades-grid">
+          <!-- Dynamically populated extreme relic cards -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>
+
