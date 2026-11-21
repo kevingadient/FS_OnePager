@@ -1944,22 +1944,23 @@ body {
 }
 
 .preview-canvas-wrapper {
-    max-width: 100%;
-    max-height: 55vh;
-    display: flex;
+    position: relative;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     background: white;
-    padding: 16px;
+    padding: 0;
     border-radius: var(--radius-md);
     box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-    overflow: auto;
+    overflow: hidden;
+    max-width: 100%;
 }
 
 .preview-canvas-wrapper canvas,
 .preview-canvas-wrapper img {
+    display: block;
     max-width: 100%;
-    max-height: 50vh;
+    max-height: 60vh;
     object-fit: contain;
 }
 

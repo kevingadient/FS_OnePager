@@ -512,7 +512,12 @@ async function openPageInspection(pageId, e = null) {
             if (img.complete) r();
             else img.onload = r;
         });
-        modalPageDimensions = { width: img.clientWidth || 600, height: img.clientHeight || 800 };
+        modalPageDimensions = {
+            width: img.naturalWidth || 600,
+            height: img.naturalHeight || 800,
+            renderedWidth: img.clientWidth || img.naturalWidth || 600,
+            renderedHeight: img.clientHeight || img.naturalHeight || 800
+        };
     } else {
         img.style.display = 'none';
         canvas.style.display = 'block';
@@ -529,17 +534,36 @@ async function openPageInspection(pageId, e = null) {
 
             const ctx = canvas.getContext('2d');
             await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-            modalPageDimensions = { width: viewport.width, height: viewport.height };
+            
+            // Unscaled original page viewport (scale 1.0) for accurate PDF coordinate mapping
+            const originalViewport = page.getViewport({ scale: 1.0, rotation: 0 });
+            modalPageDimensions = {
+                width: viewport.width,
+                height: viewport.height,
+                renderedWidth: canvas.clientWidth || viewport.width,
+                renderedHeight: canvas.clientHeight || viewport.height,
+                originalWidth: originalViewport.width,
+                originalHeight: originalViewport.height
+            };
         } catch (err) {
             console.error('Modal render error:', err);
         }
         hideLoading();
     }
 
-    // Synchronize overlay dimensions
-    const renderedWidth = canvas.style.display !== 'none' ? canvas.width : img.clientWidth;
-    const renderedHeight = canvas.style.display !== 'none' ? canvas.height : img.clientHeight;
-    modalPageDimensions = { width: renderedWidth, height: renderedHeight };
+    // Synchronize overlay to exact displayed element dimensions
+    const displayEl = canvas.style.display !== 'none' ? canvas : img;
+    const dispRect = displayEl.getBoundingClientRect();
+    const actualWidth = dispRect.width || displayEl.clientWidth || modalPageDimensions.width;
+    const actualHeight = dispRect.height || displayEl.clientHeight || modalPageDimensions.height;
+
+    modalPageDimensions.renderedWidth = actualWidth;
+    modalPageDimensions.renderedHeight = actualHeight;
+
+    if (overlay) {
+        overlay.style.width = actualWidth + 'px';
+        overlay.style.height = actualHeight + 'px';
+    }
 
     renderOverlayAnnotations();
     updatePreviewAnnotationCount();
@@ -1294,9 +1318,24 @@ function addAnnotationToPage(pageId, annotObj) {
         pageAnnotations[pageId] = [];
     }
     const id = 'ann_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+    
+    // Store coordinates as normalized percentages (0 - 100) so they are resolution and zoom independent
+    const overlay = document.getElementById('annotationOverlay');
+    const overlayW = (overlay && overlay.clientWidth) || modalPageDimensions.renderedWidth || 600;
+    const overlayH = (overlay && overlay.clientHeight) || modalPageDimensions.renderedHeight || 800;
+
+    const xPercent = (annotObj.x / overlayW) * 100;
+    const yPercent = (annotObj.y / overlayH) * 100;
+    const wPercent = (annotObj.width / overlayW) * 100;
+    const hPercent = (annotObj.height / overlayH) * 100;
+
     pageAnnotations[pageId].push({
         id: id,
-        ...annotObj
+        ...annotObj,
+        xPercent: xPercent,
+        yPercent: yPercent,
+        wPercent: wPercent,
+        hPercent: hPercent
     });
 
     renderOverlayAnnotations();
@@ -1317,13 +1356,29 @@ function renderOverlayAnnotations() {
 }
 
 function createAnnotationElement(item) {
+    const overlay = document.getElementById('annotationOverlay');
+    const overlayW = (overlay && overlay.clientWidth) || modalPageDimensions.renderedWidth || 600;
+    const overlayH = (overlay && overlay.clientHeight) || modalPageDimensions.renderedHeight || 800;
+
+    // Convert percentages to current overlay pixels
+    const currentLeft = (item.xPercent !== undefined) ? (item.xPercent / 100) * overlayW : item.x;
+    const currentTop = (item.yPercent !== undefined) ? (item.yPercent / 100) * overlayH : item.y;
+    const currentWidth = (item.wPercent !== undefined) ? (item.wPercent / 100) * overlayW : item.width;
+    const currentHeight = (item.hPercent !== undefined) ? (item.hPercent / 100) * overlayH : item.height;
+
+    // Keep item.x/y/width/height in sync with current pixels
+    item.x = currentLeft;
+    item.y = currentTop;
+    item.width = currentWidth;
+    item.height = currentHeight;
+
     const el = document.createElement('div');
     el.className = 'annotation-item';
     el.id = item.id;
-    el.style.left = item.x + 'px';
-    el.style.top = item.y + 'px';
-    el.style.width = item.width + 'px';
-    el.style.height = item.height + 'px';
+    el.style.left = currentLeft + 'px';
+    el.style.top = currentTop + 'px';
+    el.style.width = currentWidth + 'px';
+    el.style.height = currentHeight + 'px';
 
     if (item.type === 'sig') {
         el.innerHTML = `
@@ -1443,16 +1498,19 @@ function attachDragAndResize(element, item) {
     });
 
     element.addEventListener('pointermove', (e) => {
+        const overlayRect = overlay.getBoundingClientRect();
         if (isDragging) {
             const dx = e.clientX - startX;
             const dy = e.clientY - startY;
-            const overlayRect = overlay.getBoundingClientRect();
 
             let newX = Math.max(0, Math.min(overlayRect.width - item.width, initialLeft + dx));
             let newY = Math.max(0, Math.min(overlayRect.height - item.height, initialTop + dy));
 
             item.x = newX;
             item.y = newY;
+            item.xPercent = (newX / overlayRect.width) * 100;
+            item.yPercent = (newY / overlayRect.height) * 100;
+
             element.style.left = newX + 'px';
             element.style.top = newY + 'px';
         } else if (isResizing) {
@@ -1464,6 +1522,9 @@ function attachDragAndResize(element, item) {
 
             item.width = newW;
             item.height = newH;
+            item.wPercent = (newW / overlayRect.width) * 100;
+            item.hPercent = (newH / overlayRect.height) * 100;
+
             element.style.width = newW + 'px';
             element.style.height = newH + 'px';
         }
@@ -1483,34 +1544,71 @@ function attachDragAndResize(element, item) {
 // --- PDF-Lib Vector/Bitmap Burning of Annotations ---
 async function burnAnnotationsOntoPage(pdfDoc, page, annotations, pageRotation = 0) {
     const { width: pdfWidth, height: pdfHeight } = page.getSize();
-    // Modal preview canvas dimensions
-    const previewW = modalPageDimensions.width || 600;
-    const previewH = modalPageDimensions.height || 800;
-
-    // Standard Font for Text and Dates
     const standardFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
 
-    for (const ann of annotations) {
-        // Map Preview Coordinates to PDF Coordinates
-        // In PDF coordinates: (0,0) is bottom-left, while in DOM it is top-left
-        const scaleX = pdfWidth / previewW;
-        const scaleY = pdfHeight / previewH;
+    // Normalize rotation angle to 0, 90, 180, or 270 degrees
+    const rot = ((pageRotation % 360) + 360) % 360;
 
-        const mappedWidth = ann.width * scaleX;
-        const mappedHeight = ann.height * scaleY;
-        const mappedX = ann.x * scaleX;
-        const mappedY = pdfHeight - (ann.y * scaleY) - mappedHeight;
+    for (const ann of annotations) {
+        // Retrieve normalized percentage coordinates (0.0 to 1.0)
+        let normX = 0, normY = 0, normW = 0, normH = 0;
+        if (ann.xPercent !== undefined) {
+            normX = ann.xPercent / 100;
+            normY = ann.yPercent / 100;
+            normW = ann.wPercent / 100;
+            normH = ann.hPercent / 100;
+        } else {
+            const previewW = modalPageDimensions.renderedWidth || 600;
+            const previewH = modalPageDimensions.renderedHeight || 800;
+            normX = ann.x / previewW;
+            normY = ann.y / previewH;
+            normW = ann.width / previewW;
+            normH = ann.height / previewH;
+        }
+
+        // Map visual top-left coordinates to PDF coordinates
+        // When page is rotated, pdf-lib's draw operations are evaluated in the page's original coordinate system
+        let mappedX = 0, mappedY = 0, mappedW = 0, mappedH = 0;
+        let drawRotation = 0;
+
+        if (rot === 0) {
+            // Unrotated: visual matches original coordinate system
+            mappedW = normW * pdfWidth;
+            mappedH = normH * pdfHeight;
+            mappedX = normX * pdfWidth;
+            mappedY = pdfHeight - (normY * pdfHeight) - mappedH;
+            drawRotation = 0;
+        } else if (rot === 90) {
+            // Visual width corresponds to PDF height, visual height to PDF width
+            mappedW = normW * pdfHeight;
+            mappedH = normH * pdfWidth;
+            mappedX = normY * pdfWidth;
+            mappedY = normX * pdfHeight;
+            drawRotation = -90;
+        } else if (rot === 180) {
+            mappedW = normW * pdfWidth;
+            mappedH = normH * pdfHeight;
+            mappedX = pdfWidth - (normX * pdfWidth) - mappedW;
+            mappedY = normY * pdfHeight;
+            drawRotation = 180;
+        } else if (rot === 270) {
+            mappedW = normW * pdfHeight;
+            mappedH = normH * pdfWidth;
+            mappedX = pdfWidth - (normY * pdfWidth) - mappedH;
+            mappedY = pdfHeight - (normX * pdfHeight) - mappedW;
+            drawRotation = 90;
+        }
 
         if (ann.type === 'sig' && ann.content) {
             try {
-                // Fetch image bytes
                 const pngBytes = await fetch(ann.content).then(res => res.arrayBuffer());
                 const pngImage = await pdfDoc.embedPng(pngBytes);
                 page.drawImage(pngImage, {
                     x: mappedX,
                     y: mappedY,
-                    width: mappedWidth,
-                    height: mappedHeight
+                    width: mappedW,
+                    height: mappedH,
+                    rotate: PDFLib.degrees(drawRotation)
                 });
             } catch (err) {
                 console.error('Error embedding signature PNG into PDF:', err);
@@ -1518,7 +1616,9 @@ async function burnAnnotationsOntoPage(pdfDoc, page, annotations, pageRotation =
         } else if (ann.type === 'text' || ann.type === 'date') {
             try {
                 const textStr = ann.content || '';
-                const fontSize = (ann.fontSize || 14) * scaleY * 0.9;
+                // Scale font size proportionally to PDF dimensions
+                const scale = pdfHeight / 800;
+                const fontSize = Math.max(9, (ann.fontSize || 14) * scale);
                 
                 // Color conversion
                 let rgbColor = PDFLib.rgb(0.06, 0.09, 0.16); // default slate
@@ -1528,10 +1628,11 @@ async function burnAnnotationsOntoPage(pdfDoc, page, annotations, pageRotation =
 
                 page.drawText(textStr, {
                     x: mappedX,
-                    y: mappedY + (mappedHeight * 0.25),
-                    size: Math.max(8, fontSize),
+                    y: mappedY + (mappedH * 0.25),
+                    size: fontSize,
                     font: standardFont,
-                    color: rgbColor
+                    color: rgbColor,
+                    rotate: PDFLib.degrees(drawRotation)
                 });
             } catch (err) {
                 console.error('Error drawing text onto PDF page:', err);
