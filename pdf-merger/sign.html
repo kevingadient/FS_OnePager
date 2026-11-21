@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobile Signature - PDF Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #0f172a;
+            color: #f8fafc;
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10;
+        }
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            font-weight: 500;
+        }
+        .status-badge.connected {
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+        }
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .instructions-bar {
+            text-align: center;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            background: rgba(15, 23, 42, 0.6);
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            background: #ffffff;
+            margin: 12px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        canvas {
+            touch-action: none;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+        .sign-baseline {
+            position: absolute;
+            left: 10%;
+            right: 10%;
+            bottom: 25%;
+            height: 1.5px;
+            background: repeating-linear-gradient(90deg, #cbd5e1, #cbd5e1 6px, transparent 6px, transparent 12px);
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        .sign-placeholder {
+            position: absolute;
+            pointer-events: none;
+            color: #94a3b8;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+            opacity: 0.6;
+            transition: opacity 0.2s ease;
+        }
+
+        .controls {
+            padding: 12px 16px;
+            display: flex;
+            gap: 12px;
+            background: rgba(30, 41, 59, 0.9);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10;
+        }
+        .btn {
+            flex: 1;
+            padding: 14px 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-clear {
+            background: #334155;
+            color: #f1f5f9;
+            flex: 0.4;
+        }
+        .btn-clear:active {
+            background: #475569;
+            transform: scale(0.97);
+        }
+        .btn-send {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+        }
+        .btn-send:active {
+            transform: scale(0.97);
+        }
+        .btn-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Success Overlay */
+        .success-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+            z-index: 50;
+        }
+        .success-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+        .success-overlay h2 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+        }
+        .success-overlay p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-title">
+            <span>✍️</span>
+            <span>Sign Document</span>
+        </div>
+        <div class="status-badge" id="statusBadge">
+            <span class="status-dot"></span>
+            <span id="statusText">Connecting...</span>
+        </div>
+    </header>
+
+    <div class="instructions-bar">
+        Sign with your finger or stylus inside the white box below
+    </div>
+
+    <div class="canvas-container" id="canvasContainer">
+        <div class="sign-baseline"></div>
+        <div class="sign-placeholder" id="placeholder">Sign here</div>
+        <canvas id="signCanvas"></canvas>
+    </div>
+
+    <footer class="controls">
+        <button class="btn btn-clear" id="clearBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Clear
+        </button>
+        <button class="btn btn-send" id="sendBtn" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Send to Computer
+        </button>
+    </footer>
+
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-icon">✓</div>
+        <h2>Signature Sent!</h2>
+        <p>Your signature has been sent to your computer. You can place and resize it there.</p>
+        <button class="btn btn-clear" style="flex: initial; padding: 12px 24px;" onclick="resetSignature()">
+            Sign Again
+        </button>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetPeerId = urlParams.get('peer');
+
+        const canvas = document.getElementById('signCanvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('canvasContainer');
+        const placeholder = document.getElementById('placeholder');
+        const clearBtn = document.getElementById('clearBtn');
+        const sendBtn = document.getElementById('sendBtn');
+        const statusBadge = document.getElementById('statusBadge');
+        const statusText = document.getElementById('statusText');
+        const successOverlay = document.getElementById('successOverlay');
+
+        let isDrawing = false;
+        let points = [];
+        let hasDrawn = false;
+        let peerConnection = null;
+
+        // Resize Canvas dynamically with High-DPI support
+        function resizeCanvas() {
+            const rect = container.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 2;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = 3.5;
+            ctx.strokeStyle = '#0f172a';
+        }
+
+        window.addEventListener('resize', () => {
+            if (!hasDrawn) resizeCanvas();
+        });
+        window.addEventListener('load', resizeCanvas);
+
+        // Drawing Handlers with Bézier smoothing
+        function getPointerPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function startDrawing(e) {
+            e.preventDefault();
+            isDrawing = true;
+            placeholder.style.opacity = '0';
+            const pos = getPointerPos(e);
+            points = [pos];
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            const pos = getPointerPos(e);
+            points.push(pos);
+            hasDrawn = true;
+            if (peerConnection && peerConnection.open) {
+                sendBtn.disabled = false;
+            }
+
+            if (points.length > 2) {
+                const xc = (points[points.length - 2].x + pos.x) / 2;
+                const yc = (points[points.length - 2].y + pos.y) / 2;
+                ctx.quadraticCurveTo(points[points.length - 2].x, points[points.length - 2].y, xc, yc);
+                ctx.stroke();
+            } else {
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+            }
+        }
+
+        function stopDrawing(e) {
+            if (!isDrawing) return;
+            isDrawing = false;
+            points = [];
+        }
+
+        // Touch & Pointer events
+        canvas.addEventListener('pointerdown', startDrawing);
+        canvas.addEventListener('pointermove', draw);
+        canvas.addEventListener('pointerup', stopDrawing);
+        canvas.addEventListener('pointercancel', stopDrawing);
+
+        clearBtn.addEventListener('click', () => {
+            resizeCanvas();
+            placeholder.style.opacity = '0.6';
+            hasDrawn = false;
+            sendBtn.disabled = true;
+        });
+
+        // Trim whitespace and extract transparent PNG
+        function getTrimmedSignatureDataUrl() {
+            const dpr = window.devicePixelRatio || 2;
+            const w = canvas.width;
+            const h = canvas.height;
+            const imgData = ctx.getImageData(0, 0, w, h);
+            const data = imgData.data;
+
+            let minX = w, minY = h, maxX = 0, maxY = 0;
+            let foundPixel = false;
+
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    const alpha = data[(y * w + x) * 4 + 3];
+                    if (alpha > 20) {
+                        foundPixel = true;
+                        if (x < minX) minX = x;
+                        if (x > maxX) maxX = x;
+                        if (y < minY) minY = y;
+                        if (y > maxY) maxY = y;
+                    }
+                }
+            }
+
+            if (!foundPixel) return null;
+
+            const pad = 12 * dpr;
+            minX = Math.max(0, minX - pad);
+            minY = Math.max(0, minY - pad);
+            maxX = Math.min(w, maxX + pad);
+            maxY = Math.min(h, maxY + pad);
+
+            const cropW = maxX - minX;
+            const cropH = maxY - minY;
+
+            const trimmedCanvas = document.createElement('canvas');
+            trimmedCanvas.width = cropW;
+            trimmedCanvas.height = cropH;
+            const trimmedCtx = trimmedCanvas.getContext('2d');
+            trimmedCtx.drawImage(canvas, minX, minY, cropW, cropH, 0, 0, cropW, cropH);
+
+            return trimmedCanvas.toDataURL('image/png');
+        }
+
+        function resetSignature() {
+            successOverlay.style.display = 'none';
+            resizeCanvas();
+            placeholder.style.opacity = '0.6';
+            hasDrawn = false;
+            if (peerConnection && peerConnection.open) {
+                sendBtn.disabled = true;
+            }
+        }
+
+        // WebRTC Connection via PeerJS
+        function initWebRTC() {
+            if (!targetPeerId) {
+                statusText.textContent = 'No desktop ID';
+                statusBadge.classList.remove('connected');
+                alert('No connection ID found in URL. Please scan the QR code from the computer again.');
+                return;
+            }
+
+            const mobilePeer = new Peer();
+
+            mobilePeer.on('open', (id) => {
+                statusText.textContent = 'Connecting to desktop...';
+                peerConnection = mobilePeer.connect(targetPeerId, { reliable: true });
+
+                peerConnection.on('open', () => {
+                    statusText.textContent = 'Connected to Computer';
+                    statusBadge.classList.add('connected');
+                    if (hasDrawn) sendBtn.disabled = false;
+                });
+
+                peerConnection.on('close', () => {
+                    statusText.textContent = 'Disconnected';
+                    statusBadge.classList.remove('connected');
+                    sendBtn.disabled = true;
+                });
+
+                peerConnection.on('error', (err) => {
+                    console.error('Conn error:', err);
+                    statusText.textContent = 'Connection Error';
+                    statusBadge.classList.remove('connected');
+                });
+            });
+
+            mobilePeer.on('error', (err) => {
+                console.error('Peer error:', err);
+                statusText.textContent = 'Server Error';
+                statusBadge.classList.remove('connected');
+            });
+        }
+
+        sendBtn.addEventListener('click', () => {
+            if (!peerConnection || !peerConnection.open) {
+                alert('Not connected to computer yet. Please wait a moment or scan again.');
+                return;
+            }
+            const signatureUrl = getTrimmedSignatureDataUrl();
+            if (!signatureUrl) {
+                alert('Please draw a signature before sending.');
+                return;
+            }
+
+            peerConnection.send({
+                type: 'SIGNATURE_IMAGE',
+                dataUrl: signatureUrl
+            });
+
+            successOverlay.style.display = 'flex';
+        });
+
+        initWebRTC();
+    </script>
+</body>
+</html>
+

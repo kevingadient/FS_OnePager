@@ -8,12 +8,14 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Great+Vibes&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- External Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -102,14 +104,14 @@
                 </div>
             </div>
 
-            <div class="tool-card tool-organize">
-                <div class="tool-badge">📑</div>
+            <div class="tool-card tool-organize" onclick="openSignatureModal()" style="cursor: pointer;">
+                <div class="tool-badge">✍️</div>
                 <div class="tool-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/><path d="M15 3v5h5"/><path d="m10 13 2 2 4-4"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                 </div>
                 <div class="tool-info">
-                    <h3>Page Reorder</h3>
-                    <p>Sort, rotate, or delete individual pages</p>
+                    <h3>Sign & Annotate</h3>
+                    <p>Draw, scan QR with mobile, add text & dates</p>
                 </div>
             </div>
         </section>
@@ -180,6 +182,10 @@
                         </div>
 
                         <div class="bar-controls">
+                            <button class="btn btn-subtle" onclick="openSignatureModal()" title="Create or manage signatures">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                                Signatures
+                            </button>
                             <button class="btn btn-subtle" onclick="rotateAllPages(90)" title="Rotate all pages 90°">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6"/><path d="M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
                                 Rotate All
@@ -300,13 +306,28 @@
     <!-- Toast Notifications Container -->
     <div id="toastContainer" class="toast-container"></div>
 
-    <!-- Page Preview Modal (Full size inspection modal) -->
+    <!-- Page Preview Modal (Full size inspection modal with Annotations) -->
     <div id="previewModal" class="preview-modal" style="display: none;">
-        <div class="preview-modal-card">
+        <div class="preview-modal-card preview-modal-large">
             <div class="preview-header">
                 <div class="preview-title-wrap">
-                    <h3 id="previewTitle">Page Inspection</h3>
+                    <h3 id="previewTitle">Page Inspection & Signing</h3>
                     <span id="previewBadge" class="badge">Page 1</span>
+                </div>
+                <!-- Annotation Toolbar -->
+                <div class="annotator-toolbar">
+                    <button class="btn btn-tool" id="toolAddSigBtn" onclick="openSignatureModal()" title="Create or select signature">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                        <span>Signature</span>
+                    </button>
+                    <button class="btn btn-tool" id="toolAddTextBtn" onclick="addAnnotationTextToCurrentPage()" title="Add customizable text box">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+                        <span>Add Text</span>
+                    </button>
+                    <button class="btn btn-tool" id="toolAddDateBtn" onclick="addAnnotationDateToCurrentPage()" title="Add date stamp">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <span>Add Date</span>
+                    </button>
                 </div>
                 <button class="modal-close-btn" id="closePreviewBtn" onclick="closePreviewModal()">&times;</button>
             </div>
@@ -314,17 +335,24 @@
                 <div class="preview-canvas-wrapper" id="modalCanvasContainer">
                     <canvas id="modalPreviewCanvas"></canvas>
                     <img id="modalPreviewImage" src="" alt="Page preview" style="display: none;">
+                    <!-- Interactive Overlay for Signatures, Text & Dates -->
+                    <div id="annotationOverlay" class="annotation-overlay"></div>
                 </div>
                 <div class="preview-details">
-                    <p><strong>Source Document:</strong> <span id="previewSource">filename.pdf</span></p>
+                    <p><strong>Source:</strong> <span id="previewSource">filename.pdf</span></p>
                     <p><strong>Original Index:</strong> Page <span id="previewPageNumber">1</span></p>
                     <p><strong>Rotation:</strong> <span id="previewRotationText">0°</span></p>
+                    <p><strong>Annotations:</strong> <span id="previewAnnotationCount">0 elements</span></p>
                 </div>
             </div>
             <div class="preview-footer">
                 <button class="btn btn-subtle" onclick="rotateCurrentPreview(90)">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6"/><path d="M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
                     Rotate 90°
+                </button>
+                <button class="btn btn-subtle" onclick="clearCurrentPageAnnotations()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/></svg>
+                    Clear Page Annotations
                 </button>
                 <button class="btn btn-subtle" onclick="movePageToTop()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
@@ -337,6 +365,138 @@
                 <button class="btn btn-danger" onclick="removeFromPreview()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/></svg>
                     Remove Page
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signature Creation & QR Sync Modal -->
+    <div id="signatureModal" class="preview-modal" style="display: none;">
+        <div class="preview-modal-card signature-creator-card">
+            <div class="preview-header">
+                <div class="preview-title-wrap">
+                    <h3>Signature & Mobile Sign</h3>
+                    <span class="badge" id="sigModalModeBadge">Mobile / Draw</span>
+                </div>
+                <button class="modal-close-btn" onclick="closeSignatureModal()">&times;</button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="sig-tabs">
+                <button class="sig-tab active" data-tab="mobile" onclick="switchSigTab('mobile')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                    Sign on Mobile (QR)
+                </button>
+                <button class="sig-tab" data-tab="draw" onclick="switchSigTab('draw')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    Draw Here
+                </button>
+                <button class="sig-tab" data-tab="type" onclick="switchSigTab('type')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+                    Type
+                </button>
+                <button class="sig-tab" data-tab="upload" onclick="switchSigTab('upload')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Upload Image
+                </button>
+            </div>
+
+            <div class="sig-tab-content">
+                <!-- 1. Mobile QR Sync Pane -->
+                <div id="tabMobile" class="sig-pane active">
+                    <div class="qr-connection-grid">
+                        <div class="qr-display-box">
+                            <div id="qrCodeContainer" class="qr-canvas-holder">
+                                <div class="qr-spinner">Generating QR code...</div>
+                            </div>
+                            <div class="qr-scan-hint">Scan with camera app or browser</div>
+                        </div>
+                        <div class="qr-info-box">
+                            <h4>Sign with smartphone</h4>
+                            <p>Open your mobile phone camera, scan the QR code to open the smooth signing pad, sign comfortably, and tap <strong>"Send to Computer"</strong>.</p>
+                            <div class="qr-status-indicator" id="qrStatusBox">
+                                <span class="status-pulse-dot"></span>
+                                <span id="qrStatusText">Waiting for mobile scan...</span>
+                            </div>
+                            <div class="manual-url-box">
+                                <label>Or open this link directly on your mobile device:</label>
+                                <div class="url-copy-row">
+                                    <input type="text" id="mobileDirectUrl" readonly value="">
+                                    <button class="btn btn-subtle" onclick="copyMobileUrl()">Copy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Desktop Draw Pane -->
+                <div id="tabDraw" class="sig-pane">
+                    <div class="desktop-draw-area">
+                        <div class="draw-canvas-container" id="desktopDrawContainer">
+                            <div class="sign-baseline"></div>
+                            <canvas id="desktopDrawCanvas"></canvas>
+                        </div>
+                        <div class="draw-tools-row">
+                            <div class="color-pickers">
+                                <span class="color-dot active" style="background: #0f172a;" onclick="setDrawColor('#0f172a')"></span>
+                                <span class="color-dot" style="background: #1e40af;" onclick="setDrawColor('#1e40af')"></span>
+                                <span class="color-dot" style="background: #047857;" onclick="setDrawColor('#047857')"></span>
+                            </div>
+                            <button class="btn btn-subtle" onclick="clearDesktopDraw()">Clear</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Type Signature Pane -->
+                <div id="tabType" class="sig-pane">
+                    <div class="type-sig-container">
+                        <input type="text" id="typeSigInput" class="type-input" placeholder="Enter your full name" oninput="renderTypedSignatures()">
+                        <div class="font-options-grid">
+                            <div class="font-choice-card active" data-font="'Dancing Script', cursive" onclick="selectTypeFont(this)">
+                                <span class="font-preview" style="font-family: 'Dancing Script', cursive;">Signature Preview</span>
+                                <span class="font-name">Dancing Script</span>
+                            </div>
+                            <div class="font-choice-card" data-font="'Great Vibes', cursive" onclick="selectTypeFont(this)">
+                                <span class="font-preview" style="font-family: 'Great Vibes', cursive;">Signature Preview</span>
+                                <span class="font-name">Great Vibes</span>
+                            </div>
+                            <div class="font-choice-card" data-font="'Plus Jakarta Sans', sans-serif" onclick="selectTypeFont(this)">
+                                <span class="font-preview" style="font-family: 'Plus Jakarta Sans', sans-serif;">Signature Preview</span>
+                                <span class="font-name">Modern Clean</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Upload Image Pane -->
+                <div id="tabUpload" class="sig-pane">
+                    <div class="upload-sig-container">
+                        <input type="file" id="sigFileInput" accept="image/*" hidden onchange="handleSignatureFileUpload(event)">
+                        <div class="sig-upload-box" onclick="document.getElementById('sigFileInput').click()">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <p>Click to upload signature image (PNG, JPG, SVG)</p>
+                            <span>White backgrounds are automatically made transparent</span>
+                        </div>
+                        <div id="uploadPreviewArea" style="display: none; text-align: center; margin-top: 12px;">
+                            <img id="uploadedSigImg" src="" alt="Uploaded signature" style="max-height: 120px; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 6px; background: #fff;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stored / Recent Signatures Gallery -->
+            <div class="stored-signatures-section" id="storedSigsSection" style="display: none;">
+                <div class="stored-sigs-header">
+                    <label>Saved / Previous Signatures (click to select & place):</label>
+                    <button class="btn btn-subtle btn-xs" onclick="clearSavedSignatures(event)">Clear Saved</button>
+                </div>
+                <div class="stored-sigs-list" id="storedSigsList"></div>
+            </div>
+
+            <div class="preview-footer">
+                <button class="btn btn-subtle" onclick="closeSignatureModal()">Cancel</button>
+                <button class="btn btn-primary btn-glow" id="useSignatureBtn" onclick="useCurrentSignature()">
+                    Use Signature
                 </button>
             </div>
         </div>

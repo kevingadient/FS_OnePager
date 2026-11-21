@@ -1282,6 +1282,617 @@ body {
     animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.preview-modal-card.preview-modal-large {
+    max-width: 1000px;
+    width: 95%;
+}
+
+.preview-modal-card.signature-creator-card {
+    max-width: 680px;
+}
+
+/* Annotator Toolbar in Modal Header */
+.annotator-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    margin-right: 16px;
+}
+
+.btn-tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: #f8fafc;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-tool:hover {
+    background: var(--color-sky-mist);
+    border-color: var(--color-ocean-teal);
+    color: var(--color-deep-space);
+}
+
+/* Interactive Canvas & Annotation Layer */
+.preview-canvas-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    padding: 0;
+    border-radius: var(--radius-md);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.annotation-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;
+}
+
+/* Annotation Elements: Signature, Text, Date */
+.annotation-item {
+    position: absolute;
+    box-sizing: border-box;
+    cursor: move;
+    user-select: none;
+    border: 1.5px dashed transparent;
+    border-radius: 6px;
+    transition: border-color 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.annotation-item:hover,
+.annotation-item.active {
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.annotation-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.annotation-item .annotation-text-content {
+    width: 100%;
+    height: 100%;
+    outline: none;
+    background: transparent;
+    border: none;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: inherit;
+    line-height: 1.2;
+    display: flex;
+    align-items: center;
+}
+
+/* Resize Handles */
+.annotation-handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #6366f1;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    display: none;
+}
+
+.annotation-item.active .annotation-handle {
+    display: block;
+}
+
+.handle-se {
+    right: -5px;
+    bottom: -5px;
+    cursor: se-resize;
+}
+
+.handle-del {
+    position: absolute;
+    right: -8px;
+    top: -8px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ef4444;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+    border: none;
+}
+
+.annotation-item:hover .handle-del,
+.annotation-item.active .handle-del {
+    display: flex;
+}
+
+/* Floating Edit Controls Bar */
+.annotation-action-bar {
+    position: absolute;
+    top: -38px;
+    left: 0;
+    display: none;
+    align-items: center;
+    gap: 4px;
+    background: #1e293b;
+    border-radius: 6px;
+    padding: 3px 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    z-index: 100;
+}
+
+.annotation-item.active .annotation-action-bar {
+    display: flex;
+}
+
+.bar-btn {
+    background: transparent;
+    border: none;
+    color: #f8fafc;
+    font-size: 0.75rem;
+    padding: 3px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+.bar-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Signature Creator Tabs & Pane */
+.sig-tabs {
+    display: flex;
+    background: #f1f5f9;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding: 6px 16px 0;
+    gap: 8px;
+}
+
+.sig-tab {
+    padding: 10px 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sig-tab:hover {
+    color: var(--text-primary);
+}
+
+.sig-tab.active {
+    color: #4f46e5;
+    border-bottom-color: #4f46e5;
+    background: white;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.sig-tab-content {
+    padding: 20px;
+    background: #ffffff;
+    min-height: 240px;
+}
+
+.sig-pane {
+    display: none;
+}
+.sig-pane.active {
+    display: block;
+}
+
+/* QR Code Pane */
+.qr-connection-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 20px;
+    align-items: center;
+}
+
+@media (max-width: 600px) {
+    .qr-connection-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.qr-display-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.qr-canvas-holder {
+    width: 190px;
+    height: 190px;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+}
+
+.qr-canvas-holder img,
+.qr-canvas-holder canvas {
+    width: 170px !important;
+    height: 170px !important;
+}
+
+.qr-scan-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.qr-info-box h4 {
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+    color: var(--color-deep-space);
+}
+
+.qr-info-box p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin-bottom: 12px;
+}
+
+.qr-status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #f1f5f9;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.qr-status-indicator.connected {
+    background: rgba(34, 197, 94, 0.12);
+    color: #166534;
+}
+
+.status-pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #eab308;
+    box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+.qr-status-indicator.connected .status-pulse-dot {
+    background: #22c55e;
+    animation: none;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(234, 179, 8, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(234, 179, 8, 0); }
+}
+
+.manual-url-box {
+    margin-top: 8px;
+}
+
+.manual-url-box label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.url-copy-row {
+    display: flex;
+    gap: 6px;
+}
+
+.url-copy-row input {
+    flex: 1;
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #f8fafc;
+}
+
+/* Desktop Draw Pane */
+.draw-canvas-container {
+    width: 100%;
+    height: 200px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 12px;
+    background: #ffffff;
+    position: relative;
+    overflow: hidden;
+    cursor: crosshair;
+}
+
+.draw-canvas-container canvas {
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+}
+
+.draw-tools-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.color-pickers {
+    display: flex;
+    gap: 8px;
+}
+
+.color-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.15s ease;
+}
+
+.color-dot.active {
+    transform: scale(1.2);
+    border-color: #6366f1;
+}
+
+/* Type Signature Pane */
+.type-sig-container {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.type-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.type-input:focus {
+    border-color: #6366f1;
+}
+
+.font-options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+.font-choice-card {
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    background: #f8fafc;
+}
+
+.font-choice-card:hover {
+    border-color: #cbd5e1;
+}
+
+.font-choice-card.active {
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.font-preview {
+    font-size: 1.35rem;
+    color: #0f172a;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+}
+
+.font-name {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Upload Image Pane */
+.sig-upload-box {
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    background: #f8fafc;
+    transition: all 0.2s ease;
+}
+
+.sig-upload-box:hover {
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.04);
+}
+
+.sig-upload-box svg {
+    color: #6366f1;
+    margin-bottom: 8px;
+}
+
+.sig-upload-box p {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.sig-upload-box span {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Stored Signatures Bar */
+.stored-signatures-section {
+    padding: 12px 20px;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+}
+
+.stored-sigs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.stored-sigs-header label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.btn-xs {
+    padding: 3px 8px;
+    font-size: 0.72rem;
+    border-radius: 4px;
+}
+
+.stored-sigs-list {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 4px 2px 8px;
+}
+
+.stored-sig-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 56px;
+    min-width: 110px;
+    max-width: 150px;
+    padding: 6px 12px;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.stored-sig-card:hover {
+    transform: translateY(-2px);
+    border-color: #6366f1;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.stored-sig-card.selected {
+    border-color: #4f46e5;
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.stored-sig-card img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.stored-sig-card .delete-saved-btn {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 18px;
+    height: 18px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 11px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.stored-sig-card:hover .delete-saved-btn {
+    display: flex;
+}
+
+.drag-handle-bar {
+    width: 100%;
+    height: 14px;
+    background: rgba(99, 102, 241, 0.15);
+    cursor: move;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+.drag-dots {
+    width: 18px;
+    height: 3px;
+    background: repeating-linear-gradient(90deg, #6366f1, #6366f1 2px, transparent 2px, transparent 5px);
+}
+
+/* Badge for Page Preview Grid */
+.annotation-page-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #4f46e5;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(79, 70, 229, 0.4);
+    z-index: 2;
+}
+
 @keyframes modalPop {
     from { transform: scale(0.92); opacity: 0; }
     to { transform: scale(1); opacity: 1; }

@@ -7,6 +7,22 @@ let pdfPages = [];      // [{ id, fileId, fileName, pageNumber, pageIndex, array
 let sortableInstance = null;
 let currentPreviewPageId = null;
 
+// Annotations & Signature State
+// pageAnnotations[pageId] = [ { id, type: 'sig'|'text'|'date', content, x, y, width, height, fontSize, color, fontFamily } ]
+let pageAnnotations = {};
+let savedSignatures = [];
+let activeSignatureData = null;
+let desktopPeer = null;
+let desktopPeerId = null;
+let activePeerConn = null;
+let currentSigTab = 'mobile';
+let selectedDrawColor = '#0f172a';
+let selectedTypeFont = "'Dancing Script', cursive";
+
+// Modal inspection preview dimensions for coordinate mapping
+let modalPageDimensions = { width: 1, height: 1 }; // rendered width and height in px
+let currentActiveAnnotationId = null;
+
 // DOM Elements
 const fileInput = document.getElementById('fileInput');
 const uploadArea = document.getElementById('uploadArea');
@@ -29,9 +45,23 @@ const outputFilenameInput = document.getElementById('outputFilenameInput');
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', () => {
+    loadSavedSignaturesFromStorage();
     initEventListeners();
     initSortable();
+    initDesktopDrawCanvas();
 });
+
+function loadSavedSignaturesFromStorage() {
+    try {
+        const stored = localStorage.getItem('pdf_merger_saved_signatures');
+        if (stored) {
+            savedSignatures = JSON.parse(stored);
+            if (!Array.isArray(savedSignatures)) savedSignatures = [];
+        }
+    } catch (e) {
+        console.warn('Could not load signatures from localStorage:', e);
+    }
+}
 
 function initEventListeners() {
     // File input change
@@ -288,8 +318,12 @@ function createPageCardElement(pageObj, index) {
     card.className = 'page-card';
     card.setAttribute('data-page-id', pageObj.id);
 
+    const annotationsCount = (pageAnnotations[pageObj.id] || []).length;
+    const annotationBadge = annotationsCount > 0 ? `<span class="annotation-page-badge" title="${annotationsCount} signature/annotation(s)">✍️ ${annotationsCount}</span>` : '';
+
     card.innerHTML = `
         <button class="delete-btn" onclick="deletePage('${pageObj.id}', event)" title="Delete page">&times;</button>
+        ${annotationBadge}
         <div class="preview-box">
             <canvas id="canvas_${pageObj.id}"></canvas>
             <div class="page-card-overlay">
@@ -457,7 +491,7 @@ async function openPageInspection(pageId, e = null) {
 
     currentPreviewPageId = pageId;
 
-    document.getElementById('previewTitle').textContent = `Page Inspection`;
+    document.getElementById('previewTitle').textContent = `Page Inspection & Annotations`;
     document.getElementById('previewBadge').textContent = `Page ${pdfPages.indexOf(pageObj) + 1}`;
     document.getElementById('previewSource').textContent = pageObj.fileName;
     document.getElementById('previewPageNumber').textContent = pageObj.pageNumber;
@@ -465,12 +499,20 @@ async function openPageInspection(pageId, e = null) {
 
     const canvas = document.getElementById('modalPreviewCanvas');
     const img = document.getElementById('modalPreviewImage');
+    const overlay = document.getElementById('annotationOverlay');
+    const container = document.getElementById('modalCanvasContainer');
 
     if (pageObj.isImage && pageObj.imageDataUrl) {
         canvas.style.display = 'none';
         img.style.display = 'block';
         img.src = pageObj.imageDataUrl;
         img.style.transform = `rotate(${pageObj.rotation}deg)`;
+        
+        await new Promise(r => {
+            if (img.complete) r();
+            else img.onload = r;
+        });
+        modalPageDimensions = { width: img.clientWidth || 600, height: img.clientHeight || 800 };
     } else {
         img.style.display = 'none';
         canvas.style.display = 'block';
@@ -487,13 +529,41 @@ async function openPageInspection(pageId, e = null) {
 
             const ctx = canvas.getContext('2d');
             await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+            modalPageDimensions = { width: viewport.width, height: viewport.height };
         } catch (err) {
             console.error('Modal render error:', err);
         }
         hideLoading();
     }
 
+    // Synchronize overlay dimensions
+    const renderedWidth = canvas.style.display !== 'none' ? canvas.width : img.clientWidth;
+    const renderedHeight = canvas.style.display !== 'none' ? canvas.height : img.clientHeight;
+    modalPageDimensions = { width: renderedWidth, height: renderedHeight };
+
+    renderOverlayAnnotations();
+    updatePreviewAnnotationCount();
+
     previewModal.style.display = 'flex';
+}
+
+function updatePreviewAnnotationCount() {
+    const list = pageAnnotations[currentPreviewPageId] || [];
+    const countSpan = document.getElementById('previewAnnotationCount');
+    if (countSpan) {
+        countSpan.textContent = `${list.length} element(s)`;
+    }
+}
+
+function clearCurrentPageAnnotations() {
+    if (!currentPreviewPageId) return;
+    if (confirm('Clear all signatures, text, and dates from this page?')) {
+        delete pageAnnotations[currentPreviewPageId];
+        renderOverlayAnnotations();
+        renderPagesGrid();
+        updatePreviewAnnotationCount();
+        showToast('Page annotations cleared', 'success');
+    }
 }
 
 function closePreviewModal() {
@@ -562,6 +632,12 @@ async function downloadMergedPDF() {
             if (pageItem.rotation) {
                 const existingRotation = copiedPage.getRotation().angle || 0;
                 copiedPage.setRotation(PDFLib.degrees((existingRotation + pageItem.rotation) % 360));
+            }
+
+            // Burn/Embed any placed signatures, text, and dates onto this page
+            const annotations = pageAnnotations[pageItem.id] || [];
+            if (annotations.length > 0) {
+                await burnAnnotationsOntoPage(mergedPdf, copiedPage, annotations, pageItem.rotation || 0);
             }
 
             mergedPdf.addPage(copiedPage);
@@ -668,3 +744,799 @@ function toggleLayoutView() {
     pagesList.classList.toggle('compact-view');
     showToast('Toggled grid layout', 'success');
 }
+
+/* ==========================================================================
+   ANNOTATIONS ENGINE: Signatures, Text, Dates, Drag/Resize & PDF-Lib Embedding
+   ========================================================================== */
+
+// --- Signature Creator Modal Management ---
+function openSignatureModal() {
+    document.getElementById('signatureModal').style.display = 'flex';
+    switchSigTab(currentSigTab || 'mobile');
+    renderStoredSignatures();
+}
+
+function closeSignatureModal() {
+    document.getElementById('signatureModal').style.display = 'none';
+}
+
+function switchSigTab(tabName) {
+    currentSigTab = tabName;
+    document.querySelectorAll('.sig-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.sig-pane').forEach(p => p.classList.remove('active'));
+
+    const tabBtn = document.querySelector(`.sig-tab[data-tab="${tabName}"]`);
+    if (tabBtn) tabBtn.classList.add('active');
+
+    const paneMap = {
+        'mobile': 'tabMobile',
+        'draw': 'tabDraw',
+        'type': 'tabType',
+        'upload': 'tabUpload'
+    };
+    const targetPane = document.getElementById(paneMap[tabName]);
+    if (targetPane) targetPane.classList.add('active');
+
+    if (tabName === 'mobile') {
+        initDesktopWebRTC();
+    } else if (tabName === 'draw') {
+        setTimeout(resizeDesktopDrawCanvas, 50);
+    } else if (tabName === 'type') {
+        renderTypedSignatures();
+    }
+}
+
+// --- Desktop WebRTC / PeerJS Sync for Mobile QR ---
+function initDesktopWebRTC() {
+    if (desktopPeer && !desktopPeer.destroyed) {
+        return; // already active
+    }
+
+    const qrContainer = document.getElementById('qrCodeContainer');
+    const statusText = document.getElementById('qrStatusText');
+    const statusBox = document.getElementById('qrStatusBox');
+    const directUrlInput = document.getElementById('mobileDirectUrl');
+
+    statusText.textContent = 'Generating connection ID...';
+    qrContainer.innerHTML = '<div class="qr-spinner">Generating QR code...</div>';
+
+    // Unique random peer ID for this session
+    const randomId = 'pdf-sig-' + Math.random().toString(36).substr(2, 9);
+    desktopPeer = new Peer(randomId);
+
+    desktopPeer.on('open', (id) => {
+        desktopPeerId = id;
+        statusText.textContent = 'Waiting for mobile scan...';
+        statusBox.classList.remove('connected');
+
+        // Formulate target URL
+        // If on local file/host, construct mobile signing URL
+        const currentOrigin = window.location.origin;
+        const pathname = window.location.pathname.replace(/\/index\.html$/, '');
+        let targetUrl = `${currentOrigin}${pathname}/sign.html?peer=${id}`;
+
+        // If running directly as file:// or localhost, fallback message/URL
+        if (window.location.protocol === 'file:') {
+            targetUrl = `http://localhost:8000/sign.html?peer=${id}`;
+        }
+        directUrlInput.value = targetUrl;
+
+        // Render QR Code
+        qrContainer.innerHTML = '';
+        new QRCode(qrContainer, {
+            text: targetUrl,
+            width: 170,
+            height: 170,
+            colorDark: "#0f172a",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.M
+        });
+    });
+
+    desktopPeer.on('connection', (conn) => {
+        activePeerConn = conn;
+        statusText.textContent = 'Mobile phone connected!';
+        statusBox.classList.add('connected');
+        showToast('Phone connected via QR code!', 'success');
+
+        conn.on('data', (data) => {
+            if (data && data.type === 'SIGNATURE_IMAGE' && data.dataUrl) {
+                statusText.textContent = 'Signature received!';
+                showToast('Signature received from phone!', 'success');
+                activeSignatureData = data.dataUrl;
+                saveSignatureToGallery(data.dataUrl);
+
+                // Auto-close modal and add to current inspected page or activate placement
+                setTimeout(() => {
+                    closeSignatureModal();
+                    if (currentPreviewPageId) {
+                        addAnnotationToPage(currentPreviewPageId, {
+                            type: 'sig',
+                            content: data.dataUrl,
+                            x: 35,
+                            y: 40,
+                            width: 160,
+                            height: 60
+                        });
+                    } else if (pdfPages.length > 0) {
+                        // Open first page inspection with signature placed
+                        openPageInspection(pdfPages[0].id);
+                        setTimeout(() => {
+                            addAnnotationToPage(pdfPages[0].id, {
+                                type: 'sig',
+                                content: data.dataUrl,
+                                x: 35,
+                                y: 40,
+                                width: 160,
+                                height: 60
+                            });
+                        }, 250);
+                    }
+                }, 500);
+            }
+        });
+
+        conn.on('close', () => {
+            statusText.textContent = 'Mobile disconnected';
+            statusBox.classList.remove('connected');
+        });
+    });
+
+    desktopPeer.on('error', (err) => {
+        console.error('Desktop peer error:', err);
+        statusText.textContent = 'Connection notice: ready for local / manual sign';
+    });
+}
+
+function copyMobileUrl() {
+    const input = document.getElementById('mobileDirectUrl');
+    input.select();
+    navigator.clipboard.writeText(input.value);
+    showToast('Link copied to clipboard!', 'success');
+}
+
+// --- Desktop Draw Canvas Engine ---
+let desktopDrawCtx = null;
+let isDesktopDrawing = false;
+let desktopPoints = [];
+let desktopHasDrawn = false;
+
+function initDesktopDrawCanvas() {
+    const canvas = document.getElementById('desktopDrawCanvas');
+    if (!canvas) return;
+    desktopDrawCtx = canvas.getContext('2d');
+
+    function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+            x: (e.clientX || e.touches[0].clientX) - rect.left,
+            y: (e.clientY || e.touches[0].clientY) - rect.top
+        };
+    }
+
+    canvas.addEventListener('pointerdown', (e) => {
+        isDesktopDrawing = true;
+        const pos = getPos(e);
+        desktopPoints = [pos];
+        desktopDrawCtx.beginPath();
+        desktopDrawCtx.moveTo(pos.x, pos.y);
+    });
+
+    canvas.addEventListener('pointermove', (e) => {
+        if (!isDesktopDrawing) return;
+        const pos = getPos(e);
+        desktopPoints.push(pos);
+        desktopHasDrawn = true;
+
+        if (desktopPoints.length > 2) {
+            const xc = (desktopPoints[desktopPoints.length - 2].x + pos.x) / 2;
+            const yc = (desktopPoints[desktopPoints.length - 2].y + pos.y) / 2;
+            desktopDrawCtx.quadraticCurveTo(desktopPoints[desktopPoints.length - 2].x, desktopPoints[desktopPoints.length - 2].y, xc, yc);
+            desktopDrawCtx.stroke();
+        } else {
+            desktopDrawCtx.lineTo(pos.x, pos.y);
+            desktopDrawCtx.stroke();
+        }
+    });
+
+    const stop = () => { isDesktopDrawing = false; desktopPoints = []; };
+    canvas.addEventListener('pointerup', stop);
+    canvas.addEventListener('pointercancel', stop);
+}
+
+function resizeDesktopDrawCanvas() {
+    const container = document.getElementById('desktopDrawContainer');
+    const canvas = document.getElementById('desktopDrawCanvas');
+    if (!container || !canvas) return;
+
+    const dpr = window.devicePixelRatio || 2;
+    canvas.width = container.clientWidth * dpr;
+    canvas.height = container.clientHeight * dpr;
+    desktopDrawCtx.scale(dpr, dpr);
+    desktopDrawCtx.lineCap = 'round';
+    desktopDrawCtx.lineJoin = 'round';
+    desktopDrawCtx.lineWidth = 3;
+    desktopDrawCtx.strokeStyle = selectedDrawColor;
+}
+
+function setDrawColor(color) {
+    selectedDrawColor = color;
+    if (desktopDrawCtx) desktopDrawCtx.strokeStyle = color;
+    document.querySelectorAll('.color-dot').forEach(d => {
+        d.classList.toggle('active', d.style.background === color || d.getAttribute('data-color') === color);
+    });
+}
+
+function clearDesktopDraw() {
+    resizeDesktopDrawCanvas();
+    desktopHasDrawn = false;
+}
+
+function getDesktopTrimmedSignature() {
+    const canvas = document.getElementById('desktopDrawCanvas');
+    const ctx = desktopDrawCtx;
+    const w = canvas.width;
+    const h = canvas.height;
+    const imgData = ctx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+
+    let minX = w, minY = h, maxX = 0, maxY = 0;
+    let found = false;
+
+    for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+            if (data[(y * w + x) * 4 + 3] > 20) {
+                found = true;
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+            }
+        }
+    }
+    if (!found) return null;
+
+    const pad = 16;
+    minX = Math.max(0, minX - pad);
+    minY = Math.max(0, minY - pad);
+    maxX = Math.min(w, maxX + pad);
+    maxY = Math.min(h, maxY + pad);
+
+    const cropW = maxX - minX;
+    const cropH = maxY - minY;
+
+    const tCanvas = document.createElement('canvas');
+    tCanvas.width = cropW;
+    tCanvas.height = cropH;
+    const tCtx = tCanvas.getContext('2d');
+    tCtx.drawImage(canvas, minX, minY, cropW, cropH, 0, 0, cropW, cropH);
+    return tCanvas.toDataURL('image/png');
+}
+
+// --- Type Signature Generator ---
+function selectTypeFont(el) {
+    document.querySelectorAll('.font-choice-card').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    selectedTypeFont = el.getAttribute('data-font');
+}
+
+function renderTypedSignatures() {
+    const text = document.getElementById('typeSigInput').value.trim() || 'Your Signature';
+    document.querySelectorAll('.font-choice-card .font-preview').forEach(p => {
+        p.textContent = text;
+    });
+}
+
+function generateTypedSignatureDataUrl() {
+    const text = document.getElementById('typeSigInput').value.trim();
+    if (!text) return null;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 600;
+    canvas.height = 200;
+    const ctx = canvas.getContext('2d');
+
+    ctx.font = `64px ${selectedTypeFont}`;
+    ctx.fillStyle = selectedDrawColor;
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'center';
+    ctx.fillText(text, 300, 100);
+
+    // Crop to text bounding box
+    const imgData = ctx.getImageData(0, 0, 600, 200);
+    const data = imgData.data;
+    let minX = 600, minY = 200, maxX = 0, maxY = 0;
+    let found = false;
+
+    for (let y = 0; y < 200; y++) {
+        for (let x = 0; x < 600; x++) {
+            if (data[(y * 600 + x) * 4 + 3] > 20) {
+                found = true;
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+            }
+        }
+    }
+    if (!found) return null;
+
+    const pad = 12;
+    minX = Math.max(0, minX - pad);
+    minY = Math.max(0, minY - pad);
+    maxX = Math.min(600, maxX + pad);
+    maxY = Math.min(200, maxY + pad);
+
+    const cropW = maxX - minX;
+    const cropH = maxY - minY;
+
+    const tCanvas = document.createElement('canvas');
+    tCanvas.width = cropW;
+    tCanvas.height = cropH;
+    const tCtx = tCanvas.getContext('2d');
+    tCtx.drawImage(canvas, minX, minY, cropW, cropH, 0, 0, cropW, cropH);
+    return tCanvas.toDataURL('image/png');
+}
+
+// --- Upload Image Handler with Automatic Transparency ---
+function handleSignatureFileUpload(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+
+            // Make white or near-white background transparent
+            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const d = imgData.data;
+            for (let i = 0; i < d.length; i += 4) {
+                const r = d[i], g = d[i+1], b = d[i+2];
+                if (r > 230 && g > 230 && b > 230) {
+                    d[i+3] = 0; // transparent
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+
+            const transparentUrl = canvas.toDataURL('image/png');
+            activeSignatureData = transparentUrl;
+            document.getElementById('uploadedSigImg').src = transparentUrl;
+            document.getElementById('uploadPreviewArea').style.display = 'block';
+            saveSignatureToGallery(transparentUrl);
+            showToast('Signature image uploaded and cleaned!', 'success');
+        };
+        img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+// --- Confirm & Apply Signature ---
+function useCurrentSignature() {
+    let sigUrl = null;
+
+    if (activeSignatureData) {
+        sigUrl = activeSignatureData;
+    } else if (currentSigTab === 'draw') {
+        sigUrl = getDesktopTrimmedSignature();
+    } else if (currentSigTab === 'type') {
+        sigUrl = generateTypedSignatureDataUrl();
+    } else if (currentSigTab === 'upload') {
+        sigUrl = activeSignatureData;
+    } else if (currentSigTab === 'mobile') {
+        sigUrl = activeSignatureData;
+    }
+
+    if (!sigUrl) {
+        showToast('Please create or select a signature first', 'warning');
+        return;
+    }
+
+    activeSignatureData = sigUrl;
+    saveSignatureToGallery(sigUrl);
+    closeSignatureModal();
+
+    if (currentPreviewPageId) {
+        addAnnotationToPage(currentPreviewPageId, {
+            type: 'sig',
+            content: sigUrl,
+            x: 35,
+            y: 45,
+            width: 160,
+            height: 60
+        });
+        showToast('Signature placed! Drag or resize to adjust.', 'success');
+    } else if (pdfPages.length > 0) {
+        openPageInspection(pdfPages[0].id);
+        setTimeout(() => {
+            addAnnotationToPage(pdfPages[0].id, {
+                type: 'sig',
+                content: sigUrl,
+                x: 35,
+                y: 45,
+                width: 160,
+                height: 60
+            });
+            showToast('Signature placed! Drag or resize to adjust.', 'success');
+        }, 200);
+    }
+}
+
+function saveSignatureToGallery(dataUrl) {
+    if (!dataUrl) return;
+    const index = savedSignatures.indexOf(dataUrl);
+    if (index > -1) {
+        savedSignatures.splice(index, 1);
+    }
+    savedSignatures.unshift(dataUrl);
+    if (savedSignatures.length > 8) savedSignatures.pop();
+    
+    try {
+        localStorage.setItem('pdf_merger_saved_signatures', JSON.stringify(savedSignatures));
+    } catch (e) {
+        console.warn('Could not save to localStorage:', e);
+    }
+    renderStoredSignatures();
+}
+
+function renderStoredSignatures() {
+    const container = document.getElementById('storedSigsList');
+    const section = document.getElementById('storedSigsSection');
+    if (!container || !section) return;
+
+    if (savedSignatures.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+    container.innerHTML = '';
+    savedSignatures.forEach((url, i) => {
+        const card = document.createElement('div');
+        card.className = 'stored-sig-card' + (activeSignatureData === url ? ' selected' : '');
+        card.title = 'Click to place this signature';
+
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = `Signature ${i + 1}`;
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'delete-saved-btn';
+        delBtn.innerHTML = '&times;';
+        delBtn.title = 'Remove saved signature';
+        delBtn.onclick = (e) => {
+            e.stopPropagation();
+            removeSavedSignature(i);
+        };
+
+        card.appendChild(img);
+        card.appendChild(delBtn);
+
+        card.onclick = () => {
+            activeSignatureData = url;
+            useCurrentSignature();
+        };
+
+        container.appendChild(card);
+    });
+}
+
+function removeSavedSignature(index) {
+    savedSignatures.splice(index, 1);
+    try {
+        localStorage.setItem('pdf_merger_saved_signatures', JSON.stringify(savedSignatures));
+    } catch (e) {}
+    renderStoredSignatures();
+    showToast('Removed saved signature', 'success');
+}
+
+function clearSavedSignatures(e) {
+    if (e) e.stopPropagation();
+    if (confirm('Clear all saved signatures?')) {
+        savedSignatures = [];
+        activeSignatureData = null;
+        try {
+            localStorage.removeItem('pdf_merger_saved_signatures');
+        } catch (e) {}
+        renderStoredSignatures();
+        showToast('Saved signatures cleared', 'success');
+    }
+}
+
+// --- Text & Date Annotations Addition ---
+function addAnnotationTextToCurrentPage() {
+    if (!currentPreviewPageId) return;
+    const defaultText = prompt('Enter text to place on page:', 'Full Name / Note');
+    if (defaultText === null) return;
+
+    addAnnotationToPage(currentPreviewPageId, {
+        type: 'text',
+        content: defaultText.trim() || 'Text',
+        x: 35,
+        y: 45,
+        width: 180,
+        height: 38,
+        fontSize: 14,
+        color: '#0f172a'
+    });
+    showToast('Text box added! Drag or double-click to edit.', 'success');
+}
+
+function addAnnotationDateToCurrentPage() {
+    if (!currentPreviewPageId) return;
+    const today = new Date();
+    // Default format YYYY-MM-DD
+    const isoDate = today.toISOString().split('T')[0];
+    const customDate = prompt('Enter date (or leave as today):', isoDate);
+    if (customDate === null) return;
+
+    addAnnotationToPage(currentPreviewPageId, {
+        type: 'date',
+        content: customDate.trim() || isoDate,
+        x: 35,
+        y: 55,
+        width: 130,
+        height: 34,
+        fontSize: 14,
+        color: '#0f172a'
+    });
+    showToast('Date stamp added! Drag to position.', 'success');
+}
+
+// --- Interactive Annotation Overlay Manager ---
+function addAnnotationToPage(pageId, annotObj) {
+    if (!pageAnnotations[pageId]) {
+        pageAnnotations[pageId] = [];
+    }
+    const id = 'ann_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+    pageAnnotations[pageId].push({
+        id: id,
+        ...annotObj
+    });
+
+    renderOverlayAnnotations();
+    renderPagesGrid();
+    updatePreviewAnnotationCount();
+}
+
+function renderOverlayAnnotations() {
+    const overlay = document.getElementById('annotationOverlay');
+    if (!overlay || !currentPreviewPageId) return;
+    overlay.innerHTML = '';
+
+    const list = pageAnnotations[currentPreviewPageId] || [];
+    list.forEach(item => {
+        const el = createAnnotationElement(item);
+        overlay.appendChild(el);
+    });
+}
+
+function createAnnotationElement(item) {
+    const el = document.createElement('div');
+    el.className = 'annotation-item';
+    el.id = item.id;
+    el.style.left = item.x + 'px';
+    el.style.top = item.y + 'px';
+    el.style.width = item.width + 'px';
+    el.style.height = item.height + 'px';
+
+    if (item.type === 'sig') {
+        el.innerHTML = `
+            <img src="${item.content}" alt="Signature">
+            <button class="handle-del" title="Delete signature" onclick="deleteAnnotation('${item.id}', event)">&times;</button>
+            <div class="annotation-handle handle-se" title="Resize"></div>
+        `;
+    } else {
+        // Text or Date
+        el.innerHTML = `
+            <div class="drag-handle-bar" title="Drag to move">
+                <div class="drag-dots"></div>
+            </div>
+            <div class="annotation-action-bar">
+                <button class="bar-btn" onclick="changeFontSize('${item.id}', 2, event)">A+</button>
+                <button class="bar-btn" onclick="changeFontSize('${item.id}', -2, event)">A-</button>
+                <button class="bar-btn" onclick="toggleAnnotationColor('${item.id}', event)">Color</button>
+            </div>
+            <div class="annotation-text-content" contenteditable="true" style="font-size: ${item.fontSize || 14}px; color: ${item.color || '#0f172a'};">
+                ${item.content}
+            </div>
+            <button class="handle-del" title="Delete" onclick="deleteAnnotation('${item.id}', event)">&times;</button>
+            <div class="annotation-handle handle-se" title="Resize"></div>
+        `;
+
+        const textDiv = el.querySelector('.annotation-text-content');
+        textDiv.addEventListener('input', () => {
+            item.content = textDiv.innerText;
+        });
+        textDiv.addEventListener('blur', () => {
+            item.content = textDiv.innerText;
+        });
+    }
+
+    // Drag and Drop positioning
+    attachDragAndResize(el, item);
+
+    el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.querySelectorAll('.annotation-item').forEach(i => i.classList.remove('active'));
+        el.classList.add('active');
+        currentActiveAnnotationId = item.id;
+    });
+
+    return el;
+}
+
+function deleteAnnotation(id, e) {
+    if (e) e.stopPropagation();
+    if (!currentPreviewPageId || !pageAnnotations[currentPreviewPageId]) return;
+    pageAnnotations[currentPreviewPageId] = pageAnnotations[currentPreviewPageId].filter(a => a.id !== id);
+    renderOverlayAnnotations();
+    renderPagesGrid();
+    updatePreviewAnnotationCount();
+}
+
+function changeFontSize(id, delta, e) {
+    if (e) e.stopPropagation();
+    const item = (pageAnnotations[currentPreviewPageId] || []).find(a => a.id === id);
+    if (item) {
+        item.fontSize = Math.max(10, Math.min(48, (item.fontSize || 14) + delta));
+        renderOverlayAnnotations();
+    }
+}
+
+function toggleAnnotationColor(id, e) {
+    if (e) e.stopPropagation();
+    const item = (pageAnnotations[currentPreviewPageId] || []).find(a => a.id === id);
+    if (item) {
+        const colors = ['#0f172a', '#1e40af', '#047857', '#b91c1c'];
+        const nextIdx = (colors.indexOf(item.color || '#0f172a') + 1) % colors.length;
+        item.color = colors[nextIdx];
+        renderOverlayAnnotations();
+    }
+}
+
+// Drag & Resize Handlers
+function attachDragAndResize(element, item) {
+    let startX = 0, startY = 0;
+    let initialLeft = 0, initialTop = 0;
+    let initialWidth = 0, initialHeight = 0;
+    let isDragging = false;
+    let isResizing = false;
+
+    const overlay = document.getElementById('annotationOverlay');
+
+    element.addEventListener('pointerdown', (e) => {
+        // Do not trigger drag if clicking delete button or action bar
+        if (e.target.closest('.handle-del') || e.target.closest('.annotation-action-bar')) {
+            return;
+        }
+
+        // When clicking directly into editable text, allow cursor placement/typing
+        if (e.target.isContentEditable) {
+            return;
+        }
+
+        if (e.target.classList.contains('handle-se')) {
+            isResizing = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            initialWidth = item.width;
+            initialHeight = item.height;
+            element.setPointerCapture(e.pointerId);
+            e.stopPropagation();
+            return;
+        }
+
+        // Dragging initiated from element body, border, or dedicated drag-handle-bar
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        initialLeft = item.x;
+        initialTop = item.y;
+        element.setPointerCapture(e.pointerId);
+        e.stopPropagation();
+    });
+
+    element.addEventListener('pointermove', (e) => {
+        if (isDragging) {
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            const overlayRect = overlay.getBoundingClientRect();
+
+            let newX = Math.max(0, Math.min(overlayRect.width - item.width, initialLeft + dx));
+            let newY = Math.max(0, Math.min(overlayRect.height - item.height, initialTop + dy));
+
+            item.x = newX;
+            item.y = newY;
+            element.style.left = newX + 'px';
+            element.style.top = newY + 'px';
+        } else if (isResizing) {
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+
+            let newW = Math.max(40, initialWidth + dx);
+            let newH = Math.max(20, initialHeight + dy);
+
+            item.width = newW;
+            item.height = newH;
+            element.style.width = newW + 'px';
+            element.style.height = newH + 'px';
+        }
+    });
+
+    const stop = (e) => {
+        if (isDragging || isResizing) {
+            isDragging = false;
+            isResizing = false;
+            try { element.releasePointerCapture(e.pointerId); } catch (_) {}
+        }
+    };
+    element.addEventListener('pointerup', stop);
+    element.addEventListener('pointercancel', stop);
+}
+
+// --- PDF-Lib Vector/Bitmap Burning of Annotations ---
+async function burnAnnotationsOntoPage(pdfDoc, page, annotations, pageRotation = 0) {
+    const { width: pdfWidth, height: pdfHeight } = page.getSize();
+    // Modal preview canvas dimensions
+    const previewW = modalPageDimensions.width || 600;
+    const previewH = modalPageDimensions.height || 800;
+
+    // Standard Font for Text and Dates
+    const standardFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+
+    for (const ann of annotations) {
+        // Map Preview Coordinates to PDF Coordinates
+        // In PDF coordinates: (0,0) is bottom-left, while in DOM it is top-left
+        const scaleX = pdfWidth / previewW;
+        const scaleY = pdfHeight / previewH;
+
+        const mappedWidth = ann.width * scaleX;
+        const mappedHeight = ann.height * scaleY;
+        const mappedX = ann.x * scaleX;
+        const mappedY = pdfHeight - (ann.y * scaleY) - mappedHeight;
+
+        if (ann.type === 'sig' && ann.content) {
+            try {
+                // Fetch image bytes
+                const pngBytes = await fetch(ann.content).then(res => res.arrayBuffer());
+                const pngImage = await pdfDoc.embedPng(pngBytes);
+                page.drawImage(pngImage, {
+                    x: mappedX,
+                    y: mappedY,
+                    width: mappedWidth,
+                    height: mappedHeight
+                });
+            } catch (err) {
+                console.error('Error embedding signature PNG into PDF:', err);
+            }
+        } else if (ann.type === 'text' || ann.type === 'date') {
+            try {
+                const textStr = ann.content || '';
+                const fontSize = (ann.fontSize || 14) * scaleY * 0.9;
+                
+                // Color conversion
+                let rgbColor = PDFLib.rgb(0.06, 0.09, 0.16); // default slate
+                if (ann.color === '#1e40af') rgbColor = PDFLib.rgb(0.12, 0.25, 0.69);
+                else if (ann.color === '#047857') rgbColor = PDFLib.rgb(0.02, 0.47, 0.34);
+                else if (ann.color === '#b91c1c') rgbColor = PDFLib.rgb(0.72, 0.11, 0.11);
+
+                page.drawText(textStr, {
+                    x: mappedX,
+                    y: mappedY + (mappedHeight * 0.25),
+                    size: Math.max(8, fontSize),
+                    font: standardFont,
+                    color: rgbColor
+                });
+            } catch (err) {
+                console.error('Error drawing text onto PDF page:', err);
+            }
+        }
+    }
+}
+
